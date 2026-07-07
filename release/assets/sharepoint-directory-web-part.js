@@ -939,11 +939,12 @@ var CsvExport = function (_a) {
     var members = _a.members;
     var csvService = new _services_CsvService__WEBPACK_IMPORTED_MODULE_1__.CsvService();
     var disabled = members.length === 0;
+    var _b = react__WEBPACK_IMPORTED_MODULE_0__.useState(false), hovered = _b[0], setHovered = _b[1];
     var handleExport = function () {
         var date = new Date().toISOString().split('T')[0];
         csvService.exportToCsv(members, "annuaire-sharepoint-".concat(date, ".csv"));
     };
-    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: handleExport, disabled: disabled, title: "Exporter en CSV", style: {
+    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: handleExport, disabled: disabled, title: "Exporter en CSV", onMouseEnter: function () { return !disabled && setHovered(true); }, onMouseLeave: function () { return setHovered(false); }, style: {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
@@ -952,13 +953,14 @@ var CsvExport = function (_a) {
             paddingRight: 14,
             borderRadius: 20,
             border: '1px solid #c7c9cc',
-            backgroundColor: '#ffffff',
+            backgroundColor: hovered ? '#f3f2f1' : '#ffffff',
             color: disabled ? '#a19f9d' : '#6B7280',
             fontSize: 13,
             cursor: disabled ? 'not-allowed' : 'pointer',
             whiteSpace: 'nowrap',
             flexShrink: 0,
             outline: 'none',
+            transition: 'background-color 0.15s ease',
         } },
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "13", height: "13", viewBox: "0 0 16 16", fill: "currentColor", "aria-hidden": "true" },
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M8 12.5a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 1 0v9a.5.5 0 0 1-.5.5z" }),
@@ -1107,7 +1109,8 @@ var ListView = function (_a) {
                 } },
                 react__WEBPACK_IMPORTED_MODULE_0__.createElement("thead", null,
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", null,
-                        showCollaborateur && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", __assign({}, sortableThProps('displayName'), { style: __assign(__assign({}, sortableThProps('displayName').style), { paddingLeft: showPhoto ? 60 : 16 }) }),
+                        showPhoto && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", { style: __assign(__assign({}, headerCellStyle), { cursor: 'default', width: 44, padding: '10px 0 10px 16px' }) })),
+                        (showName || showFirstName) && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", __assign({}, sortableThProps('displayName')),
                             "Collaborateur ",
                             sortIndicator('displayName'))),
                         showJobTitle && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", __assign({}, sortableThProps('jobTitle')),
@@ -1145,18 +1148,14 @@ var ListView = function (_a) {
                             e.currentTarget.style.backgroundColor =
                                 'transparent';
                         } },
-                        showCollaborateur && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: cellStyle },
-                            react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: {
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 12,
-                                } },
-                                showPhoto && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_2__["default"], { photoUrl: member.photoUrl, displayName: member.displayName, givenName: member.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_6__.PersonaSize.size32 })),
-                                (showName || showFirstName) && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontWeight: 500 } }, showFirstName && showName
-                                    ? fullName
-                                    : showFirstName
-                                        ? member.givenName || ''
-                                        : "".concat(member.givenName ? '' : '').concat(member.surname || member.displayName)))))),
+                        showPhoto && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: __assign(__assign({}, cellStyle), { width: 44, padding: '10px 0 10px 16px' }) },
+                            react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_2__["default"], { photoUrl: member.photoUrl, displayName: member.displayName, givenName: member.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_6__.PersonaSize.size32 }))),
+                        (showName || showFirstName) && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: cellStyle },
+                            react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontWeight: 500 } }, showFirstName && showName
+                                ? fullName
+                                : showFirstName
+                                    ? member.givenName || ''
+                                    : "".concat(member.surname || member.displayName)))),
                         showJobTitle && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: cellStyle }, member.jobTitle || '')),
                         showEmail && react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: cellStyle }, member.email || ''),
                         showPhone && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: cellStyle }, member.mobilePhone || '')),
@@ -1354,7 +1353,7 @@ var MemberModal = function (_a) {
                         justifyContent: 'center',
                         gap: 10,
                         padding: '12px 20px',
-                        borderRadius: 6,
+                        borderRadius: 30,
                         border: '1.5px solid #0099a4',
                         background: 'transparent',
                         color: '#0099a4',
@@ -1378,7 +1377,7 @@ var MemberModal = function (_a) {
                         justifyContent: 'center',
                         gap: 10,
                         padding: '12px 20px',
-                        borderRadius: 6,
+                        borderRadius: 30,
                         border: '1.5px solid #0078D4',
                         background: 'transparent',
                         color: '#0078D4',
@@ -18676,7 +18675,7 @@ var hiddenContentStyle = {
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! tslib */ 93);
 /* harmony import */ var _fluentui_utilities__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fluentui/utilities */ 4362);
 /* harmony import */ var _fluentui_utilities__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fluentui/utilities */ 2419);
-/* harmony import */ var _microsoft_load_themed_styles__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @microsoft/load-themed-styles */ 1919);
+/* harmony import */ var _microsoft_load_themed_styles__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @microsoft/load-themed-styles */ 7724);
 /* harmony import */ var _fluentui_theme__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @fluentui/theme */ 3261);
 
 
@@ -19048,6 +19047,315 @@ function _warnDuplicateIcon(iconName) {
 // The checked in version is a placeholder only and will not be updated.
 
 (0,_fluentui_set_version__WEBPACK_IMPORTED_MODULE_0__.setVersion)('@fluentui/style-utilities', '8.15.2');
+
+
+/***/ }),
+
+/***/ 7724:
+/*!************************************************************************************************************!*\
+  !*** ./node_modules/@fluentui/style-utilities/node_modules/@microsoft/load-themed-styles/lib-es6/index.js ***!
+  \************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   loadTheme: () => (/* binding */ loadTheme)
+/* harmony export */ });
+/* unused harmony exports loadStyles, configureLoadStyles, configureRunMode, flush, clearStyles, detokenize, splitStyles */
+// Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+// See LICENSE in the project root for license information.
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+// Store the theming state in __themeState__ global scope for reuse in the case of duplicate
+// load-themed-styles hosted on the page.
+var _root = typeof window === 'undefined' ? __webpack_require__.g : window; // eslint-disable-line @typescript-eslint/no-explicit-any
+// Nonce string to inject into script tag if one provided. This is used in CSP (Content Security Policy).
+var _styleNonce = _root && _root.CSPSettings && _root.CSPSettings.nonce;
+var _themeState = initializeThemeState();
+/**
+ * Matches theming tokens. For example, "[theme: themeSlotName, default: #FFF]" (including the quotes).
+ */
+var _themeTokenRegex = /[\'\"]\[theme:\s*(\w+)\s*(?:\,\s*default:\s*([\\"\']?[\.\,\(\)\#\-\s\w]*[\.\,\(\)\#\-\w][\"\']?))?\s*\][\'\"]/g;
+var now = function () {
+    return typeof performance !== 'undefined' && !!performance.now ? performance.now() : Date.now();
+};
+function measure(func) {
+    var start = now();
+    func();
+    var end = now();
+    _themeState.perf.duration += end - start;
+}
+/**
+ * initialize global state object
+ */
+function initializeThemeState() {
+    var state = _root.__themeState__ || {
+        theme: undefined,
+        lastStyleElement: undefined,
+        registeredStyles: []
+    };
+    if (!state.runState) {
+        state = __assign(__assign({}, state), { perf: {
+                count: 0,
+                duration: 0
+            }, runState: {
+                flushTimer: 0,
+                mode: 0 /* Mode.sync */,
+                buffer: []
+            } });
+    }
+    if (!state.registeredThemableStyles) {
+        state = __assign(__assign({}, state), { registeredThemableStyles: [] });
+    }
+    _root.__themeState__ = state;
+    return state;
+}
+/**
+ * Loads a set of style text. If it is registered too early, we will register it when the window.load
+ * event is fired.
+ * @param {string | ThemableArray} styles Themable style text to register.
+ * @param {boolean} loadAsync When true, always load styles in async mode, irrespective of current sync mode.
+ */
+function loadStyles(styles, loadAsync) {
+    if (loadAsync === void 0) { loadAsync = false; }
+    measure(function () {
+        var styleParts = Array.isArray(styles) ? styles : splitStyles(styles);
+        var _a = _themeState.runState, mode = _a.mode, buffer = _a.buffer, flushTimer = _a.flushTimer;
+        if (loadAsync || mode === 1 /* Mode.async */) {
+            buffer.push(styleParts);
+            if (!flushTimer) {
+                _themeState.runState.flushTimer = asyncLoadStyles();
+            }
+        }
+        else {
+            applyThemableStyles(styleParts);
+        }
+    });
+}
+/**
+ * Allows for customizable loadStyles logic. e.g. for server side rendering application
+ * @param {(processedStyles: string, rawStyles?: string | ThemableArray) => void}
+ * a loadStyles callback that gets called when styles are loaded or reloaded
+ */
+function configureLoadStyles(loadStylesFn) {
+    _themeState.loadStyles = loadStylesFn;
+}
+/**
+ * Configure run mode of load-themable-styles
+ * @param mode load-themable-styles run mode, async or sync
+ */
+function configureRunMode(mode) {
+    _themeState.runState.mode = mode;
+}
+/**
+ * external code can call flush to synchronously force processing of currently buffered styles
+ */
+function flush() {
+    measure(function () {
+        var styleArrays = _themeState.runState.buffer.slice();
+        _themeState.runState.buffer = [];
+        var mergedStyleArray = [].concat.apply([], styleArrays);
+        if (mergedStyleArray.length > 0) {
+            applyThemableStyles(mergedStyleArray);
+        }
+    });
+}
+/**
+ * register async loadStyles
+ */
+function asyncLoadStyles() {
+    return setTimeout(function () {
+        _themeState.runState.flushTimer = 0;
+        flush();
+    }, 0);
+}
+/**
+ * Loads a set of style text. If it is registered too early, we will register it when the window.load event
+ * is fired.
+ * @param {string} styleText Style to register.
+ * @param {IStyleRecord} styleRecord Existing style record to re-apply.
+ */
+function applyThemableStyles(stylesArray, styleRecord) {
+    if (_themeState.loadStyles) {
+        _themeState.loadStyles(resolveThemableArray(stylesArray).styleString, stylesArray);
+    }
+    else {
+        registerStyles(stylesArray);
+    }
+}
+/**
+ * Registers a set theme tokens to find and replace. If styles were already registered, they will be
+ * replaced.
+ * @param {theme} theme JSON object of theme tokens to values.
+ */
+function loadTheme(theme) {
+    _themeState.theme = theme;
+    // reload styles.
+    reloadStyles();
+}
+/**
+ * Clear already registered style elements and style records in theme_State object
+ * @param option - specify which group of registered styles should be cleared.
+ * Default to be both themable and non-themable styles will be cleared
+ */
+function clearStyles(option) {
+    if (option === void 0) { option = 3 /* ClearStyleOptions.all */; }
+    if (option === 3 /* ClearStyleOptions.all */ || option === 2 /* ClearStyleOptions.onlyNonThemable */) {
+        clearStylesInternal(_themeState.registeredStyles);
+        _themeState.registeredStyles = [];
+    }
+    if (option === 3 /* ClearStyleOptions.all */ || option === 1 /* ClearStyleOptions.onlyThemable */) {
+        clearStylesInternal(_themeState.registeredThemableStyles);
+        _themeState.registeredThemableStyles = [];
+    }
+}
+function clearStylesInternal(records) {
+    records.forEach(function (styleRecord) {
+        var styleElement = styleRecord && styleRecord.styleElement;
+        if (styleElement && styleElement.parentElement) {
+            styleElement.parentElement.removeChild(styleElement);
+        }
+    });
+}
+/**
+ * Reloads styles.
+ */
+function reloadStyles() {
+    if (_themeState.theme) {
+        var themableStyles = [];
+        for (var _i = 0, _a = _themeState.registeredThemableStyles; _i < _a.length; _i++) {
+            var styleRecord = _a[_i];
+            themableStyles.push(styleRecord.themableStyle);
+        }
+        if (themableStyles.length > 0) {
+            clearStyles(1 /* ClearStyleOptions.onlyThemable */);
+            applyThemableStyles([].concat.apply([], themableStyles));
+        }
+    }
+}
+/**
+ * Find theme tokens and replaces them with provided theme values.
+ * @param {string} styles Tokenized styles to fix.
+ */
+function detokenize(styles) {
+    if (styles) {
+        styles = resolveThemableArray(splitStyles(styles)).styleString;
+    }
+    return styles;
+}
+/**
+ * Resolves ThemingInstruction objects in an array and joins the result into a string.
+ * @param {ThemableArray} splitStyleArray ThemableArray to resolve and join.
+ */
+function resolveThemableArray(splitStyleArray) {
+    var theme = _themeState.theme;
+    var themable = false;
+    // Resolve the array of theming instructions to an array of strings.
+    // Then join the array to produce the final CSS string.
+    var resolvedArray = (splitStyleArray || []).map(function (currentValue) {
+        var themeSlot = currentValue.theme;
+        if (themeSlot) {
+            themable = true;
+            // A theming annotation. Resolve it.
+            var themedValue = theme ? theme[themeSlot] : undefined;
+            var defaultValue = currentValue.defaultValue || 'inherit';
+            // Warn to console if we hit an unthemed value even when themes are provided, but only if "DEBUG" is true.
+            // Allow the themedValue to be undefined to explicitly request the default value.
+            if (theme &&
+                !themedValue &&
+                console &&
+                !(themeSlot in theme) &&
+                "boolean" !== 'undefined' &&
+                true) {
+                console.warn("Theming value not provided for \"".concat(themeSlot, "\". Falling back to \"").concat(defaultValue, "\"."));
+            }
+            return themedValue || defaultValue;
+        }
+        else {
+            // A non-themable string. Preserve it.
+            return currentValue.rawString;
+        }
+    });
+    return {
+        styleString: resolvedArray.join(''),
+        themable: themable
+    };
+}
+/**
+ * Split tokenized CSS into an array of strings and theme specification objects
+ * @param {string} styles Tokenized styles to split.
+ */
+function splitStyles(styles) {
+    var result = [];
+    if (styles) {
+        var pos = 0; // Current position in styles.
+        var tokenMatch = void 0;
+        while ((tokenMatch = _themeTokenRegex.exec(styles))) {
+            var matchIndex = tokenMatch.index;
+            if (matchIndex > pos) {
+                result.push({
+                    rawString: styles.substring(pos, matchIndex)
+                });
+            }
+            result.push({
+                theme: tokenMatch[1],
+                defaultValue: tokenMatch[2] // May be undefined
+            });
+            // index of the first character after the current match
+            pos = _themeTokenRegex.lastIndex;
+        }
+        // Push the rest of the string after the last match.
+        result.push({
+            rawString: styles.substring(pos)
+        });
+    }
+    return result;
+}
+/**
+ * Registers a set of style text. If it is registered too early, we will register it when the
+ * window.load event is fired.
+ * @param {ThemableArray} styleArray Array of IThemingInstruction objects to register.
+ * @param {IStyleRecord} styleRecord May specify a style Element to update.
+ */
+function registerStyles(styleArray) {
+    if (typeof document === 'undefined') {
+        return;
+    }
+    var head = document.getElementsByTagName('head')[0];
+    var styleElement = document.createElement('style');
+    var _a = resolveThemableArray(styleArray), styleString = _a.styleString, themable = _a.themable;
+    styleElement.setAttribute('data-load-themed-styles', 'true');
+    if (_styleNonce) {
+        styleElement.setAttribute('nonce', _styleNonce);
+    }
+    styleElement.appendChild(document.createTextNode(styleString));
+    _themeState.perf.count++;
+    head.appendChild(styleElement);
+    var ev = document.createEvent('HTMLEvents');
+    ev.initEvent('styleinsert', true /* bubbleEvent */, false /* cancelable */);
+    ev.args = {
+        newStyle: styleElement
+    };
+    document.dispatchEvent(ev);
+    var record = {
+        styleElement: styleElement,
+        themableStyle: styleArray
+    };
+    if (themable) {
+        _themeState.registeredThemableStyles.push(record);
+    }
+    else {
+        _themeState.registeredStyles.push(record);
+    }
+}
 
 
 /***/ }),
@@ -25266,315 +25574,6 @@ function warnMutuallyExclusive(componentName, props, exclusiveMap) {
                 }
             }
         }
-    }
-}
-
-
-/***/ }),
-
-/***/ 1919:
-/*!*********************************************************************!*\
-  !*** ./node_modules/@microsoft/load-themed-styles/lib-es6/index.js ***!
-  \*********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   loadTheme: () => (/* binding */ loadTheme)
-/* harmony export */ });
-/* unused harmony exports loadStyles, configureLoadStyles, configureRunMode, flush, clearStyles, detokenize, splitStyles */
-// Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
-// See LICENSE in the project root for license information.
-var __assign = (undefined && undefined.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-// Store the theming state in __themeState__ global scope for reuse in the case of duplicate
-// load-themed-styles hosted on the page.
-var _root = typeof window === 'undefined' ? __webpack_require__.g : window; // eslint-disable-line @typescript-eslint/no-explicit-any
-// Nonce string to inject into script tag if one provided. This is used in CSP (Content Security Policy).
-var _styleNonce = _root && _root.CSPSettings && _root.CSPSettings.nonce;
-var _themeState = initializeThemeState();
-/**
- * Matches theming tokens. For example, "[theme: themeSlotName, default: #FFF]" (including the quotes).
- */
-var _themeTokenRegex = /[\'\"]\[theme:\s*(\w+)\s*(?:\,\s*default:\s*([\\"\']?[\.\,\(\)\#\-\s\w]*[\.\,\(\)\#\-\w][\"\']?))?\s*\][\'\"]/g;
-var now = function () {
-    return typeof performance !== 'undefined' && !!performance.now ? performance.now() : Date.now();
-};
-function measure(func) {
-    var start = now();
-    func();
-    var end = now();
-    _themeState.perf.duration += end - start;
-}
-/**
- * initialize global state object
- */
-function initializeThemeState() {
-    var state = _root.__themeState__ || {
-        theme: undefined,
-        lastStyleElement: undefined,
-        registeredStyles: []
-    };
-    if (!state.runState) {
-        state = __assign(__assign({}, state), { perf: {
-                count: 0,
-                duration: 0
-            }, runState: {
-                flushTimer: 0,
-                mode: 0 /* Mode.sync */,
-                buffer: []
-            } });
-    }
-    if (!state.registeredThemableStyles) {
-        state = __assign(__assign({}, state), { registeredThemableStyles: [] });
-    }
-    _root.__themeState__ = state;
-    return state;
-}
-/**
- * Loads a set of style text. If it is registered too early, we will register it when the window.load
- * event is fired.
- * @param {string | ThemableArray} styles Themable style text to register.
- * @param {boolean} loadAsync When true, always load styles in async mode, irrespective of current sync mode.
- */
-function loadStyles(styles, loadAsync) {
-    if (loadAsync === void 0) { loadAsync = false; }
-    measure(function () {
-        var styleParts = Array.isArray(styles) ? styles : splitStyles(styles);
-        var _a = _themeState.runState, mode = _a.mode, buffer = _a.buffer, flushTimer = _a.flushTimer;
-        if (loadAsync || mode === 1 /* Mode.async */) {
-            buffer.push(styleParts);
-            if (!flushTimer) {
-                _themeState.runState.flushTimer = asyncLoadStyles();
-            }
-        }
-        else {
-            applyThemableStyles(styleParts);
-        }
-    });
-}
-/**
- * Allows for customizable loadStyles logic. e.g. for server side rendering application
- * @param {(processedStyles: string, rawStyles?: string | ThemableArray) => void}
- * a loadStyles callback that gets called when styles are loaded or reloaded
- */
-function configureLoadStyles(loadStylesFn) {
-    _themeState.loadStyles = loadStylesFn;
-}
-/**
- * Configure run mode of load-themable-styles
- * @param mode load-themable-styles run mode, async or sync
- */
-function configureRunMode(mode) {
-    _themeState.runState.mode = mode;
-}
-/**
- * external code can call flush to synchronously force processing of currently buffered styles
- */
-function flush() {
-    measure(function () {
-        var styleArrays = _themeState.runState.buffer.slice();
-        _themeState.runState.buffer = [];
-        var mergedStyleArray = [].concat.apply([], styleArrays);
-        if (mergedStyleArray.length > 0) {
-            applyThemableStyles(mergedStyleArray);
-        }
-    });
-}
-/**
- * register async loadStyles
- */
-function asyncLoadStyles() {
-    return setTimeout(function () {
-        _themeState.runState.flushTimer = 0;
-        flush();
-    }, 0);
-}
-/**
- * Loads a set of style text. If it is registered too early, we will register it when the window.load event
- * is fired.
- * @param {string} styleText Style to register.
- * @param {IStyleRecord} styleRecord Existing style record to re-apply.
- */
-function applyThemableStyles(stylesArray, styleRecord) {
-    if (_themeState.loadStyles) {
-        _themeState.loadStyles(resolveThemableArray(stylesArray).styleString, stylesArray);
-    }
-    else {
-        registerStyles(stylesArray);
-    }
-}
-/**
- * Registers a set theme tokens to find and replace. If styles were already registered, they will be
- * replaced.
- * @param {theme} theme JSON object of theme tokens to values.
- */
-function loadTheme(theme) {
-    _themeState.theme = theme;
-    // reload styles.
-    reloadStyles();
-}
-/**
- * Clear already registered style elements and style records in theme_State object
- * @param option - specify which group of registered styles should be cleared.
- * Default to be both themable and non-themable styles will be cleared
- */
-function clearStyles(option) {
-    if (option === void 0) { option = 3 /* ClearStyleOptions.all */; }
-    if (option === 3 /* ClearStyleOptions.all */ || option === 2 /* ClearStyleOptions.onlyNonThemable */) {
-        clearStylesInternal(_themeState.registeredStyles);
-        _themeState.registeredStyles = [];
-    }
-    if (option === 3 /* ClearStyleOptions.all */ || option === 1 /* ClearStyleOptions.onlyThemable */) {
-        clearStylesInternal(_themeState.registeredThemableStyles);
-        _themeState.registeredThemableStyles = [];
-    }
-}
-function clearStylesInternal(records) {
-    records.forEach(function (styleRecord) {
-        var styleElement = styleRecord && styleRecord.styleElement;
-        if (styleElement && styleElement.parentElement) {
-            styleElement.parentElement.removeChild(styleElement);
-        }
-    });
-}
-/**
- * Reloads styles.
- */
-function reloadStyles() {
-    if (_themeState.theme) {
-        var themableStyles = [];
-        for (var _i = 0, _a = _themeState.registeredThemableStyles; _i < _a.length; _i++) {
-            var styleRecord = _a[_i];
-            themableStyles.push(styleRecord.themableStyle);
-        }
-        if (themableStyles.length > 0) {
-            clearStyles(1 /* ClearStyleOptions.onlyThemable */);
-            applyThemableStyles([].concat.apply([], themableStyles));
-        }
-    }
-}
-/**
- * Find theme tokens and replaces them with provided theme values.
- * @param {string} styles Tokenized styles to fix.
- */
-function detokenize(styles) {
-    if (styles) {
-        styles = resolveThemableArray(splitStyles(styles)).styleString;
-    }
-    return styles;
-}
-/**
- * Resolves ThemingInstruction objects in an array and joins the result into a string.
- * @param {ThemableArray} splitStyleArray ThemableArray to resolve and join.
- */
-function resolveThemableArray(splitStyleArray) {
-    var theme = _themeState.theme;
-    var themable = false;
-    // Resolve the array of theming instructions to an array of strings.
-    // Then join the array to produce the final CSS string.
-    var resolvedArray = (splitStyleArray || []).map(function (currentValue) {
-        var themeSlot = currentValue.theme;
-        if (themeSlot) {
-            themable = true;
-            // A theming annotation. Resolve it.
-            var themedValue = theme ? theme[themeSlot] : undefined;
-            var defaultValue = currentValue.defaultValue || 'inherit';
-            // Warn to console if we hit an unthemed value even when themes are provided, but only if "DEBUG" is true.
-            // Allow the themedValue to be undefined to explicitly request the default value.
-            if (theme &&
-                !themedValue &&
-                console &&
-                !(themeSlot in theme) &&
-                "boolean" !== 'undefined' &&
-                true) {
-                console.warn("Theming value not provided for \"".concat(themeSlot, "\". Falling back to \"").concat(defaultValue, "\"."));
-            }
-            return themedValue || defaultValue;
-        }
-        else {
-            // A non-themable string. Preserve it.
-            return currentValue.rawString;
-        }
-    });
-    return {
-        styleString: resolvedArray.join(''),
-        themable: themable
-    };
-}
-/**
- * Split tokenized CSS into an array of strings and theme specification objects
- * @param {string} styles Tokenized styles to split.
- */
-function splitStyles(styles) {
-    var result = [];
-    if (styles) {
-        var pos = 0; // Current position in styles.
-        var tokenMatch = void 0;
-        while ((tokenMatch = _themeTokenRegex.exec(styles))) {
-            var matchIndex = tokenMatch.index;
-            if (matchIndex > pos) {
-                result.push({
-                    rawString: styles.substring(pos, matchIndex)
-                });
-            }
-            result.push({
-                theme: tokenMatch[1],
-                defaultValue: tokenMatch[2] // May be undefined
-            });
-            // index of the first character after the current match
-            pos = _themeTokenRegex.lastIndex;
-        }
-        // Push the rest of the string after the last match.
-        result.push({
-            rawString: styles.substring(pos)
-        });
-    }
-    return result;
-}
-/**
- * Registers a set of style text. If it is registered too early, we will register it when the
- * window.load event is fired.
- * @param {ThemableArray} styleArray Array of IThemingInstruction objects to register.
- * @param {IStyleRecord} styleRecord May specify a style Element to update.
- */
-function registerStyles(styleArray) {
-    if (typeof document === 'undefined') {
-        return;
-    }
-    var head = document.getElementsByTagName('head')[0];
-    var styleElement = document.createElement('style');
-    var _a = resolveThemableArray(styleArray), styleString = _a.styleString, themable = _a.themable;
-    styleElement.setAttribute('data-load-themed-styles', 'true');
-    if (_styleNonce) {
-        styleElement.setAttribute('nonce', _styleNonce);
-    }
-    styleElement.appendChild(document.createTextNode(styleString));
-    _themeState.perf.count++;
-    head.appendChild(styleElement);
-    var ev = document.createEvent('HTMLEvents');
-    ev.initEvent('styleinsert', true /* bubbleEvent */, false /* cancelable */);
-    ev.args = {
-        newStyle: styleElement
-    };
-    document.dispatchEvent(ev);
-    var record = {
-        styleElement: styleElement,
-        themableStyle: styleArray
-    };
-    if (themable) {
-        _themeState.registeredThemableStyles.push(record);
-    }
-    else {
-        _themeState.registeredStyles.push(record);
     }
 }
 

@@ -9,6 +9,7 @@ interface CsvExportProps {
 const CsvExport: React.FC<CsvExportProps> = ({ members }) => {
   const csvService = new CsvService()
   const disabled = members.length === 0
+  const [hovered, setHovered] = React.useState(false)
 
   const handleExport = () => {
     const date = new Date().toISOString().split('T')[0]
@@ -20,6 +21,8 @@ const CsvExport: React.FC<CsvExportProps> = ({ members }) => {
       onClick={handleExport}
       disabled={disabled}
       title="Exporter en CSV"
+      onMouseEnter={() => !disabled && setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -29,13 +32,14 @@ const CsvExport: React.FC<CsvExportProps> = ({ members }) => {
         paddingRight: 14,
         borderRadius: 20,
         border: '1px solid #c7c9cc',
-        backgroundColor: '#ffffff',
+        backgroundColor: hovered ? '#f3f2f1' : '#ffffff',
         color: disabled ? '#a19f9d' : '#6B7280',
         fontSize: 13,
         cursor: disabled ? 'not-allowed' : 'pointer',
         whiteSpace: 'nowrap',
         flexShrink: 0,
         outline: 'none',
+        transition: 'background-color 0.15s ease',
       }}
     >
       <svg

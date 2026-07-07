@@ -21,9 +21,9 @@
     "react-dom": "17.0.1"
   },
   "devDependencies": {
-    "@babel/preset-env": "^8.0.2",
-    "@babel/preset-react": "^8.0.1",
-    "@babel/preset-typescript": "^8.0.1",
+    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
     "@microsoft/rush-stack-compiler-4.7": "0.1.1",
     "@microsoft/sp-build-web": "1.20.2",
     "@testing-library/jest-dom": "^5.17.0",

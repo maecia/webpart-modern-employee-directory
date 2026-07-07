@@ -141,14 +141,18 @@ const ListView: React.FC<ListViewProps> = ({
         >
           <thead>
             <tr>
-              {showCollaborateur && (
+              {showPhoto && (
                 <th
-                  {...sortableThProps('displayName')}
                   style={{
-                    ...sortableThProps('displayName').style,
-                    paddingLeft: showPhoto ? 60 : 16,
+                    ...headerCellStyle,
+                    cursor: 'default',
+                    width: 44,
+                    padding: '10px 0 10px 16px',
                   }}
-                >
+                />
+              )}
+              {(showName || showFirstName) && (
+                <th {...sortableThProps('displayName')}>
                   Collaborateur {sortIndicator('displayName')}
                 </th>
               )}
@@ -216,33 +220,31 @@ const ListView: React.FC<ListViewProps> = ({
                       'transparent'
                   }}
                 >
-                  {showCollaborateur && (
+                  {showPhoto && (
+                    <td
+                      style={{
+                        ...cellStyle,
+                        width: 44,
+                        padding: '10px 0 10px 16px',
+                      }}
+                    >
+                      <PersonaAvatar
+                        photoUrl={member.photoUrl}
+                        displayName={member.displayName}
+                        givenName={member.givenName}
+                        size={PersonaSize.size32}
+                      />
+                    </td>
+                  )}
+                  {(showName || showFirstName) && (
                     <td style={cellStyle}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 12,
-                        }}
-                      >
-                        {showPhoto && (
-                          <PersonaAvatar
-                            photoUrl={member.photoUrl}
-                            displayName={member.displayName}
-                            givenName={member.givenName}
-                            size={PersonaSize.size32}
-                          />
-                        )}
-                        {(showName || showFirstName) && (
-                          <span style={{ fontWeight: 500 }}>
-                            {showFirstName && showName
-                              ? fullName
-                              : showFirstName
-                                ? member.givenName || ''
-                                : `${member.givenName ? '' : ''}${member.surname || member.displayName}`}
-                          </span>
-                        )}
-                      </div>
+                      <span style={{ fontWeight: 500 }}>
+                        {showFirstName && showName
+                          ? fullName
+                          : showFirstName
+                            ? member.givenName || ''
+                            : `${member.surname || member.displayName}`}
+                      </span>
                     </td>
                   )}
                   {showJobTitle && (

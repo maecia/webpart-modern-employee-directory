@@ -1,0 +1,35 @@
+name: Build SPFx Webpart SharePoint Directory
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build SPFx Webpart SharePoint Directory
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Bundle (production)
+        run: npx gulp bundle --ship
+
+      - name: Package solution (.sppkg)
+        run: npx gulp package-solution --ship
+
+      - name: Upload .sppkg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: maecia-webpart-sharepoint-directory-sppkg
+          path: sharepoint/solution/*.sppkg
+          if-no-files-found: error

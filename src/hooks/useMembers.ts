@@ -1,0 +1,61 @@
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Member } from '../models/Member';
+import { GraphService } from '../services/GraphService';
+import { WebPartContext } from '@microsoft/sp-webpart-base';
+
+interface UseMembersResult {
+  members: Member[];
+  isLoading: boolean;
+  error: string | null;
+  retry: () => void;
+}
+
+export function useMembers(context: WebPartContext): UseMembersResult {
+  const [members, setMembers] = useState<Member[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const serviceRef = useRef<GraphService | null>(null);
+
+  const loadMembers = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      serviceRef.current?.dispose();
+      const service = new GraphService(context);
+      serviceRef.current = service;
+
+      const data = await service.getMembers();
+
+      const membersWithPhotos = await Promise.all(
+        data.map(async (member) => {
+          if (member.id) {
+            const photoUrl = await service.getMemberPhoto(member.id);
+            return { ...member, photoUrl: photoUrl || undefined };
+          }
+          return member;
+        })
+      );
+
+      setMembers(membersWithPhotos);
+    } catch (err) {
+      setError('Impossible de charger les données de l\'annuaire. Veuillez réessayer.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [context, retryCount]);
+
+  useEffect(() => {
+    loadMembers();
+    return () => {
+      serviceRef.current?.dispose();
+    };
+  }, [loadMembers]);
+
+  const retry = useCallback(() => {
+    setRetryCount(c => c + 1);
+  }, []);
+
+  return { members, isLoading, error, retry };
+}

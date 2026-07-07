@@ -1,0 +1,49 @@
+{
+  "name": "sharepoint-directory",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "gulp bundle",
+    "clean": "gulp clean",
+    "serve": "fast-serve"
+  },
+  "dependencies": {
+    "@microsoft/sp-core-library": "1.20.0",
+    "@microsoft/sp-lodash-subset": "1.20.0",
+    "@microsoft/sp-property-pane": "1.20.0",
+    "@microsoft/sp-webpart-base": "1.20.0",
+    "@pnp/graph": "^4.20.0",
+    "@pnp/sp": "^4.20.0",
+    "@pnp/spfx-controls-react": "^3.25.0",
+    "@types/papaparse": "^5.5.2",
+    "papaparse": "^5.5.4",
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^8.0.2",
+    "@babel/preset-react": "^8.0.1",
+    "@babel/preset-typescript": "^8.0.1",
+    "@microsoft/rush-stack-compiler-4.7": "0.1.1",
+    "@microsoft/sp-build-web": "1.20.2",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^12.1.5",
+    "@types/jest": "^30.0.0",
+    "@types/react": "17.0.45",
+    "@types/react-dom": "17.0.17",
+    "@types/webpack-env": "1.18.0",
+    "ajv": "^8.20.0",
+    "babel-jest": "^30.4.1",
+    "eslint": "^8.57.1",
+    "gulp": "4.0.2",
+    "jest": "^26.6.3",
+    "jest-environment-jsdom": "^26.6.2",
+    "spfx-fast-serve": "^4.0.2",
+    "spfx-fast-serve-helpers": "~1.20.0",
+    "ts-jest": "^26.5.6",
+    "typescript": "4.7.4"
+  },
+  "overrides": {
+    "@microsoft/sp-module-interfaces": "1.20.1"
+  }
+}

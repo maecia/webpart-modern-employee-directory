@@ -1,0 +1,9 @@
+node_modules/
+lib/
+dist/
+temp/
+*.sppkg
+sharepoint/solution/
+.env
+.env.local
+npm-debug.log*

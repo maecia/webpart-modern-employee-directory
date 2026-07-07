@@ -1,0 +1,86 @@
+import * as React from 'react'
+
+interface SearchBarProps {
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({
+  value,
+  onChange,
+  placeholder = 'Rechercher un collaborateur...',
+}) => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        height: 38,
+        borderRadius: 20,
+        border: '1px solid #c7c9cc',
+        backgroundColor: '#ffffff',
+        paddingLeft: 12,
+        paddingRight: 12,
+        gap: 8,
+        boxSizing: 'border-box',
+        flexShrink: 0,
+        minWidth: 240,
+      }}
+    >
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 16 16"
+        fill="#6B7280"
+        aria-hidden="true"
+        style={{ flexShrink: 0 }}
+      >
+        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z" />
+      </svg>
+      <input
+        type="text"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          border: 'none',
+          outline: 'none',
+          background: 'transparent',
+          fontSize: 13,
+          color: '#323130',
+          width: '100%',
+          lineHeight: '1',
+        }}
+      />
+      {value && (
+        <button
+          onClick={() => onChange('')}
+          aria-label="Effacer la recherche"
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 0,
+            display: 'flex',
+            alignItems: 'center',
+            color: '#6B7280',
+            flexShrink: 0,
+          }}
+        >
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 12 12"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M.293.293a1 1 0 0 1 1.414 0L6 4.586 10.293.293a1 1 0 1 1 1.414 1.414L7.414 6l4.293 4.293a1 1 0 0 1-1.414 1.414L6 7.414l-4.293 4.293A1 1 0 0 1 .293 10.707L4.586 6 .293 1.707A1 1 0 0 1 .293.293Z" />
+          </svg>
+        </button>
+      )}
+    </div>
+  )
+}
+
+export default SearchBar

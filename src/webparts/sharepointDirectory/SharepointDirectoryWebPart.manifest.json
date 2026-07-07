@@ -1,0 +1,55 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "b3c4d5e6-f7a8-9012-cdef-123456789012",
+  "alias": "SharepointDirectoryWebPart",
+  "componentType": "WebPart",
+  "version": "1.0.0",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportsFullBleed": true,
+  "supportedHosts": ["SharePointWebPart"],
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": { "default": "Autres" },
+      "title": { "default": "Annuaire SharePoint" },
+      "description": {
+        "default": "Affiche un annuaire des membres du site SharePoint"
+      },
+      "officeFabricIconFontName": "People",
+      "properties": {
+        "defaultView": "card",
+        "cardFields": ["photo", "name", "firstName", "outlook", "teams"],
+        "listFields": [
+          "photo",
+          "name",
+          "firstName",
+          "email",
+          "phone",
+          "jobTitle",
+          "department",
+          "manager"
+        ],
+        "modalFields": [
+          "photo",
+          "name",
+          "firstName",
+          "email",
+          "phone",
+          "jobTitle",
+          "department",
+          "officeLocation",
+          "outlook",
+          "teams"
+        ],
+        "filterCount": 0,
+        "filterField1": "",
+        "filterLabel1": "",
+        "filterField2": "",
+        "filterLabel2": "",
+        "filterField3": "",
+        "filterLabel3": ""
+      }
+    }
+  ]
+}

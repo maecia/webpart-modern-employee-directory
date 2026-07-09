@@ -14,15 +14,8 @@ export interface DnDFieldSelectorProps {
   labelsJson: string
   detectedExtAttrs: string[]
   primaryColor: string
-  supportedLanguages: string[]
   onUpdateKeys: (keys: string[]) => void
   onUpdateLabels: (labelsJson: string) => void
-}
-
-/** Return the human-readable name for a language code, e.g. "fr" → "Français" */
-function getLangName(code: string): string {
-  const key = `Lang_${code}`
-  return (strings as any)[key] || code.toUpperCase()
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -86,16 +79,15 @@ function createStyles(primary: string) {
 
     sectionLabel: {
       display: 'block',
-      fontSize: 14,
+      fontSize: 12,
       fontWeight: 600,
       color: '#323130',
-      marginTop: 12,
       marginBottom: 4,
     } as React.CSSProperties,
 
     // ── Fluent UI dropdown trigger ──────────────────────────────────────────
     selectTrigger: (open: boolean): React.CSSProperties => ({
-      height: open ? 33 : 32,
+      height: 32,
       width: '100%',
       display: 'flex',
       alignItems: 'center',
@@ -104,10 +96,10 @@ function createStyles(primary: string) {
       WebkitAppearance: 'none' as any,
       borderRadius: 'var(--borderRadiusMedium, 4px)',
       border: '1px solid var(--colorNeutralStroke1, #d1d1d1)',
-      borderBottomWidth: open ? '2px' : '1px',
-      borderBottomStyle: 'solid',
-      borderBottomColor: open ? primary : 'var(--colorNeutralStrokeAccessiblePressed, #616161)',
-      background: '#ffffff',
+      borderBottom: open
+        ? `2px solid ${primary}`
+        : `1px solid var(--colorNeutralStrokeAccessiblePressed, #616161)`,
+      background: open ? '#f3f2f1' : '#ffffff',
       fontSize: 14,
       fontFamily:
         '"Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif',
@@ -126,7 +118,7 @@ function createStyles(primary: string) {
       right: 0,
       zIndex: 9999,
       background: '#ffffff',
-      border: '1px solid #8a8886',
+      border: '1px solid #c7c9cc',
       borderRadius: 2,
       maxHeight: 300,
       overflowY: 'auto' as const,
@@ -154,7 +146,7 @@ function createStyles(primary: string) {
       padding: '0 8px',
       height: 36,
       cursor: 'pointer',
-      background: 'transparent',
+      background: hovered ? '#f3f2f1' : 'transparent',
       userSelect: 'none' as const,
       color: '#201f1e',
       fontSize: 14,
@@ -208,8 +200,8 @@ function createStyles(primary: string) {
     } as React.CSSProperties,
 
     handle: {
-    color: '#8a8886',
-    cursor: 'grab',
+      color: '#c8c6c4',
+      cursor: 'grab',
       userSelect: 'none' as const,
       flexShrink: 0,
       paddingTop: 2,
@@ -271,7 +263,7 @@ function createStyles(primary: string) {
       border: 'none',
       padding: '2px 4px',
       cursor: 'pointer',
-      color: '#605e5c',
+      color: '#a19f9d',
       fontSize: 16,
       lineHeight: '1',
       flexShrink: 0,
@@ -279,7 +271,7 @@ function createStyles(primary: string) {
 
     hint: {
       fontSize: 11,
-      color: '#605e5c',
+      color: '#a19f9d',
       marginBottom: 6,
     } as React.CSSProperties,
   }
@@ -293,7 +285,6 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
   labelsJson: initialLabelsJson,
   detectedExtAttrs,
   primaryColor,
-  supportedLanguages,
   onUpdateKeys,
   onUpdateLabels,
 }) => {
@@ -305,7 +296,7 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
       width="10"
       height="16"
       viewBox="0 0 10 16"
-      fill="#8a8886"
+      fill="#c8c6c4"
       style={S.handle}
       aria-hidden
     >
@@ -369,7 +360,7 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
     reorderWithLockedPrefix(initialKeys),
   )
   const [labels, setLabels] = React.useState<
-    Record<string, Record<string, string>>
+    Record<string, { fr: string; en: string }>
   >(() => parseLabels(initialLabelsJson))
   const [dropdownOpen, setDropdownOpen] = React.useState(false)
   const dropdownRef = React.useRef<HTMLDivElement>(null)
@@ -450,9 +441,12 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
   }
 
   // ── Labels ────────────────────────────────────────────────────────────────
-  const updateLabelLocal = (k: string, lang: string, val: string) => {
+  const updateLabelLocal = (k: string, lang: 'fr' | 'en', val: string) => {
     setLabels((prev) => {
-      const next = { ...prev, [k]: { ...(prev[k] || {}), [lang]: val } }
+      const next = {
+        ...prev,
+        [k]: { ...(prev[k] || { fr: '', en: '' }), [lang]: val },
+      }
       onUpdateLabels(JSON.stringify(next))
       return next
     })
@@ -633,18 +627,30 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
 
                   {showLabels && !isLocked && (
                     <div style={S.labelRow}>
-                      {supportedLanguages.map((lang) => (
-                        <div key={lang}>
-                          <div style={S.labelCaption}>{getLangName(lang)}</div>
-                          <input
-                            type="text"
-                            style={S.labelInput}
-                            defaultValue={labels[key]?.[lang] || ''}
-                            placeholder={defaultLabel(key)}
-                            onChange={(e) => updateLabelLocal(key, lang, e.target.value)}
-                          />
-                        </div>
-                      ))}
+                      <div>
+                        <div style={S.labelCaption}>{strings.DnD_LabelFr}</div>
+                        <input
+                          type="text"
+                          style={S.labelInput}
+                          defaultValue={labels[key]?.fr || ''}
+                          placeholder={defaultLabel(key)}
+                          onChange={(e) =>
+                            updateLabelLocal(key, 'fr', e.target.value)
+                          }
+                        />
+                      </div>
+                      <div>
+                        <div style={S.labelCaption}>{strings.DnD_LabelEn}</div>
+                        <input
+                          type="text"
+                          style={S.labelInput}
+                          defaultValue={labels[key]?.en || ''}
+                          placeholder={defaultLabel(key)}
+                          onChange={(e) =>
+                            updateLabelLocal(key, 'en', e.target.value)
+                          }
+                        />
+                      </div>
                     </div>
                   )}
                 </div>

@@ -5,7 +5,7 @@ import ErrorState from '../../../../src/webparts/sharepointDirectory/components/
 describe('ErrorState', () => {
   it('renders error message', () => {
     const { getByText } = render(React.createElement(ErrorState, { onRetry: jest.fn() }));
-    expect(getByText(/Une erreur est survenue/)).toBeTruthy();
+    expect(getByText(/Impossible de charger les données/)).toBeTruthy();
   });
 
   it('renders custom error message', () => {

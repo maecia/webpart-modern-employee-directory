@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { FilterField } from '../../../../models/Filter'
 import { Member } from '../../../../models/Member'
+import { strings } from '../../loc/mystrings'
 
 interface FilterBarProps {
   filters: FilterField[]
@@ -22,7 +23,9 @@ const FilterBar: React.FC<FilterBarProps> = ({
   const getDistinctValues = (fieldName: string): string[] => {
     const unique = new Set<string>()
     members.forEach((member) => {
-      const value = (member as any)[fieldName]
+      const value =
+        (member as any)[fieldName] ??
+        (member.customProperties && member.customProperties[fieldName])
       if (value) unique.add(String(value))
     })
     return Array.from(unique).sort()
@@ -46,6 +49,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
             }}
           >
             <select
+              aria-label={filter.label}
               value={selected}
               disabled={disabled}
               onChange={(e) => {
@@ -59,7 +63,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
                 borderRadius: 20,
                 border: '1px solid #c7c9cc',
                 backgroundColor: disabled ? '#f3f2f1' : '#ffffff',
-                color: selected ? '#323130' : '#6B7280',
+                color: selected ? '#323130' : '#605e5c',
                 fontSize: 13,
                 paddingLeft: 16,
                 paddingRight: selected ? 52 : 36,
@@ -88,7 +92,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
                 position: 'absolute',
                 right: selected ? 30 : 14,
                 pointerEvents: 'none',
-                color: disabled ? '#a19f9d' : '#6B7280',
+                color: disabled ? '#605e5c' : '#605e5c',
               }}
             >
               <path
@@ -107,8 +111,8 @@ const FilterBar: React.FC<FilterBarProps> = ({
                   e.stopPropagation()
                   onChange(filter.fieldName, null)
                 }}
-                aria-label="Effacer le filtre"
-                title="Effacer le filtre"
+                aria-label={strings.ClearSearch}
+                  title={strings.ClearSearch}
                 style={{
                   position: 'absolute',
                   right: 10,
@@ -121,7 +125,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#6B7280',
+                  color: '#605e5c',
                   borderRadius: '50%',
                   width: 16,
                   height: 16,

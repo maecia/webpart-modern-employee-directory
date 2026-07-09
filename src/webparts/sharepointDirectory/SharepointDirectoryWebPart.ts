@@ -1,114 +1,98 @@
-import * as React from 'react';
-import * as ReactDom from 'react-dom';
-import { Version } from '@microsoft/sp-core-library';
+import * as React from 'react'
+import * as ReactDom from 'react-dom'
+import { Version } from '@microsoft/sp-core-library'
+import { useTheme } from '@fluentui/react/lib/Theme'
 import {
   BaseClientSideWebPart,
   IPropertyPaneConfiguration,
   PropertyPaneDropdown,
-  PropertyPaneCheckbox,
   PropertyPaneTextField,
   PropertyPaneButton,
   PropertyPaneButtonType,
   PropertyPaneLabel,
+  PropertyPaneChoiceGroup,
   IPropertyPaneDropdownOption,
-} from '@microsoft/sp-webpart-base';
-import Directory from './components/Directory';
-import { DirectoryConfig, CardFieldName } from '../../models/DirectoryConfig';
-import { FilterField } from '../../models/Filter';
-import { useMembers } from '../../hooks/useMembers';
-import { useDirectoryConfig } from '../../hooks/useDirectoryConfig';
+} from '@microsoft/sp-webpart-base'
+import {
+  IPropertyPaneField,
+  IPropertyPaneCustomFieldProps,
+  PropertyPaneFieldType,
+} from '@microsoft/sp-property-pane'
+import Directory from './components/Directory'
+import {
+  DirectoryConfig,
+  STANDARD_FIELD_KEYS,
+  getAvailableEntraIdFieldGroups,
+  getAvailableEntraIdFields,
+} from '../../models/DirectoryConfig'
+import { FilterField } from '../../models/Filter'
+import { useMembers } from '../../hooks/useMembers'
+import {
+  useDirectoryConfig,
+  DEFAULT_CARD_ORDER,
+  DEFAULT_LIST_ORDER,
+  DEFAULT_MODAL_ORDER,
+} from '../../hooks/useDirectoryConfig'
+import { setLanguage, strings } from './loc/mystrings'
+import DnDFieldSelector from './components/propertyPane/DnDFieldSelector'
 
 export interface ISharepointDirectoryWebPartProps {
   defaultView: 'card' | 'list'
-  cardFields: CardFieldName[]
-  listFields: CardFieldName[]
-  modalFields: CardFieldName[]
+  sortOrder: string
+  /** Active tab in the property pane — drives which view is being configured */
+  activeViewTab: 'card' | 'list' | 'modal'
+  /** JSON-serialised ordered string[] of field keys for each view */
+  cardFieldsJson: string
+  listFieldsJson: string
+  modalFieldsJson: string
+  /** JSON-serialised Record<string, { fr: string; en: string }> for labels */
+  listFieldLabelsJson: string
+  modalFieldLabelsJson: string
+  /** Filters */
   filterCount: number
   filterField1: string
-  filterLabel1: string
+  filterLabelFr1: string
+  filterLabelEn1: string
   filterField2: string
-  filterLabel2: string
+  filterLabelFr2: string
+  filterLabelEn2: string
   filterField3: string
-  filterLabel3: string
+  filterLabelFr3: string
+  filterLabelEn3: string
 }
 
-const AVAILABLE_FILTER_FIELDS: IPropertyPaneDropdownOption[] = [
-  { key: '', text: 'Aucun' },
-  { key: 'givenName', text: 'Prénom' },
-  { key: 'surname', text: 'Nom' },
-  { key: 'email', text: 'E-mail' },
-  { key: 'mobilePhone', text: 'Téléphone' },
-  { key: 'jobTitle', text: 'Poste' },
-  { key: 'department', text: 'Département' },
-  { key: 'officeLocation', text: 'Localisation' },
-  { key: 'managerDisplayName', text: 'Manager' },
-]
+const ALL_FIELD_KEYS_SET = STANDARD_FIELD_KEYS
 
-const CARD_FIELDS: { key: CardFieldName; text: string }[] = [
-  { key: 'photo', text: 'Photo' },
-  { key: 'name', text: 'Nom' },
-  { key: 'firstName', text: 'Prénom' },
-  { key: 'email', text: 'E-mail' },
-  { key: 'phone', text: 'Téléphone' },
-  { key: 'jobTitle', text: 'Poste' },
-  { key: 'department', text: 'Département' },
-  { key: 'officeLocation', text: 'Localisation' },
-  { key: 'manager', text: 'Manager' },
-  { key: 'outlook', text: 'Outlook' },
-  { key: 'teams', text: 'Teams' },
-]
+// Backward-compat references used only by migrateOldFieldOrder
+const CARD_DEFAULTS = DEFAULT_CARD_ORDER
+const LIST_DEFAULTS = DEFAULT_LIST_ORDER
+const MODAL_DEFAULTS = DEFAULT_MODAL_ORDER
 
-const LIST_FIELDS: { key: CardFieldName; text: string }[] = [
-  { key: 'photo', text: 'Photo' },
-  { key: 'name', text: 'Nom' },
-  { key: 'firstName', text: 'Prénom' },
-  { key: 'email', text: 'E-mail' },
-  { key: 'phone', text: 'Téléphone' },
-  { key: 'jobTitle', text: 'Poste' },
-  { key: 'department', text: 'Département' },
-  { key: 'officeLocation', text: 'Localisation' },
-  { key: 'manager', text: 'Manager' },
-  { key: 'outlook', text: 'Outlook' },
-  { key: 'teams', text: 'Teams' },
-]
+const DirectoryContainer: React.FC<{
+  context: any
+  config: DirectoryConfig
+  onDetectedExtAttrs: (attrs: string[]) => void
+}> = ({ context, config, onDetectedExtAttrs }) => {
+  const customFieldKeys = React.useMemo(() => {
+    const all = [
+      ...config.cardFieldOrder,
+      ...config.listFieldOrder,
+      ...config.modalFieldOrder,
+    ]
+    const filtered = all.filter((k) => !ALL_FIELD_KEYS_SET.has(k))
+    const seen: Record<string, boolean> = {}
+    return filtered.filter((k) => {
+      if (seen[k]) return false
+      seen[k] = true
+      return true
+    })
+  }, [config.cardFieldOrder, config.listFieldOrder, config.modalFieldOrder])
 
-const MODAL_FIELDS: { key: CardFieldName; text: string }[] = [
-  { key: 'photo', text: 'Photo' },
-  { key: 'name', text: 'Nom' },
-  { key: 'firstName', text: 'Prénom' },
-  { key: 'email', text: 'E-mail' },
-  { key: 'phone', text: 'Téléphone' },
-  { key: 'jobTitle', text: 'Poste' },
-  { key: 'department', text: 'Département' },
-  { key: 'officeLocation', text: 'Localisation' },
-  { key: 'manager', text: 'Manager' },
-  { key: 'outlook', text: 'Outlook' },
-  { key: 'teams', text: 'Teams' },
-]
-
-const CARD_DEFAULTS: CardFieldName[] = ['photo', 'name', 'firstName', 'outlook', 'teams'];
-const LIST_DEFAULTS: CardFieldName[] = ['photo', 'name', 'firstName', 'email', 'phone', 'jobTitle', 'department', 'manager'];
-const MODAL_DEFAULTS: CardFieldName[] = ['photo', 'name', 'firstName', 'outlook', 'teams'];
-
-function getCheckedFields(
-  properties: any,
-  prefix: string,
-  availableFields: { key: CardFieldName; text: string }[],
-  defaults: CardFieldName[],
-): CardFieldName[] {
-  const checked: CardFieldName[] = [];
-  const hasExplicitValues = availableFields.some((f) => (properties as any)[`${prefix}_${f.key}`] !== undefined);
-  availableFields.forEach((f) => {
-    const val = (properties as any)[`${prefix}_${f.key}`];
-    if (val === true || (val === undefined && !hasExplicitValues && defaults.includes(f.key))) {
-      checked.push(f.key);
-    }
-  });
-  return checked;
-}
-
-const DirectoryContainer: React.FC<{ context: any; config: DirectoryConfig }> = ({ context, config }) => {
-  const { members, isLoading, error, retry } = useMembers(context);
+  const { members, isLoading, error, retry } = useMembers(
+    context,
+    customFieldKeys,
+    onDetectedExtAttrs,
+  )
 
   return React.createElement(Directory, {
     config,
@@ -116,69 +100,247 @@ const DirectoryContainer: React.FC<{ context: any; config: DirectoryConfig }> = 
     isLoading,
     error,
     onRetry: retry,
-  });
-};
+  })
+}
 
 export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<ISharepointDirectoryWebPartProps> {
+  private _themePrimary: string = '#1B7A6E'
+
+  // ── LCID → language code mapping ──────────────────────────────────────────
+  private static LCID_TO_LANG: Record<number, string> = {
+    1033: 'en', 1036: 'fr', 1031: 'de', 3082: 'es',
+    1040: 'it', 1043: 'nl', 1046: 'pt', 1049: 'ru',
+    1055: 'tr', 1025: 'ar', 1028: 'zh', 1041: 'ja',
+    1042: 'ko', 1053: 'sv', 1044: 'nb', 1030: 'da',
+    1035: 'fi', 1029: 'cs', 1038: 'hu', 1045: 'pl',
+    2070: 'pt', 1069: 'eu', 1081: 'hi', 1110: 'gl',
+  }
+
+  private _supportedLanguages: string[] = []
+
+  private getSupportedLanguages(): string[] {
+    if (this._supportedLanguages.length > 0) return this._supportedLanguages
+    const ids: number[] | undefined =
+      (this.context.pageContext.legacyPageContext as any)?.web?.supportedUILanguageIds
+    if (ids && ids.length > 0) {
+      this._supportedLanguages = ids
+        .map((id) => SharepointDirectoryWebPart.LCID_TO_LANG[id])
+        .filter(Boolean)
+    }
+    if (this._supportedLanguages.length === 0) {
+      const lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase()
+      this._supportedLanguages = [lang || 'en']
+    }
+    return this._supportedLanguages
+  }
+
+  protected onInit(): Promise<void> {
+    setLanguage(this.context.pageContext.cultureInfo.currentCultureName)
+    if (!this.properties.activeViewTab) this.properties.activeViewTab = 'card'
+    this.getSupportedLanguages()
+    return super.onInit()
+  }
+
+  private detectedExtAttrs: string[] = []
 
   public render(): void {
-    const cardFields = (this.properties.cardFields && this.properties.cardFields.length > 0)
-      ? this.properties.cardFields : CARD_DEFAULTS;
-    const listFields = (this.properties.listFields && this.properties.listFields.length > 0)
-      ? this.properties.listFields : LIST_DEFAULTS;
-    const modalFields = (this.properties.modalFields && this.properties.modalFields.length > 0)
-      ? this.properties.modalFields : MODAL_DEFAULTS;
+    const isFr = this.isCurrentLocaleFr()
+
+    // Extract the Fluent UI theme primary — stored on the class so the
+    // property pane (which lives in a separate iframe) can read it.
+    const ThemeExtractor: React.FC = () => {
+      const theme = useTheme()
+      React.useEffect(() => {
+        const c = theme?.palette?.themePrimary
+        if (c) this._themePrimary = c
+      })
+      return null
+    }
 
     const rawConfig: Partial<DirectoryConfig> = {
       defaultView: this.properties.defaultView || 'card',
-      cardFields,
-      listFields,
-      modalFields,
+      sortOrder: (this.properties.sortOrder || 'lastNameAsc') as any,
+      cardFieldOrder: this.getEffectiveFieldOrder('card'),
+      listFieldOrder: this.getEffectiveFieldOrder('list'),
+      modalFieldOrder: this.getEffectiveFieldOrder('modal'),
+      listFieldLabels: this.getLocalizedLabels('list', isFr),
+      modalFieldLabels: this.getLocalizedLabels('modal', isFr),
       filters: this.getFiltersFromProperties(),
-    };
+    }
 
-    const config = useDirectoryConfig(rawConfig);
+    const config = useDirectoryConfig(rawConfig)
 
     ReactDom.render(
-      React.createElement(DirectoryContainer, { context: this.context, config }),
+      React.createElement(
+        React.Fragment,
+        null,
+        React.createElement(ThemeExtractor),
+        React.createElement(DirectoryContainer, {
+        context: this.context,
+        config,
+        onDetectedExtAttrs: (attrs: string[]) => {
+          if (JSON.stringify(this.detectedExtAttrs) !== JSON.stringify(attrs)) {
+            this.detectedExtAttrs = attrs
+            this.context.propertyPane.refresh()
+          }
+        },
+      }),
+      ),
       this.domElement,
-    );
+    )
   }
 
   protected onDispose(): void {
-    ReactDom.unmountComponentAtNode(this.domElement);
+    ReactDom.unmountComponentAtNode(this.domElement)
   }
 
   protected get dataVersion(): Version {
-    return Version.parse('2.0');
+    return Version.parse('2.0')
   }
 
   private getFiltersFromProperties(): FilterField[] {
-    const filters: FilterField[] = [];
-    const count = this.properties.filterCount || 0;
+    const filters: FilterField[] = []
+    const count = this.properties.filterCount || 0
+    const isFr = this.isCurrentLocaleFr()
+
+    const pickLabel = (fr: string, en: string) => {
+      return isFr ? fr : en
+    }
 
     if (count >= 1 && this.properties.filterField1) {
-      filters.push({ fieldName: this.properties.filterField1, label: this.properties.filterLabel1 || this.properties.filterField1 });
+      filters.push({
+        fieldName: this.properties.filterField1,
+        label: pickLabel(
+          (this.properties as any).filterLabelFr1,
+          (this.properties as any).filterLabelEn1,
+        ),
+      })
     }
     if (count >= 2 && this.properties.filterField2) {
-      filters.push({ fieldName: this.properties.filterField2, label: this.properties.filterLabel2 || this.properties.filterField2 });
+      filters.push({
+        fieldName: this.properties.filterField2,
+        label: pickLabel(
+          (this.properties as any).filterLabelFr2,
+          (this.properties as any).filterLabelEn2,
+        ),
+      })
     }
     if (count >= 3 && this.properties.filterField3) {
-      filters.push({ fieldName: this.properties.filterField3, label: this.properties.filterLabel3 || this.properties.filterField3 });
+      filters.push({
+        fieldName: this.properties.filterField3,
+        label: pickLabel(
+          (this.properties as any).filterLabelFr3,
+          (this.properties as any).filterLabelEn3,
+        ),
+      })
     }
 
-    return filters;
+    return filters
   }
 
-  private getCheckboxKey(targetProperty: string): { prefix: string; field: CardFieldName } | null {
-    for (const prefix of ['cardField', 'listField', 'modalField']) {
-      for (const f of [...CARD_FIELDS, ...LIST_FIELDS, ...MODAL_FIELDS]) {
-        if (`${prefix}_${f.key}` === targetProperty) {
-          return { prefix, field: f.key };
-        }
+  // ─── New helper methods ──────────────────────────────────────────────────
+
+  private isCurrentLocaleFr(): boolean {
+    return (
+      this.context.pageContext.cultureInfo.currentCultureName || ''
+    ).startsWith('fr')
+  }
+
+  /** Parse the JSON stored in *FieldsJson — migrate from old flat props if absent */
+  private getEffectiveFieldOrder(view: 'card' | 'list' | 'modal'): string[] {
+    const prop =
+      view === 'card'
+        ? 'cardFieldsJson'
+        : view === 'list'
+          ? 'listFieldsJson'
+          : 'modalFieldsJson'
+    const json = (this.properties as any)[prop]
+    if (json) {
+      try {
+        return JSON.parse(json)
+      } catch {
+        /* fall through */
       }
     }
-    return null;
+    return this.migrateOldFieldOrder(view)
+  }
+
+  /** Build initial order from the old flat customCardField1-5 properties */
+  private migrateOldFieldOrder(view: 'card' | 'list' | 'modal'): string[] {
+    const defaults =
+      view === 'card'
+        ? CARD_DEFAULTS
+        : view === 'list'
+          ? LIST_DEFAULTS
+          : MODAL_DEFAULTS
+    const fieldsProp =
+      view === 'card'
+        ? 'cardFields'
+        : view === 'list'
+          ? 'listFields'
+          : 'modalFields'
+    const saved: string[] | undefined = (this.properties as any)[fieldsProp]
+    const standard = saved && saved.length > 0 ? saved : defaults
+    const prefix =
+      view === 'card'
+        ? 'customCardField'
+        : view === 'list'
+          ? 'customListField'
+          : 'customModalField'
+    const count: number = (this.properties as any)[`${prefix}Count`] || 0
+    const custom: string[] = []
+    for (let i = 1; i <= count; i++) {
+      const v = (this.properties as any)[`${prefix}${i}`]
+      if (v) custom.push(v)
+    }
+    return [...standard, ...custom]
+  }
+
+  /** Parse labels JSON — migrate from old LabelFr/LabelEn flat props if absent */
+  private parseFieldLabelsRecord(
+    view: 'list' | 'modal',
+  ): Record<string, Record<string, string>> {
+    const prop =
+      view === 'list' ? 'listFieldLabelsJson' : 'modalFieldLabelsJson'
+    const json = (this.properties as any)[prop]
+    if (json) {
+      try {
+        return JSON.parse(json)
+      } catch {
+        /* fall through */
+      }
+    }
+    // Migrate from old flat properties
+    const prefix = view === 'list' ? 'customListField' : 'customModalField'
+    const count: number = (this.properties as any)[`${prefix}Count`] || 0
+    const result: Record<string, Record<string, string>> = {}
+    for (let i = 1; i <= count; i++) {
+      const key = (this.properties as any)[`${prefix}${i}`]
+      if (key) {
+        const fr = (this.properties as any)[`${prefix}LabelFr${i}`] || ''
+        const en = (this.properties as any)[`${prefix}LabelEn${i}`] || ''
+        const entry: Record<string, string> = {}
+        if (fr) entry['fr'] = fr
+        if (en) entry['en'] = en
+        if (Object.keys(entry).length > 0) result[key] = entry
+      }
+    }
+    return result
+  }
+
+  /** Return localized (single string) labels per field key for the given view */
+  private getLocalizedLabels(
+    view: 'list' | 'modal',
+    _isFr: boolean,
+  ): Record<string, string> {
+    const record = this.parseFieldLabelsRecord(view)
+    const lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase()
+    const result: Record<string, string> = {}
+    for (const [key, labels] of Object.entries(record)) {
+      const labelMap = labels as Record<string, string>
+      result[key] = labelMap[lang] || ''
+    }
+    return result
   }
 
   protected onPropertyPaneFieldChanged(
@@ -186,131 +348,237 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
     oldValue: any,
     newValue: any,
   ): void {
-    const checkbox = this.getCheckboxKey(propertyPath);
-    if (checkbox) {
-      const { prefix, field } = checkbox;
-      const propKey = prefix === 'cardField' ? 'cardFields' : prefix === 'listField' ? 'listFields' : 'modalFields';
-      const currentArray: CardFieldName[] = (this.properties as any)[propKey] || [];
-
-      if (newValue === true && !currentArray.includes(field)) {
-        (this.properties as any)[propKey] = [...currentArray, field];
-      } else if (newValue === false && currentArray.includes(field)) {
-        (this.properties as any)[propKey] = currentArray.filter((f: CardFieldName) => f !== field);
-      }
-    }
-
-    super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
-    this.context.propertyPane.refresh();
+    super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue)
+    this.context.propertyPane.refresh()
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
-    const filterCount = this.properties.filterCount || 0;
+    const filterCount = this.properties.filterCount || 0
+    const activeTab = (this.properties.activeViewTab || 'card') as
+      | 'card'
+      | 'list'
+      | 'modal'
 
-    const filterGroupFields: any[] = [];
+    // ── Filter field options (base + EntraID + detected ext attrs) ──────────
+    const buildFilterOptions = (): IPropertyPaneDropdownOption[] => {
+      const options: IPropertyPaneDropdownOption[] = [
+        { key: '', text: strings.None },
+        { key: 'givenName', text: strings.FieldFirstName },
+        { key: 'surname', text: strings.FieldName },
+        { key: 'mail', text: strings.FieldEmail },
+        { key: 'mobilePhone', text: strings.FieldPhone },
+        { key: 'jobTitle', text: strings.FieldJobTitle },
+        { key: 'department', text: strings.FieldDepartment },
+        { key: 'officeLocation', text: strings.FieldOfficeLocation },
+        { key: 'managerDisplayName', text: strings.FieldManager },
+      ]
+      for (const group of getAvailableEntraIdFieldGroups()) {
+        for (const f of group.fields) {
+          options.push({ key: f.key, text: f.label })
+        }
+      }
+      for (const k of this.detectedExtAttrs) {
+        options.push({ key: k, text: (strings as any)[`EntraField_${k}`] || k })
+      }
+      return options
+    }
+
+    const FILTER_OPTIONS = buildFilterOptions()
+
+    const filterGroupFields: any[] = []
 
     for (let i = 1; i <= filterCount; i++) {
       filterGroupFields.push(
-        PropertyPaneLabel(`filterSeparator${i}`, { text: `Filtre ${i}` }),
         PropertyPaneDropdown(`filterField${i}`, {
-          label: 'Champ',
-          options: AVAILABLE_FILTER_FIELDS,
+          label: `${strings.FilterLabel} ${i} — ${strings.FilterFieldLabel}`,
+          options: FILTER_OPTIONS,
           selectedKey: (this.properties as any)[`filterField${i}`] || '',
         }),
-        PropertyPaneTextField(`filterLabel${i}`, {
-          label: 'Libellé',
-          value: (this.properties as any)[`filterLabel${i}`] || '',
+        PropertyPaneTextField(`filterLabelFr${i}`, {
+          label: strings.CustomFieldLabelFr,
+          value: (this.properties as any)[`filterLabelFr${i}`] || '',
+        }),
+        PropertyPaneTextField(`filterLabelEn${i}`, {
+          label: strings.CustomFieldLabelEn,
+          value: (this.properties as any)[`filterLabelEn${i}`] || '',
         }),
         PropertyPaneButton(`removeFilter${i}`, {
-          text: 'Supprimer',
+          text: strings.RemoveFilterLabel,
           buttonType: PropertyPaneButtonType.Command,
           icon: 'Delete',
           onClick: () => {
-            this.properties.filterCount = Math.max(0, filterCount - 1);
-            this.context.propertyPane.refresh();
+            this.properties.filterCount = Math.max(0, filterCount - 1)
+            this.context.propertyPane.refresh()
           },
         }),
-      );
+      )
     }
 
     if (filterCount < 3) {
       filterGroupFields.push(
         PropertyPaneButton('addFilter', {
-          text: 'Ajouter un filtre',
+          text: strings.AddFilter,
           buttonType: PropertyPaneButtonType.Command,
           icon: 'Add',
           onClick: () => {
-            this.properties.filterCount = filterCount + 1;
-            this.context.propertyPane.refresh();
+            this.properties.filterCount = filterCount + 1
+            this.context.propertyPane.refresh()
           },
         }),
-      );
+      )
     }
 
-    const buildCheckboxes = (prefix: string, fields: { key: CardFieldName; text: string }[], defaults: CardFieldName[]) => {
-      const propKey = prefix === 'cardField' ? 'cardFields' : prefix === 'listField' ? 'listFields' : 'modalFields';
-      const currentArray: CardFieldName[] = (this.properties as any)[propKey];
-      const effectiveArray: CardFieldName[] = (currentArray && currentArray.length > 0) ? currentArray : defaults;
-      return fields.map((f) => {
-        return PropertyPaneCheckbox(`${prefix}_${f.key}`, {
-          text: f.text,
-          checked: effectiveArray.includes(f.key),
-          key: `${prefix}_${f.key}`,
-        } as any);
-      });
-    };
+    // ── DnD custom field — remounts when activeTab changes (via key prop) ─────
+    const dndCustomField: IPropertyPaneField<IPropertyPaneCustomFieldProps> = {
+      type: PropertyPaneFieldType.Custom,
+      targetProperty: 'dnd_selector',
+      shouldFocus: false,
+      properties: {
+        key: 'dnd_selector',
+        onRender: (elem: HTMLElement) => {
+          const primaryColor = this._themePrimary
+
+          // Inject CSS override — primary color for choice group, label font size
+          const doc = elem.ownerDocument!
+          if (!doc.getElementById('spdir-chocegroup-override')) {
+            const style = doc.createElement('style')
+            style.id = 'spdir-chocegroup-override'
+            style.textContent = `
+            .ms-ChoiceField--image.is-checked::before { border-color: ${primaryColor} !important; }
+            .ms-ChoiceField--image.is-checked .ms-ChoiceField-icon { color: ${primaryColor} !important; }
+            .ms-ChoiceField--image:hover::before { border-color: ${primaryColor} !important; }
+            .ms-ChoiceField-field.is-checked::before { border-color: ${primaryColor} !important; }
+            .ms-ChoiceField-field.is-checked .ms-ChoiceField-icon { color: ${primaryColor} !important; }
+            [class*="PropertyPane"] label { color: #323130 !important; }
+          `
+            doc.head.appendChild(style)
+          }
+
+          // Reduce ChoiceGroup tab label font size from 14px to 12px
+          if (!doc.getElementById('spdir-chocegroup-font')) {
+            const fontStyle = doc.createElement('style')
+            fontStyle.id = 'spdir-chocegroup-font'
+            fontStyle.textContent = `[class*="ChoiceGroup"] label, [role="radiogroup"] label { font-size: 12px !important; }`
+            doc.head.appendChild(fontStyle)
+          }
+
+          const tab = (this.properties.activeViewTab || 'card') as
+            | 'card'
+            | 'list'
+            | 'modal'
+          const selectedKeys = this.getEffectiveFieldOrder(tab)
+          const labelsJson =
+            tab === 'list'
+              ? this.properties.listFieldLabelsJson || '{}'
+              : tab === 'modal'
+                ? this.properties.modalFieldLabelsJson || '{}'
+                : '{}'
+
+          const onUpdateKeys = (newKeys: string[]) => {
+            const prop =
+              tab === 'card'
+                ? 'cardFieldsJson'
+                : tab === 'list'
+                  ? 'listFieldsJson'
+                  : 'modalFieldsJson'
+            ;(this.properties as any)[prop] = JSON.stringify(newKeys)
+            this.render()
+          }
+
+          const onUpdateLabels = (newLabelsJson: string) => {
+            const prop =
+              tab === 'list' ? 'listFieldLabelsJson' : 'modalFieldLabelsJson'
+            ;(this.properties as any)[prop] = newLabelsJson
+            this.render()
+          }
+
+          ReactDom.render(
+            React.createElement(DnDFieldSelector, {
+              key: tab, // force remount when tab changes
+              view: tab,
+              selectedKeys,
+              labelsJson,
+              detectedExtAttrs: this.detectedExtAttrs,
+              primaryColor,
+              supportedLanguages: this._supportedLanguages,
+              onUpdateKeys,
+              onUpdateLabels,
+            }),
+            elem,
+          )
+        },
+        onDispose: (elem: HTMLElement) => {
+          ReactDom.unmountComponentAtNode(elem)
+        },
+      },
+    }
 
     return {
       pages: [
         {
-          header: { description: 'Paramètres généraux' },
+          header: { description: strings.PropertyPaneHeader },
           groups: [
             {
-              groupName: 'Affichage',
+              groupName: strings.ViewGroupName,
               groupFields: [
                 PropertyPaneDropdown('defaultView', {
-                  label: 'Vue par défaut',
+                  label: strings.DefaultViewLabel,
                   options: [
-                    { key: 'card', text: 'Vue Carte' },
-                    { key: 'list', text: 'Vue Liste' },
+                    { key: 'card', text: strings.ViewTrombinoscope },
+                    { key: 'list', text: strings.ViewList },
                   ],
                   selectedKey: this.properties.defaultView || 'card',
+                }),
+                PropertyPaneDropdown('sortOrder', {
+                  label: strings.SortOrderLabel,
+                  options: [
+                    { key: 'lastNameAsc', text: strings.SortLastNameAsc },
+                    { key: 'lastNameDesc', text: strings.SortLastNameDesc },
+                    { key: 'firstNameAsc', text: strings.SortFirstNameAsc },
+                    { key: 'firstNameDesc', text: strings.SortFirstNameDesc },
+                    { key: 'random', text: strings.SortRandom },
+                  ],
+                  selectedKey: this.properties.sortOrder || 'lastNameAsc',
                 }),
               ],
             },
             {
-              groupName: 'Filtres',
-              groupFields: filterGroupFields,
+              groupName: strings.FilterGroupName,
+              groupFields:
+                filterGroupFields.length > 0
+                  ? filterGroupFields
+                  : [PropertyPaneLabel('noFilter', { text: strings.NoFilter })],
             },
-          ],
-        },
-        {
-          header: { description: 'Vue Carte' },
-          groups: [
             {
-              groupName: 'Champs affichés',
-              groupFields: buildCheckboxes('cardField', CARD_FIELDS, CARD_DEFAULTS),
-            },
-          ],
-        },
-        {
-          header: { description: 'Vue Liste' },
-          groups: [
-            {
-              groupName: 'Champs affichés',
-              groupFields: buildCheckboxes('listField', LIST_FIELDS, LIST_DEFAULTS),
-            },
-          ],
-        },
-        {
-          header: { description: 'Vue Modale' },
-          groups: [
-            {
-              groupName: 'Champs affichés',
-              groupFields: buildCheckboxes('modalField', MODAL_FIELDS, MODAL_DEFAULTS),
+              // Tab selector — 3 icon buttons Card / List / Modal
+              groupName: strings.ViewTabLabel,
+              groupFields: [
+                PropertyPaneChoiceGroup('activeViewTab', {
+                  label: '',
+                  options: [
+                    {
+                      key: 'card',
+                      text: strings.TabCard,
+                      iconProps: { officeFabricIconFontName: 'GridViewMedium' },
+                    },
+                    {
+                      key: 'list',
+                      text: strings.TabList,
+                      iconProps: { officeFabricIconFontName: 'BulletedList2' },
+                    },
+                    {
+                      key: 'modal',
+                      text: strings.TabModal,
+                      iconProps: { officeFabricIconFontName: 'ContactInfo' },
+                    },
+                  ],
+                }),
+                dndCustomField,
+              ],
             },
           ],
         },
       ],
-    };
+    }
   }
 }

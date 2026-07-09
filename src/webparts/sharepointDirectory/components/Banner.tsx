@@ -3,6 +3,7 @@ import { Text } from '@fluentui/react/lib/Text'
 import { useTheme } from '@fluentui/react/lib/Theme'
 import { FilterField } from '../../../models/Filter'
 import { Member } from '../../../models/Member'
+import { strings } from '../loc/mystrings'
 import SearchBar from './search/SearchBar'
 import FilterBar from './search/FilterBar'
 import CsvExport from './export/CsvExport'
@@ -67,10 +68,12 @@ const Banner: React.FC<BannerProps> = ({
       {/* Count */}
       <Text
         variant="small"
-        styles={{ root: { whiteSpace: 'nowrap', color: '#6B7280' } }}
+        styles={{ root: { whiteSpace: 'nowrap', color: '#605e5c' } }}
       >
-        Résultats : {resultCount}{' '}
-        {resultCount <= 1 ? 'collaborateur' : 'collaborateurs'}
+        {strings.ResultsLabel} {resultCount}{' '}
+        {resultCount <= 1
+          ? strings.CollaboratorSingular
+          : strings.CollaboratorPlural}
       </Text>
 
       {/* View toggle pill */}
@@ -88,8 +91,8 @@ const Banner: React.FC<BannerProps> = ({
       >
         <button
           onClick={() => onViewChange('card')}
-          title="Vue Carte"
-          aria-label="Vue Carte"
+          title={strings.ViewTrombinoscope}
+          aria-label={strings.ViewTrombinoscope}
           aria-pressed={activeView === 'card'}
           style={{
             width: 32,
@@ -100,10 +103,9 @@ const Banner: React.FC<BannerProps> = ({
             borderRadius: '50%',
             backgroundColor:
               activeView === 'card' ? primaryColor : 'transparent',
-            color: activeView === 'card' ? '#ffffff' : '#a8a8a8',
+            color: activeView === 'card' ? '#ffffff' : '#605e5c',
             cursor: 'pointer',
             border: 'none',
-            outline: 'none',
             padding: 0,
             flexShrink: 0,
             transition: 'background-color 0.2s ease, color 0.2s ease',
@@ -124,8 +126,8 @@ const Banner: React.FC<BannerProps> = ({
         </button>
         <button
           onClick={() => onViewChange('list')}
-          title="Vue Liste"
-          aria-label="Vue Liste"
+          title={strings.ViewList}
+          aria-label={strings.ViewList}
           aria-pressed={activeView === 'list'}
           style={{
             width: 32,
@@ -136,10 +138,9 @@ const Banner: React.FC<BannerProps> = ({
             borderRadius: '50%',
             backgroundColor:
               activeView === 'list' ? primaryColor : 'transparent',
-            color: activeView === 'list' ? '#ffffff' : '#a8a8a8',
+            color: activeView === 'list' ? '#ffffff' : '#605e5c',
             cursor: 'pointer',
             border: 'none',
-            outline: 'none',
             padding: 0,
             flexShrink: 0,
             transition: 'background-color 0.2s ease, color 0.2s ease',

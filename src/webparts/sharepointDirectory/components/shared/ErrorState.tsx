@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { MessageBar, MessageBarType } from '@fluentui/react/lib/MessageBar';
 import { DefaultButton } from '@fluentui/react/lib/Button';
+import { strings } from '../../loc/mystrings';
 
 interface ErrorStateProps {
   message?: string;
@@ -8,7 +9,7 @@ interface ErrorStateProps {
 }
 
 const ErrorState: React.FC<ErrorStateProps> = ({
-  message = 'Une erreur est survenue lors du chargement de l\'annuaire.',
+  message,
   onRetry
 }) => {
   return (
@@ -16,10 +17,10 @@ const ErrorState: React.FC<ErrorStateProps> = ({
       messageBarType={MessageBarType.error}
       isMultiline={false}
       actions={
-        <DefaultButton onClick={onRetry}>Réessayer</DefaultButton>
+        <DefaultButton onClick={onRetry}>{strings.Retry}</DefaultButton>
       }
     >
-      {message}
+      {message || strings.ErrorLoading}
     </MessageBar>
   );
 };

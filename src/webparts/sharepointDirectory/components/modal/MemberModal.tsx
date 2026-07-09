@@ -1,19 +1,23 @@
 import * as React from 'react'
 import { Modal } from '@fluentui/react/lib/Modal'
-import { Icon } from '@fluentui/react/lib/Icon'
 import { PersonaSize } from '@fluentui/react/lib/Persona'
+import { useTheme } from '@fluentui/react/lib/Theme'
 import { Member } from '../../../../models/Member'
-import { CardFieldName } from '../../../../models/DirectoryConfig'
+import { getEntraFieldLabel } from '../../../../models/DirectoryConfig'
 import { getTeamsDeepLink } from '../../../../utils/teamsDeepLink'
 import { getMailtoLink } from '../../../../utils/formatUtils'
+import { strings } from '../../loc/mystrings'
 import PersonaAvatar from '../shared/PersonaAvatar'
 import TeamsIcon from '../shared/TeamsIcon'
 import OutlookIcon from '../shared/OutlookIcon'
 
 interface MemberModalProps {
   member: Member | null
-  modalFields: CardFieldName[]
+  members: Member[]
+  modalFieldOrder: string[]
+  modalFieldLabels: Record<string, string>
   onDismiss: () => void
+  onMemberClick: (member: Member) => void
 }
 
 const Divider = () => (
@@ -27,37 +31,106 @@ const Divider = () => (
   />
 )
 
-const FieldIcon = ({ name }: { name: string }) => (
-  <Icon iconName={name} styles={{ root: { color: '#605e5c', fontSize: 16 } }} />
+/** Uniform label+value row used for every detail field */
+const FieldRow = ({
+  label,
+  value,
+  link,
+}: {
+  label: string
+  value: string
+  link?: string
+}) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <span style={{ fontSize: 12, color: '#605e5c' }}>{label}</span>
+    {link ? (
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ fontSize: 14, color: '#201f1e', textDecoration: 'none' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {value}
+      </a>
+    ) : (
+      <span style={{ fontSize: 14, color: '#201f1e' }}>{value}</span>
+    )}
+  </div>
 )
 
 const MemberModal: React.FC<MemberModalProps> = ({
   member,
-  modalFields,
+  members,
+  modalFieldOrder,
+  modalFieldLabels,
   onDismiss,
+  onMemberClick,
 }) => {
+  const theme = useTheme()
+  const primaryColor = theme?.palette?.themePrimary || '#1B7A6E'
+
   if (!member) return null
 
   const fullName =
     `${member.givenName || ''} ${member.surname || ''}`.trim() ||
     member.displayName
 
-  const hasDetailFields =
-    (modalFields.includes('email') && !!member.email) ||
-    (modalFields.includes('phone') && !!member.mobilePhone) ||
-    (modalFields.includes('department') && !!member.department) ||
-    (modalFields.includes('officeLocation') && !!member.officeLocation) ||
-    (modalFields.includes('manager') && !!member.managerDisplayName)
+  const managerMember = member.managerId
+    ? members.find((m) => m.id === member.managerId)
+    : undefined
+
+  // Fields shown in the fixed header (position-based, not ordered)
+  const showPhoto = modalFieldOrder.includes('photo')
+  const showName =
+    modalFieldOrder.includes('name') || modalFieldOrder.includes('firstName')
+  const showFirstName = modalFieldOrder.includes('firstName')
+  const showLastName = modalFieldOrder.includes('name')
+
+  // Detail fields: everything except photo / name / firstName (rendered in declared order)
+  const HEADER = new Set(['photo', 'name', 'firstName'])
+  const detailFields = modalFieldOrder.filter((k) => !HEADER.has(k))
+
+  const DETAIL_FIELDS = new Set([
+    'jobTitle',
+    'email',
+    'phone',
+    'department',
+    'officeLocation',
+    'manager',
+  ])
+  const ACTION_FIELDS = new Set(['outlook', 'teams'])
+
+  const hasDetailSection = detailFields.some((k) => {
+    if (ACTION_FIELDS.has(k)) return false
+    switch (k) {
+      case 'email':
+        return !!member.email
+      case 'phone':
+        return !!member.mobilePhone
+      case 'department':
+        return !!member.department
+      case 'officeLocation':
+        return !!member.officeLocation
+      case 'manager':
+        return !!member.managerDisplayName
+      case 'jobTitle':
+        return !!member.jobTitle
+      default:
+        return !!member.customProperties?.[k]
+    }
+  })
 
   const hasActionButtons =
-    (modalFields.includes('outlook') && !!member.email) ||
-    (modalFields.includes('teams') && !!member.teamsId)
+    (detailFields.includes('outlook') && !!member.email) ||
+    (detailFields.includes('teams') && !!member.teamsId)
 
   return (
     <Modal
       isOpen={!!member}
       onDismiss={onDismiss}
       isBlocking={false}
+      titleAriaId="spdir-modal-title"
       styles={{
         main: {
           maxWidth: 480,
@@ -83,10 +156,32 @@ const MemberModal: React.FC<MemberModalProps> = ({
             from { opacity: 0; }
             to   { opacity: 1; }
           }
+          .spdir-mgr-link {
+            display: inline-block;
+            width: fit-content;
+            align-self: flex-start;
+            position: relative;
+            padding-bottom: 2px;
+          }
+          .spdir-mgr-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: currentColor;
+            transform-origin: right;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+          }
+          .spdir-mgr-link:hover::after {
+            transform: scaleX(1);
+          }
         `}</style>
         <button
           onClick={onDismiss}
-          aria-label="Fermer"
+          aria-label={strings.CloseModal}
           style={{
             position: 'absolute',
             top: 12,
@@ -113,7 +208,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
           </svg>
         </button>
 
-        {modalFields.includes('photo') && (
+        {showPhoto && (
           <PersonaAvatar
             photoUrl={member.photoUrl}
             displayName={member.displayName}
@@ -124,9 +219,9 @@ const MemberModal: React.FC<MemberModalProps> = ({
           />
         )}
 
-        {(modalFields.includes('name') ||
-          modalFields.includes('firstName')) && (
+        {showName && (
           <h2
+            id="spdir-modal-title"
             style={{
               margin: '16px 0 4px',
               fontSize: 20,
@@ -135,40 +230,16 @@ const MemberModal: React.FC<MemberModalProps> = ({
               textAlign: 'center',
             }}
           >
-            {fullName}
+            {showFirstName && member.givenName ? member.givenName : ''}
+            {showFirstName && showLastName && member.givenName && member.surname
+              ? ' '
+              : ''}
+            {showLastName && member.surname ? member.surname : ''}
+            {!member.givenName && !member.surname ? fullName : ''}
           </h2>
         )}
 
-        {modalFields.includes('jobTitle') && member.jobTitle && (
-          <p
-            style={{
-              margin: '0 0 4px',
-              fontSize: 14,
-              color: '#605e5c',
-              textAlign: 'center',
-            }}
-          >
-            {member.jobTitle}
-          </p>
-        )}
-
-        {modalFields.includes('officeLocation') && member.officeLocation && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              marginBottom: 4,
-            }}
-          >
-            <FieldIcon name="MapPin" />
-            <span style={{ fontSize: 13, color: '#605e5c' }}>
-              {member.officeLocation}
-            </span>
-          </div>
-        )}
-
-        {hasDetailFields && (
+        {hasDetailSection && (
           <>
             <Divider />
             <div
@@ -179,46 +250,124 @@ const MemberModal: React.FC<MemberModalProps> = ({
                 gap: 12,
               }}
             >
-              {modalFields.includes('email') && member.email && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <FieldIcon name="Mail" />
-                  <a
-                    href={getMailtoLink(member.email)}
-                    style={{
-                      fontSize: 14,
-                      color: '#201f1e',
-                      textDecoration: 'none',
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {member.email}
-                  </a>
-                </div>
-              )}
-              {modalFields.includes('phone') && member.mobilePhone && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <FieldIcon name="Phone" />
-                  <span style={{ fontSize: 14, color: '#201f1e' }}>
-                    {member.mobilePhone}
-                  </span>
-                </div>
-              )}
-              {modalFields.includes('department') && member.department && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <FieldIcon name="Org" />
-                  <span style={{ fontSize: 14, color: '#201f1e' }}>
-                    {member.department}
-                  </span>
-                </div>
-              )}
-              {modalFields.includes('manager') && member.managerDisplayName && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <FieldIcon name="Contact" />
-                  <span style={{ fontSize: 14, color: '#201f1e' }}>
-                    {member.managerDisplayName}
-                  </span>
-                </div>
-              )}
+              {detailFields.map((key) => {
+                if (ACTION_FIELDS.has(key)) return null
+
+                switch (key) {
+                  case 'jobTitle':
+                    return member.jobTitle ? (
+                      <FieldRow
+                        key={key}
+                        label={strings.FieldJobTitle}
+                        value={member.jobTitle}
+                      />
+                    ) : null
+
+                  case 'email':
+                    return member.email ? (
+                      <FieldRow
+                        key={key}
+                        label={strings.FieldEmail}
+                        value={member.email}
+                        link={getMailtoLink(member.email)}
+                      />
+                    ) : null
+
+                  case 'phone':
+                    return member.mobilePhone ? (
+                      <FieldRow
+                        key={key}
+                        label={strings.FieldPhone}
+                        value={member.mobilePhone}
+                      />
+                    ) : null
+
+                  case 'department':
+                    return member.department ? (
+                      <FieldRow
+                        key={key}
+                        label={strings.LabelDepartment}
+                        value={member.department}
+                      />
+                    ) : null
+
+                  case 'officeLocation':
+                    return member.officeLocation ? (
+                      <FieldRow
+                        key={key}
+                        label={strings.LabelLocation}
+                        value={member.officeLocation}
+                      />
+                    ) : null
+
+                  case 'manager':
+                    return member.managerDisplayName ? (
+                      <div
+                        key={key}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 2,
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: 12,
+                            color: '#605e5c',
+                            marginBottom: 4,
+                          }}
+                        >
+                          {strings.LabelManager}
+                        </span>
+                        {managerMember ? (
+                          <span
+                            className="spdir-mgr-link"
+                            role="button"
+                            tabIndex={0}
+                            style={{
+                              fontSize: 14,
+                              color: primaryColor,
+                              cursor: 'pointer',
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onDismiss()
+                              setTimeout(
+                                () => onMemberClick(managerMember),
+                                100,
+                              )
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                onDismiss()
+                                setTimeout(
+                                  () => onMemberClick(managerMember),
+                                  100,
+                                )
+                              }
+                            }}
+                          >
+                            {member.managerDisplayName}
+                          </span>
+                        ) : (
+                          <span style={{ fontSize: 14, color: '#201f1e' }}>
+                            {member.managerDisplayName}
+                          </span>
+                        )}
+                      </div>
+                    ) : null
+
+                  default: {
+                    const val = member.customProperties?.[key]
+                    if (!val) return null
+                    const label =
+                      modalFieldLabels[key] || getEntraFieldLabel(key)
+                    return <FieldRow key={key} label={label} value={val} />
+                  }
+                }
+              })}
             </div>
           </>
         )}
@@ -233,7 +382,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
               marginTop: 16,
             }}
           >
-            {modalFields.includes('teams') && member.teamsId && (
+            {detailFields.includes('teams') && member.teamsId && (
               <button
                 onClick={() =>
                   window.open(getTeamsDeepLink(member.teamsId!), '_blank')
@@ -252,9 +401,9 @@ const MemberModal: React.FC<MemberModalProps> = ({
                   gap: 10,
                   padding: '12px 20px',
                   borderRadius: 30,
-                  border: '1.5px solid #0099a4',
+                  border: '1.5px solid #6264A7',
                   background: 'transparent',
-                  color: '#0099a4',
+                  color: '#6264A7',
                   fontSize: 15,
                   fontWeight: 500,
                   cursor: 'pointer',
@@ -262,10 +411,10 @@ const MemberModal: React.FC<MemberModalProps> = ({
                 }}
               >
                 <TeamsIcon size={20} />
-                Contacter via Teams
+                {strings.ContactViaTeams}
               </button>
             )}
-            {modalFields.includes('outlook') && member.email && (
+            {detailFields.includes('outlook') && member.email && (
               <button
                 onClick={() =>
                   window.open(getMailtoLink(member.email!), '_blank')
@@ -294,7 +443,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                 }}
               >
                 <OutlookIcon size={20} />
-                Envoyer un email
+                {strings.SendEmail}
               </button>
             )}
           </div>

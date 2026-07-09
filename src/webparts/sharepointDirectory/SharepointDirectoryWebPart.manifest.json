@@ -3,7 +3,7 @@
   "id": "b3c4d5e6-f7a8-9012-cdef-123456789012",
   "alias": "SharepointDirectoryWebPart",
   "componentType": "WebPart",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "manifestVersion": 2,
   "requiresCustomScript": false,
   "supportsFullBleed": true,

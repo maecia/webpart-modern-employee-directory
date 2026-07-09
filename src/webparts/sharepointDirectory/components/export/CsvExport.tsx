@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { CsvService } from '../../../../services/CsvService'
 import { Member } from '../../../../models/Member'
+import { strings } from '../../loc/mystrings'
 
 interface CsvExportProps {
   members: Member[]
@@ -20,7 +21,7 @@ const CsvExport: React.FC<CsvExportProps> = ({ members }) => {
     <button
       onClick={handleExport}
       disabled={disabled}
-      title="Exporter en CSV"
+      title={strings.ExportCsv}
       onMouseEnter={() => !disabled && setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -53,7 +54,7 @@ const CsvExport: React.FC<CsvExportProps> = ({ members }) => {
         <path d="M4.646 9.146a.5.5 0 0 1 .708 0L8 11.793l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z" />
         <path d="M2 14a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-1a.5.5 0 0 0-1 0v1H3v-1a.5.5 0 0 0-1 0v1z" />
       </svg>
-      Exporter en CSV
+      {strings.ExportCsv}
     </button>
   )
 }

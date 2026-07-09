@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Member } from '../../../models/Member'
 import { DirectoryProps } from './Directory.types'
+import { SortOrder } from '../../../models/DirectoryConfig'
 import CardView from './cardView/CardView'
 import ListView from './listView/ListView'
 import MemberModal from './modal/MemberModal'
@@ -9,35 +10,88 @@ import LoadingState from './shared/LoadingState'
 import ErrorState from './shared/ErrorState'
 import EmptyState from './shared/EmptyState'
 
+function applySortOrder(members: Member[], sortOrder: SortOrder): Member[] {
+  const copy = [...members]
+  switch (sortOrder) {
+    case 'firstNameAsc':
+      copy.sort((a, b) =>
+        (a.givenName || a.displayName || '').localeCompare(
+          b.givenName || b.displayName || '',
+          'fr',
+          { sensitivity: 'base' },
+        ),
+      )
+      break
+    case 'firstNameDesc':
+      copy.sort((a, b) =>
+        (b.givenName || b.displayName || '').localeCompare(
+          a.givenName || a.displayName || '',
+          'fr',
+          { sensitivity: 'base' },
+        ),
+      )
+      break
+    case 'lastNameAsc':
+      copy.sort((a, b) =>
+        (a.surname || a.displayName || '').localeCompare(
+          b.surname || b.displayName || '',
+          'fr',
+          { sensitivity: 'base' },
+        ),
+      )
+      break
+    case 'lastNameDesc':
+      copy.sort((a, b) =>
+        (b.surname || b.displayName || '').localeCompare(
+          a.surname || a.displayName || '',
+          'fr',
+          { sensitivity: 'base' },
+        ),
+      )
+      break
+    case 'random':
+      const rng = createSeededRng(members.length)
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = rng() % (i + 1)
+        ;[copy[i], copy[j]] = [copy[j], copy[i]]
+      }
+      break
+  }
+  return copy
+}
+
+function createSeededRng(seed: number): () => number {
+  let s = seed
+  return () => {
+    s = (s * 1664525 + 1013904223) & 0xffffffff
+    return s >>> 0
+  }
+}
+
 function searchScore(member: any, query: string): number {
   let score = 0
-  const disp = (member.displayName || '').toLowerCase()
-  const given = (member.givenName || '').toLowerCase()
-  const sur = (member.surname || '').toLowerCase()
+  const fields = [
+    member.displayName,
+    member.givenName,
+    member.surname,
+    member.jobTitle,
+    member.department,
+    member.email,
+    member.officeLocation,
+    member.mobilePhone,
+    member.managerDisplayName,
+  ].filter(Boolean) as string[]
+  const customProps = member.customProperties || {}
+  const customValues = Object.values(customProps).filter(Boolean) as string[]
 
-  if (disp === query) {
-    score += 100
-  }
-  if (disp.startsWith(query)) {
-    score += 50
-  }
-  if (sur === query) {
-    score += 80
-  }
-  if (sur.startsWith(query)) {
-    score += 40
-  }
-  if (given === query) {
-    score += 80
-  }
-  if (given.startsWith(query)) {
-    score += 40
-  }
-  if (disp.indexOf(query) !== -1) {
-    score += 10
-  }
-  if (sur.indexOf(query) !== -1 || given.indexOf(query) !== -1) {
-    score += 5
+  const allValues = [...fields, ...customValues]
+  const lowerValues = allValues.map((v) => v.toLowerCase())
+  const q = query
+
+  for (const v of lowerValues) {
+    if (v === q) score += 100
+    else if (v.startsWith(q)) score += 50
+    else if (v.indexOf(q) !== -1) score += 10
   }
 
   return score
@@ -64,18 +118,30 @@ const Directory: React.FC<DirectoryProps> = ({
   }, [config.defaultView])
 
   const filteredMembers = React.useMemo(() => {
-    let result = members.filter((m) => m.isVisible)
+    let result = members.filter(
+      (m) => m.isVisible && (m.givenName || m.surname),
+    )
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase()
       result = result
-        .filter(
-          (m) =>
-            (m.displayName &&
-              m.displayName.toLowerCase().indexOf(query) !== -1) ||
-            (m.givenName && m.givenName.toLowerCase().indexOf(query) !== -1) ||
-            (m.surname && m.surname.toLowerCase().indexOf(query) !== -1),
-        )
+        .filter((m) => {
+          const fields = [
+            m.displayName,
+            m.givenName,
+            m.surname,
+            m.jobTitle,
+            m.department,
+            m.email,
+            m.officeLocation,
+            m.mobilePhone,
+            m.managerDisplayName,
+          ]
+          const customValues = Object.values(m.customProperties || {})
+          return [...fields, ...customValues].some(
+            (v) => v && v.toLowerCase().indexOf(query) !== -1,
+          )
+        })
         .sort((a, b) => searchScore(b, query) - searchScore(a, query))
     }
 
@@ -84,7 +150,9 @@ const Directory: React.FC<DirectoryProps> = ({
         const value = filterValues[filter.fieldName]
         if (value) {
           result = result.filter((m) => {
-            const fieldValue = (m as any)[filter.fieldName]
+            const fieldValue =
+              (m as any)[filter.fieldName] ??
+              (m.customProperties && m.customProperties[filter.fieldName])
             return fieldValue === value
           })
         }
@@ -92,17 +160,11 @@ const Directory: React.FC<DirectoryProps> = ({
     }
 
     if (!searchQuery.trim()) {
-      result = [...result].sort((a, b) =>
-        (a.givenName || a.displayName || '').localeCompare(
-          b.givenName || b.displayName || '',
-          'fr',
-          { sensitivity: 'base' },
-        ),
-      )
+      result = applySortOrder([...result], config.sortOrder)
     }
 
     return result
-  }, [members, searchQuery, filterValues, config.filters])
+  }, [members, searchQuery, filterValues, config.filters, config.sortOrder])
 
   const resultCount = filteredMembers.length
 
@@ -158,13 +220,14 @@ const Directory: React.FC<DirectoryProps> = ({
         ) : view === 'card' ? (
           <CardView
             members={filteredMembers}
-            cardFields={config.cardFields}
+            cardFieldOrder={config.cardFieldOrder}
             onMemberClick={setSelectedMember}
           />
         ) : (
           <ListView
             members={filteredMembers}
-            listFields={config.listFields}
+            listFieldOrder={config.listFieldOrder}
+            listFieldLabels={config.listFieldLabels}
             onMemberClick={setSelectedMember}
           />
         )}
@@ -172,8 +235,11 @@ const Directory: React.FC<DirectoryProps> = ({
 
       <MemberModal
         member={selectedMember}
-        modalFields={config.modalFields}
+        members={members}
+        modalFieldOrder={config.modalFieldOrder}
+        modalFieldLabels={config.modalFieldLabels}
         onDismiss={() => setSelectedMember(null)}
+        onMemberClick={setSelectedMember}
       />
     </div>
   )

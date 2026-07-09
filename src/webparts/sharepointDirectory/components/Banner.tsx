@@ -3,6 +3,7 @@ import { Text } from '@fluentui/react/lib/Text'
 import { useTheme } from '@fluentui/react/lib/Theme'
 import { FilterField } from '../../../models/Filter'
 import { Member } from '../../../models/Member'
+import { strings } from '../loc/mystrings'
 import SearchBar from './search/SearchBar'
 import FilterBar from './search/FilterBar'
 import CsvExport from './export/CsvExport'
@@ -69,8 +70,10 @@ const Banner: React.FC<BannerProps> = ({
         variant="small"
         styles={{ root: { whiteSpace: 'nowrap', color: '#6B7280' } }}
       >
-        Résultats : {resultCount}{' '}
-        {resultCount <= 1 ? 'collaborateur' : 'collaborateurs'}
+        {strings.ResultsLabel} {resultCount}{' '}
+        {resultCount <= 1
+          ? strings.CollaboratorSingular
+          : strings.CollaboratorPlural}
       </Text>
 
       {/* View toggle pill */}
@@ -88,8 +91,8 @@ const Banner: React.FC<BannerProps> = ({
       >
         <button
           onClick={() => onViewChange('card')}
-          title="Vue Carte"
-          aria-label="Vue Carte"
+          title={strings.ViewTrombinoscope}
+          aria-label={strings.ViewTrombinoscope}
           aria-pressed={activeView === 'card'}
           style={{
             width: 32,
@@ -124,8 +127,8 @@ const Banner: React.FC<BannerProps> = ({
         </button>
         <button
           onClick={() => onViewChange('list')}
-          title="Vue Liste"
-          aria-label="Vue Liste"
+          title={strings.ViewList}
+          aria-label={strings.ViewList}
           aria-pressed={activeView === 'list'}
           style={{
             width: 32,

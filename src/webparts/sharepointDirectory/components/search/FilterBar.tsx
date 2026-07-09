@@ -22,7 +22,9 @@ const FilterBar: React.FC<FilterBarProps> = ({
   const getDistinctValues = (fieldName: string): string[] => {
     const unique = new Set<string>()
     members.forEach((member) => {
-      const value = (member as any)[fieldName]
+      const value =
+        (member as any)[fieldName] ??
+        (member.customProperties && member.customProperties[fieldName])
       if (value) unique.add(String(value))
     })
     return Array.from(unique).sort()

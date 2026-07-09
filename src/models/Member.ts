@@ -13,4 +13,5 @@ export interface Member {
   photoUrl?: string;
   isVisible: boolean;
   teamsId?: string;
+  customProperties?: Record<string, string>;
 }

@@ -1,4 +1,4 @@
-(()=>{ var __RUSHSTACK_CURRENT_SCRIPT__ = document.currentScript; define("b3c4d5e6-f7a8-9012-cdef-123456789012_1.0.0", ["react","react-dom","@microsoft/sp-core-library","@microsoft/sp-webpart-base"], (__WEBPACK_EXTERNAL_MODULE__2650__, __WEBPACK_EXTERNAL_MODULE__2729__, __WEBPACK_EXTERNAL_MODULE__3878__, __WEBPACK_EXTERNAL_MODULE__3134__) => { return /******/ (() => { // webpackBootstrap
+(()=>{ var __RUSHSTACK_CURRENT_SCRIPT__ = document.currentScript; define("b3c4d5e6-f7a8-9012-cdef-123456789012_1.0.0", ["react","react-dom","@microsoft/sp-core-library","@microsoft/sp-webpart-base","@microsoft/sp-property-pane"], (__WEBPACK_EXTERNAL_MODULE__2650__, __WEBPACK_EXTERNAL_MODULE__2729__, __WEBPACK_EXTERNAL_MODULE__3878__, __WEBPACK_EXTERNAL_MODULE__3134__, __WEBPACK_EXTERNAL_MODULE__4723__) => { return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
@@ -9,29 +9,32 @@
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DEFAULT_CARD_ORDER: () => (/* binding */ DEFAULT_CARD_ORDER),
+/* harmony export */   DEFAULT_LIST_ORDER: () => (/* binding */ DEFAULT_LIST_ORDER),
+/* harmony export */   DEFAULT_MODAL_ORDER: () => (/* binding */ DEFAULT_MODAL_ORDER),
 /* harmony export */   useDirectoryConfig: () => (/* binding */ useDirectoryConfig)
 /* harmony export */ });
-var DEFAULT_CARD_FIELDS = [
+var DEFAULT_CARD_ORDER = [
     'photo',
-    'name',
     'firstName',
+    'name',
     'outlook',
     'teams',
 ];
-var DEFAULT_LIST_FIELDS = [
+var DEFAULT_LIST_ORDER = [
     'photo',
-    'name',
     'firstName',
+    'name',
     'email',
     'phone',
     'jobTitle',
     'department',
     'manager',
 ];
-var DEFAULT_MODAL_FIELDS = [
+var DEFAULT_MODAL_ORDER = [
     'photo',
-    'name',
     'firstName',
+    'name',
     'email',
     'phone',
     'jobTitle',
@@ -40,13 +43,17 @@ var DEFAULT_MODAL_FIELDS = [
     'outlook',
     'teams',
 ];
+
 function useDirectoryConfig(rawConfig) {
     return {
         defaultView: rawConfig.defaultView || 'card',
+        sortOrder: rawConfig.sortOrder || 'lastNameAsc',
         filters: rawConfig.filters || [],
-        cardFields: rawConfig.cardFields || DEFAULT_CARD_FIELDS,
-        listFields: rawConfig.listFields || DEFAULT_LIST_FIELDS,
-        modalFields: rawConfig.modalFields || DEFAULT_MODAL_FIELDS,
+        cardFieldOrder: rawConfig.cardFieldOrder || DEFAULT_CARD_ORDER,
+        listFieldOrder: rawConfig.listFieldOrder || DEFAULT_LIST_ORDER,
+        modalFieldOrder: rawConfig.modalFieldOrder || DEFAULT_MODAL_ORDER,
+        listFieldLabels: rawConfig.listFieldLabels || {},
+        modalFieldLabels: rawConfig.modalFieldLabels || {},
     };
 }
 
@@ -114,31 +121,35 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 };
 
 
-function useMembers(context) {
+function useMembers(context, customFieldKeys, onDetectedExtensionAttrs) {
     var _this = this;
+    if (customFieldKeys === void 0) { customFieldKeys = []; }
     var _a = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]), members = _a[0], setMembers = _a[1];
     var _b = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true), isLoading = _b[0], setIsLoading = _b[1];
     var _c = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null), error = _c[0], setError = _c[1];
     var _d = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0), retryCount = _d[0], setRetryCount = _d[1];
     var serviceRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
     var loadMembers = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(function () { return __awaiter(_this, void 0, void 0, function () {
-        var service_1, data, membersWithPhotos, err_1;
+        var service_1, _a, data, detectedExtensionAttrs, membersWithPhotos, err_1;
         var _this = this;
-        var _a;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var _b;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
                     setIsLoading(true);
                     setError(null);
-                    _b.label = 1;
+                    _c.label = 1;
                 case 1:
-                    _b.trys.push([1, 4, 5, 6]);
-                    (_a = serviceRef.current) === null || _a === void 0 ? void 0 : _a.dispose();
+                    _c.trys.push([1, 4, 5, 6]);
+                    (_b = serviceRef.current) === null || _b === void 0 ? void 0 : _b.dispose();
                     service_1 = new _services_GraphService__WEBPACK_IMPORTED_MODULE_1__.GraphService(context);
                     serviceRef.current = service_1;
-                    return [4 /*yield*/, service_1.getMembers()];
+                    return [4 /*yield*/, service_1.getMembers(customFieldKeys)];
                 case 2:
-                    data = _b.sent();
+                    _a = _c.sent(), data = _a.members, detectedExtensionAttrs = _a.detectedExtensionAttrs;
+                    if (detectedExtensionAttrs.length > 0 && onDetectedExtensionAttrs) {
+                        onDetectedExtensionAttrs(detectedExtensionAttrs);
+                    }
                     return [4 /*yield*/, Promise.all(data.map(function (member) { return __awaiter(_this, void 0, void 0, function () {
                             var photoUrl;
                             return __generator(this, function (_a) {
@@ -154,11 +165,11 @@ function useMembers(context) {
                             });
                         }); }))];
                 case 3:
-                    membersWithPhotos = _b.sent();
+                    membersWithPhotos = _c.sent();
                     setMembers(membersWithPhotos);
                     return [3 /*break*/, 6];
                 case 4:
-                    err_1 = _b.sent();
+                    err_1 = _c.sent();
                     setError('Impossible de charger les données de l\'annuaire. Veuillez réessayer.');
                     return [3 /*break*/, 6];
                 case 5:
@@ -167,7 +178,7 @@ function useMembers(context) {
                 case 6: return [2 /*return*/];
             }
         });
-    }); }, [context, retryCount]);
+    }); }, [context, retryCount, customFieldKeys.join(',')]);
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
         loadMembers();
         return function () {
@@ -215,6 +226,177 @@ function usePagination(items, view) {
     }, []);
     return { visibleItems: visibleItems, hasMore: hasMore, loadMore: loadMore, reset: reset };
 }
+
+
+/***/ }),
+
+/***/ 5930:
+/*!***************************************!*\
+  !*** ./lib/models/DirectoryConfig.js ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   STANDARD_FIELD_KEYS: () => (/* binding */ STANDARD_FIELD_KEYS),
+/* harmony export */   getAvailableEntraIdFieldGroups: () => (/* binding */ getAvailableEntraIdFieldGroups),
+/* harmony export */   getEntraFieldLabel: () => (/* binding */ getEntraFieldLabel)
+/* harmony export */ });
+/* unused harmony exports getAvailableEntraIdFields, AVAILABLE_ENTRAID_FIELDS */
+/* harmony import */ var _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../webparts/sharepointDirectory/loc/mystrings */ 5126);
+
+/** All standard CardFieldName keys — not fetched via Graph custom properties */
+var STANDARD_FIELD_KEYS = new Set([
+    'photo',
+    'name',
+    'firstName',
+    'email',
+    'phone',
+    'jobTitle',
+    'department',
+    'officeLocation',
+    'manager',
+    'outlook',
+    'teams',
+]);
+function getAvailableEntraIdFieldGroups() {
+    return [
+        {
+            groupKey: 'profile',
+            label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.DnD_Group_Profile,
+            fields: [
+                { key: 'aboutMe', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_aboutMe },
+                { key: 'birthday', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_birthday },
+                { key: 'interests', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_interests },
+                { key: 'pastProjects', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_pastProjects },
+                { key: 'responsibilities', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_responsibilities },
+                { key: 'schools', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_schools },
+                { key: 'skills', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_skills },
+            ],
+        },
+        {
+            groupKey: 'contact',
+            label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.DnD_Group_Contact,
+            fields: [
+                { key: 'streetAddress', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_streetAddress },
+                { key: 'city', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_city },
+                { key: 'state', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_state },
+                { key: 'postalCode', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_postalCode },
+                { key: 'country', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_country },
+                { key: 'businessPhones', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_businessPhones },
+                { key: 'faxNumber', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_faxNumber },
+                { key: 'otherMails', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_otherMails },
+                { key: 'imAddresses', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_imAddresses },
+                { key: 'mySite', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_mySite },
+            ],
+        },
+        {
+            groupKey: 'company',
+            label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.DnD_Group_Company,
+            fields: [
+                { key: 'companyName', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_companyName },
+                { key: 'employeeId', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_employeeId },
+                { key: 'employeeType', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_employeeType },
+                { key: 'employeeHireDate', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_employeeHireDate },
+                { key: 'hireDate', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_hireDate },
+                {
+                    key: 'employeeLeaveDateTime',
+                    label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_employeeLeaveDateTime,
+                },
+                { key: 'division', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_division },
+                { key: 'costCenter', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_costCenter },
+            ],
+        },
+        {
+            groupKey: 'region',
+            label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.DnD_Group_Region,
+            fields: [
+                {
+                    key: 'preferredLanguage',
+                    label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_preferredLanguage,
+                },
+                { key: 'usageLocation', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_usageLocation },
+            ],
+        },
+        {
+            groupKey: 'other',
+            label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.DnD_Group_Other,
+            fields: [
+                { key: 'createdDateTime', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_createdDateTime },
+                { key: 'ageGroup', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_ageGroup },
+                {
+                    key: 'consentProvidedForMinor',
+                    label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_consentProvidedForMinor,
+                },
+                {
+                    key: 'legalAgeGroupClassification',
+                    label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_legalAgeGroupClassification,
+                },
+                {
+                    key: 'externalUserState',
+                    label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_externalUserState,
+                },
+                { key: 'mailNickname', label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_mailNickname },
+                {
+                    key: 'lastPasswordChangeDateTime',
+                    label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_lastPasswordChangeDateTime,
+                },
+            ],
+        },
+        {
+            groupKey: 'onprem',
+            label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.DnD_Group_OnPrem,
+            fields: [
+                {
+                    key: 'onPremisesDistinguishedName',
+                    label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_onPremisesDistinguishedName,
+                },
+                {
+                    key: 'onPremisesDomainName',
+                    label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_onPremisesDomainName,
+                },
+                {
+                    key: 'onPremisesSamAccountName',
+                    label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_onPremisesSamAccountName,
+                },
+                {
+                    key: 'onPremisesUserPrincipalName',
+                    label: _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings.EntraField_onPremisesUserPrincipalName,
+                },
+            ],
+        },
+    ];
+}
+function getAvailableEntraIdFields() {
+    return getAvailableEntraIdFieldGroups().reduce(function (acc, g) { return acc.concat(g.fields); }, []);
+}
+/** Return the localized display label for any EntraID or extensionAttribute field key */
+function getEntraFieldLabel(key) {
+    for (var _i = 0, _a = getAvailableEntraIdFieldGroups(); _i < _a.length; _i++) {
+        var group = _a[_i];
+        var found = group.fields.find(function (f) { return f.key === key; });
+        if (found)
+            return found.label;
+    }
+    var strKey = "EntraField_".concat(key);
+    return _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_0__.strings[strKey] || key;
+}
+/** @deprecated Use getEntraFieldLabel() instead */
+var AVAILABLE_ENTRAID_FIELDS = new Proxy([], {
+    get: function (_target, prop) {
+        var live = getAvailableEntraIdFields();
+        if (prop === 'find')
+            return live.find.bind(live);
+        if (prop === 'filter')
+            return live.filter.bind(live);
+        if (prop === 'map')
+            return live.map.bind(live);
+        if (prop === 'length')
+            return live.length;
+        if (typeof prop === 'string' && !isNaN(Number(prop)))
+            return live[Number(prop)];
+        return live[prop];
+    },
+});
 
 
 /***/ }),
@@ -359,61 +541,106 @@ var SELECT_FIELDS = [
     'officeLocation',
     'mobilePhone',
     'userType',
-    'accountEnabled'
+    'accountEnabled',
+    'onPremisesExtensionAttributes',
 ];
 var PAGE_SIZE = 100;
+var DATE_FIELDS = new Set([
+    'birthday',
+    'employeeHireDate',
+    'hireDate',
+    'employeeLeaveDateTime',
+    'createdDateTime',
+    'lastPasswordChangeDateTime',
+]);
+function formatValue(key, v) {
+    if (v === undefined || v === null)
+        return '';
+    if (Array.isArray(v))
+        return v.filter(Boolean).join(', ');
+    var s = String(v);
+    if (DATE_FIELDS.has(key) && s) {
+        var d = new Date(s);
+        if (!isNaN(d.getTime()) && d.getFullYear() > 1900) {
+            return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+        return '';
+    }
+    return s;
+}
 var GraphService = /** @class */ (function () {
     function GraphService(context) {
         this.photoUrls = [];
         this.graph = (0,_pnp_graph__WEBPACK_IMPORTED_MODULE_0__.graphfi)().using((0,_pnp_graph__WEBPACK_IMPORTED_MODULE_0__.SPFx)(context));
     }
-    GraphService.prototype.getMembers = function () {
+    GraphService.prototype.getMembers = function (customFieldKeys) {
         var e_1, _a;
         var _b, _c;
+        if (customFieldKeys === void 0) { customFieldKeys = []; }
         return __awaiter(this, void 0, void 0, function () {
-            var allUsers, rawUsers, _d, _e, page, e_1_1, members, _i, allUsers_1, user;
-            var _f;
-            return __generator(this, function (_g) {
-                switch (_g.label) {
+            var allUsers, rawUsers, _d, _e, page, e_1_1, customDataMap, detectedExtAttrs, _i, allUsers_1, user, i, v, members, _f, allUsers_2, user, cp;
+            var _g;
+            return __generator(this, function (_h) {
+                switch (_h.label) {
                     case 0:
                         allUsers = [];
-                        rawUsers = (_f = this.graph.users)
-                            .select.apply(_f, SELECT_FIELDS).expand('manager($select=id,displayName)')
+                        rawUsers = (_g = this.graph.users)
+                            .select.apply(_g, SELECT_FIELDS).expand('manager($select=id,displayName)')
                             .filter("accountEnabled eq true and userType eq 'Member'")
                             .top(PAGE_SIZE);
-                        _g.label = 1;
+                        _h.label = 1;
                     case 1:
-                        _g.trys.push([1, 6, 7, 12]);
+                        _h.trys.push([1, 6, 7, 12]);
                         _d = __asyncValues(rawUsers);
-                        _g.label = 2;
+                        _h.label = 2;
                     case 2: return [4 /*yield*/, _d.next()];
                     case 3:
-                        if (!(_e = _g.sent(), !_e.done)) return [3 /*break*/, 5];
+                        if (!(_e = _h.sent(), !_e.done)) return [3 /*break*/, 5];
                         page = _e.value;
                         allUsers.push.apply(allUsers, page);
-                        _g.label = 4;
+                        _h.label = 4;
                     case 4: return [3 /*break*/, 2];
                     case 5: return [3 /*break*/, 12];
                     case 6:
-                        e_1_1 = _g.sent();
+                        e_1_1 = _h.sent();
                         e_1 = { error: e_1_1 };
                         return [3 /*break*/, 12];
                     case 7:
-                        _g.trys.push([7, , 10, 11]);
+                        _h.trys.push([7, , 10, 11]);
                         if (!(_e && !_e.done && (_a = _d.return))) return [3 /*break*/, 9];
                         return [4 /*yield*/, _a.call(_d)];
                     case 8:
-                        _g.sent();
-                        _g.label = 9;
+                        _h.sent();
+                        _h.label = 9;
                     case 9: return [3 /*break*/, 11];
                     case 10:
                         if (e_1) throw e_1.error;
                         return [7 /*endfinally*/];
                     case 11: return [7 /*endfinally*/];
                     case 12:
-                        members = [];
+                        customDataMap = {};
+                        if (!(customFieldKeys.length > 0)) return [3 /*break*/, 14];
+                        return [4 /*yield*/, this.fetchCustomProperties(allUsers, customFieldKeys)];
+                    case 13:
+                        customDataMap = _h.sent();
+                        _h.label = 14;
+                    case 14:
+                        detectedExtAttrs = new Set();
                         for (_i = 0, allUsers_1 = allUsers; _i < allUsers_1.length; _i++) {
                             user = allUsers_1[_i];
+                            if (user.onPremisesExtensionAttributes) {
+                                for (i = 1; i <= 15; i++) {
+                                    v = user.onPremisesExtensionAttributes["extensionAttribute".concat(i)];
+                                    if (v !== null && v !== undefined && v !== '') {
+                                        detectedExtAttrs.add("extensionAttribute".concat(i));
+                                    }
+                                }
+                            }
+                        }
+                        members = [];
+                        for (_f = 0, allUsers_2 = allUsers; _f < allUsers_2.length; _f++) {
+                            user = allUsers_2[_f];
+                            cp = customDataMap[user.id] || {};
                             members.push({
                                 id: user.id || '',
                                 displayName: user.displayName || '',
@@ -427,10 +654,99 @@ var GraphService = /** @class */ (function () {
                                 managerId: ((_b = user.manager) === null || _b === void 0 ? void 0 : _b.id) || undefined,
                                 managerDisplayName: ((_c = user.manager) === null || _c === void 0 ? void 0 : _c.displayName) || undefined,
                                 isVisible: true,
-                                teamsId: user.userPrincipalName || undefined
+                                teamsId: user.userPrincipalName || undefined,
+                                customProperties: cp,
                             });
                         }
-                        return [2 /*return*/, members];
+                        return [2 /*return*/, { members: members, detectedExtensionAttrs: Array.from(detectedExtAttrs).sort() }];
+                }
+            });
+        });
+    };
+    GraphService.prototype.fetchCustomProperties = function (users, customFieldKeys) {
+        return __awaiter(this, void 0, void 0, function () {
+            var result, selectFields, _i, customFieldKeys_1, key, CONCURRENCY, i, chunk, promises;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        result = {};
+                        selectFields = [];
+                        for (_i = 0, customFieldKeys_1 = customFieldKeys; _i < customFieldKeys_1.length; _i++) {
+                            key = customFieldKeys_1[_i];
+                            if (key === 'division' || key === 'costCenter') {
+                                if (!selectFields.includes('employeeOrgData'))
+                                    selectFields.push('employeeOrgData');
+                            }
+                            else if (key.startsWith('extensionAttribute')) {
+                                if (!selectFields.includes('onPremisesExtensionAttributes'))
+                                    selectFields.push('onPremisesExtensionAttributes');
+                            }
+                            else {
+                                if (!selectFields.includes(key))
+                                    selectFields.push(key);
+                            }
+                        }
+                        CONCURRENCY = 10;
+                        i = 0;
+                        _a.label = 1;
+                    case 1:
+                        if (!(i < users.length)) return [3 /*break*/, 4];
+                        chunk = users.slice(i, i + CONCURRENCY);
+                        promises = chunk.map(function (user) { return __awaiter(_this, void 0, void 0, function () {
+                            var detail, cp, _i, customFieldKeys_2, key, v, _a;
+                            var _b;
+                            var _c, _d, _e;
+                            return __generator(this, function (_f) {
+                                switch (_f.label) {
+                                    case 0:
+                                        if (!user.id)
+                                            return [2 /*return*/];
+                                        _f.label = 1;
+                                    case 1:
+                                        _f.trys.push([1, 3, , 4]);
+                                        return [4 /*yield*/, (_b = this.graph.users.getById(user.id)).select.apply(_b, selectFields)()];
+                                    case 2:
+                                        detail = _f.sent();
+                                        cp = {};
+                                        for (_i = 0, customFieldKeys_2 = customFieldKeys; _i < customFieldKeys_2.length; _i++) {
+                                            key = customFieldKeys_2[_i];
+                                            v = void 0;
+                                            if (key === 'division') {
+                                                v = (_c = detail.employeeOrgData) === null || _c === void 0 ? void 0 : _c.division;
+                                            }
+                                            else if (key === 'costCenter') {
+                                                v = (_d = detail.employeeOrgData) === null || _d === void 0 ? void 0 : _d.costCenter;
+                                            }
+                                            else if (key.startsWith('extensionAttribute')) {
+                                                v = (_e = detail.onPremisesExtensionAttributes) === null || _e === void 0 ? void 0 : _e[key];
+                                            }
+                                            else {
+                                                v = detail[key];
+                                            }
+                                            if (v !== undefined && v !== null) {
+                                                cp[key] = formatValue(key, v);
+                                            }
+                                        }
+                                        if (Object.keys(cp).length > 0) {
+                                            result[user.id] = cp;
+                                        }
+                                        return [3 /*break*/, 4];
+                                    case 3:
+                                        _a = _f.sent();
+                                        return [3 /*break*/, 4];
+                                    case 4: return [2 /*return*/];
+                                }
+                            });
+                        }); });
+                        return [4 /*yield*/, Promise.all(promises)];
+                    case 2:
+                        _a.sent();
+                        _a.label = 3;
+                    case 3:
+                        i += CONCURRENCY;
+                        return [3 /*break*/, 1];
+                    case 4: return [2 /*return*/, result];
                 }
             });
         });
@@ -510,11 +826,13 @@ function getTeamsDeepLink(userPrincipalName) {
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fluentui/react/lib/Text */ 6667);
-/* harmony import */ var _fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fluentui/react/lib/Theme */ 3635);
-/* harmony import */ var _search_SearchBar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./search/SearchBar */ 335);
-/* harmony import */ var _search_FilterBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./search/FilterBar */ 7963);
-/* harmony import */ var _export_CsvExport__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./export/CsvExport */ 8444);
+/* harmony import */ var _fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @fluentui/react/lib/Text */ 6667);
+/* harmony import */ var _fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fluentui/react/lib/Theme */ 3635);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../loc/mystrings */ 5126);
+/* harmony import */ var _search_SearchBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./search/SearchBar */ 335);
+/* harmony import */ var _search_FilterBar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./search/FilterBar */ 7963);
+/* harmony import */ var _export_CsvExport__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./export/CsvExport */ 8444);
+
 
 
 
@@ -524,7 +842,7 @@ function getTeamsDeepLink(userPrincipalName) {
 var Banner = function (_a) {
     var _b;
     var searchQuery = _a.searchQuery, onSearchChange = _a.onSearchChange, filters = _a.filters, members = _a.members, filterValues = _a.filterValues, onFilterChange = _a.onFilterChange, resultCount = _a.resultCount, activeView = _a.activeView, onViewChange = _a.onViewChange, filteredMembers = _a.filteredMembers;
-    var theme = (0,_fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_4__.useTheme)();
+    var theme = (0,_fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_5__.useTheme)();
     var primaryColor = ((_b = theme === null || theme === void 0 ? void 0 : theme.palette) === null || _b === void 0 ? void 0 : _b.themePrimary) || '#1B7A6E';
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: {
             display: 'flex',
@@ -537,14 +855,17 @@ var Banner = function (_a) {
             borderBottom: '1px solid #edebe9',
             boxSizing: 'border-box',
         } },
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_search_SearchBar__WEBPACK_IMPORTED_MODULE_1__["default"], { value: searchQuery, onChange: onSearchChange }),
-        filters.length > 0 && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_search_FilterBar__WEBPACK_IMPORTED_MODULE_2__["default"], { filters: filters, members: members, values: filterValues, onChange: onFilterChange })),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_search_SearchBar__WEBPACK_IMPORTED_MODULE_2__["default"], { value: searchQuery, onChange: onSearchChange }),
+        filters.length > 0 && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_search_FilterBar__WEBPACK_IMPORTED_MODULE_3__["default"], { filters: filters, members: members, values: filterValues, onChange: onFilterChange })),
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { flex: 1, minWidth: 16 } }),
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_5__.Text, { variant: "small", styles: { root: { whiteSpace: 'nowrap', color: '#6B7280' } } },
-            "R\u00E9sultats : ",
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_6__.Text, { variant: "small", styles: { root: { whiteSpace: 'nowrap', color: '#6B7280' } } },
+            _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ResultsLabel,
+            " ",
             resultCount,
             ' ',
-            resultCount <= 1 ? 'collaborateur' : 'collaborateurs'),
+            resultCount <= 1
+                ? _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.CollaboratorSingular
+                : _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.CollaboratorPlural),
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: {
                 display: 'flex',
                 alignItems: 'center',
@@ -555,7 +876,7 @@ var Banner = function (_a) {
                 backgroundColor: '#ffffff',
                 flexShrink: 0,
             } },
-            react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: function () { return onViewChange('card'); }, title: "Vue Carte", "aria-label": "Vue Carte", "aria-pressed": activeView === 'card', style: {
+            react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: function () { return onViewChange('card'); }, title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ViewTrombinoscope, "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ViewTrombinoscope, "aria-pressed": activeView === 'card', style: {
                     width: 32,
                     height: 32,
                     display: 'flex',
@@ -576,7 +897,7 @@ var Banner = function (_a) {
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("rect", { x: "9", y: "1", width: "6", height: "6", rx: "1" }),
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("rect", { x: "1", y: "9", width: "6", height: "6", rx: "1" }),
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("rect", { x: "9", y: "9", width: "6", height: "6", rx: "1" }))),
-            react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: function () { return onViewChange('list'); }, title: "Vue Liste", "aria-label": "Vue Liste", "aria-pressed": activeView === 'list', style: {
+            react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: function () { return onViewChange('list'); }, title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ViewList, "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ViewList, "aria-pressed": activeView === 'list', style: {
                     width: 32,
                     height: 32,
                     display: 'flex',
@@ -596,7 +917,7 @@ var Banner = function (_a) {
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("rect", { x: "1", y: "2", width: "14", height: "2", rx: "1" }),
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("rect", { x: "1", y: "7", width: "14", height: "2", rx: "1" }),
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("rect", { x: "1", y: "12", width: "14", height: "2", rx: "1" })))),
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_export_CsvExport__WEBPACK_IMPORTED_MODULE_3__["default"], { members: filteredMembers })));
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_export_CsvExport__WEBPACK_IMPORTED_MODULE_4__["default"], { members: filteredMembers })));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Banner);
 
@@ -649,34 +970,73 @@ var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from
 
 
 
+function applySortOrder(members, sortOrder) {
+    var _a;
+    var copy = __spreadArray([], members, true);
+    switch (sortOrder) {
+        case 'firstNameAsc':
+            copy.sort(function (a, b) {
+                return (a.givenName || a.displayName || '').localeCompare(b.givenName || b.displayName || '', 'fr', { sensitivity: 'base' });
+            });
+            break;
+        case 'firstNameDesc':
+            copy.sort(function (a, b) {
+                return (b.givenName || b.displayName || '').localeCompare(a.givenName || a.displayName || '', 'fr', { sensitivity: 'base' });
+            });
+            break;
+        case 'lastNameAsc':
+            copy.sort(function (a, b) {
+                return (a.surname || a.displayName || '').localeCompare(b.surname || b.displayName || '', 'fr', { sensitivity: 'base' });
+            });
+            break;
+        case 'lastNameDesc':
+            copy.sort(function (a, b) {
+                return (b.surname || b.displayName || '').localeCompare(a.surname || a.displayName || '', 'fr', { sensitivity: 'base' });
+            });
+            break;
+        case 'random':
+            var rng = createSeededRng(members.length);
+            for (var i = copy.length - 1; i > 0; i--) {
+                var j = rng() % (i + 1);
+                _a = [copy[j], copy[i]], copy[i] = _a[0], copy[j] = _a[1];
+            }
+            break;
+    }
+    return copy;
+}
+function createSeededRng(seed) {
+    var s = seed;
+    return function () {
+        s = (s * 1664525 + 1013904223) & 0xffffffff;
+        return s >>> 0;
+    };
+}
 function searchScore(member, query) {
     var score = 0;
-    var disp = (member.displayName || '').toLowerCase();
-    var given = (member.givenName || '').toLowerCase();
-    var sur = (member.surname || '').toLowerCase();
-    if (disp === query) {
-        score += 100;
-    }
-    if (disp.startsWith(query)) {
-        score += 50;
-    }
-    if (sur === query) {
-        score += 80;
-    }
-    if (sur.startsWith(query)) {
-        score += 40;
-    }
-    if (given === query) {
-        score += 80;
-    }
-    if (given.startsWith(query)) {
-        score += 40;
-    }
-    if (disp.indexOf(query) !== -1) {
-        score += 10;
-    }
-    if (sur.indexOf(query) !== -1 || given.indexOf(query) !== -1) {
-        score += 5;
+    var fields = [
+        member.displayName,
+        member.givenName,
+        member.surname,
+        member.jobTitle,
+        member.department,
+        member.email,
+        member.officeLocation,
+        member.mobilePhone,
+        member.managerDisplayName,
+    ].filter(Boolean);
+    var customProps = member.customProperties || {};
+    var customValues = Object.values(customProps).filter(Boolean);
+    var allValues = __spreadArray(__spreadArray([], fields, true), customValues, true);
+    var lowerValues = allValues.map(function (v) { return v.toLowerCase(); });
+    var q = query;
+    for (var _i = 0, lowerValues_1 = lowerValues; _i < lowerValues_1.length; _i++) {
+        var v = lowerValues_1[_i];
+        if (v === q)
+            score += 100;
+        else if (v.startsWith(q))
+            score += 50;
+        else if (v.indexOf(q) !== -1)
+            score += 10;
     }
     return score;
 }
@@ -690,15 +1050,24 @@ var Directory = function (_a) {
         setView(config.defaultView);
     }, [config.defaultView]);
     var filteredMembers = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(function () {
-        var result = members.filter(function (m) { return m.isVisible; });
+        var result = members.filter(function (m) { return m.isVisible && (m.givenName || m.surname); });
         if (searchQuery.trim()) {
             var query_1 = searchQuery.toLowerCase();
             result = result
                 .filter(function (m) {
-                return (m.displayName &&
-                    m.displayName.toLowerCase().indexOf(query_1) !== -1) ||
-                    (m.givenName && m.givenName.toLowerCase().indexOf(query_1) !== -1) ||
-                    (m.surname && m.surname.toLowerCase().indexOf(query_1) !== -1);
+                var fields = [
+                    m.displayName,
+                    m.givenName,
+                    m.surname,
+                    m.jobTitle,
+                    m.department,
+                    m.email,
+                    m.officeLocation,
+                    m.mobilePhone,
+                    m.managerDisplayName,
+                ];
+                var customValues = Object.values(m.customProperties || {});
+                return __spreadArray(__spreadArray([], fields, true), customValues, true).some(function (v) { return v && v.toLowerCase().indexOf(query_1) !== -1; });
             })
                 .sort(function (a, b) { return searchScore(b, query_1) - searchScore(a, query_1); });
         }
@@ -707,19 +1076,18 @@ var Directory = function (_a) {
                 var value = filterValues[filter.fieldName];
                 if (value) {
                     result = result.filter(function (m) {
-                        var fieldValue = m[filter.fieldName];
+                        var _a;
+                        var fieldValue = (_a = m[filter.fieldName]) !== null && _a !== void 0 ? _a : (m.customProperties && m.customProperties[filter.fieldName]);
                         return fieldValue === value;
                     });
                 }
             });
         }
         if (!searchQuery.trim()) {
-            result = __spreadArray([], result, true).sort(function (a, b) {
-                return (a.givenName || a.displayName || '').localeCompare(b.givenName || b.displayName || '', 'fr', { sensitivity: 'base' });
-            });
+            result = applySortOrder(__spreadArray([], result, true), config.sortOrder);
         }
         return result;
-    }, [members, searchQuery, filterValues, config.filters]);
+    }, [members, searchQuery, filterValues, config.filters, config.sortOrder]);
     var resultCount = filteredMembers.length;
     var handleFilterChange = function (fieldName, value) {
         setFilterValues(function (prev) {
@@ -739,8 +1107,8 @@ var Directory = function (_a) {
                 animation: 'spdir-fadein 0.18s ease',
             } },
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("style", null, "\n          @keyframes spdir-fadein {\n            from { opacity: 0; transform: translateY(6px); }\n            to   { opacity: 1; transform: translateY(0); }\n          }\n        "),
-            filteredMembers.length === 0 ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_EmptyState__WEBPACK_IMPORTED_MODULE_7__["default"], null)) : view === 'card' ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_cardView_CardView__WEBPACK_IMPORTED_MODULE_1__["default"], { members: filteredMembers, cardFields: config.cardFields, onMemberClick: setSelectedMember })) : (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_listView_ListView__WEBPACK_IMPORTED_MODULE_2__["default"], { members: filteredMembers, listFields: config.listFields, onMemberClick: setSelectedMember }))),
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_modal_MemberModal__WEBPACK_IMPORTED_MODULE_3__["default"], { member: selectedMember, modalFields: config.modalFields, onDismiss: function () { return setSelectedMember(null); } })));
+            filteredMembers.length === 0 ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_EmptyState__WEBPACK_IMPORTED_MODULE_7__["default"], null)) : view === 'card' ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_cardView_CardView__WEBPACK_IMPORTED_MODULE_1__["default"], { members: filteredMembers, cardFieldOrder: config.cardFieldOrder, onMemberClick: setSelectedMember })) : (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_listView_ListView__WEBPACK_IMPORTED_MODULE_2__["default"], { members: filteredMembers, listFieldOrder: config.listFieldOrder, listFieldLabels: config.listFieldLabels, onMemberClick: setSelectedMember }))),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_modal_MemberModal__WEBPACK_IMPORTED_MODULE_3__["default"], { member: selectedMember, members: members, modalFieldOrder: config.modalFieldOrder, modalFieldLabels: config.modalFieldLabels, onDismiss: function () { return setSelectedMember(null); }, onMemberClick: setSelectedMember })));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Directory);
 
@@ -758,18 +1126,20 @@ var Directory = function (_a) {
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fluentui/react/lib/Theme */ 3635);
+/* harmony import */ var _fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fluentui/react/lib/Theme */ 3635);
 /* harmony import */ var _hooks_usePagination__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../hooks/usePagination */ 8216);
-/* harmony import */ var _MemberCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MemberCard */ 7453);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../loc/mystrings */ 5126);
+/* harmony import */ var _MemberCard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./MemberCard */ 7453);
+
 
 
 
 
 var CardView = function (_a) {
     var _b;
-    var members = _a.members, cardFields = _a.cardFields, onMemberClick = _a.onMemberClick;
+    var members = _a.members, cardFieldOrder = _a.cardFieldOrder, onMemberClick = _a.onMemberClick;
     var _c = (0,_hooks_usePagination__WEBPACK_IMPORTED_MODULE_1__.usePagination)(members, 'card'), visibleItems = _c.visibleItems, hasMore = _c.hasMore, loadMore = _c.loadMore;
-    var theme = (0,_fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_3__.useTheme)();
+    var theme = (0,_fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_4__.useTheme)();
     var primaryColor = ((_b = theme === null || theme === void 0 ? void 0 : theme.palette) === null || _b === void 0 ? void 0 : _b.themePrimary) || '#1B7A6E';
     var _d = react__WEBPACK_IMPORTED_MODULE_0__.useState(false), loadMoreHovered = _d[0], setLoadMoreHovered = _d[1];
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { padding: '16px 24px 32px' } },
@@ -778,7 +1148,7 @@ var CardView = function (_a) {
                 gridTemplateColumns: 'repeat(auto-fill, minmax(282px, 1fr))',
                 gap: 16,
                 width: '100%',
-            } }, visibleItems.map(function (member) { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_MemberCard__WEBPACK_IMPORTED_MODULE_2__["default"], { key: member.id, member: member, cardFields: cardFields, onClick: onMemberClick })); })),
+            } }, visibleItems.map(function (member) { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_MemberCard__WEBPACK_IMPORTED_MODULE_3__["default"], { key: member.id, member: member, cardFieldOrder: cardFieldOrder, members: members, onClick: onMemberClick })); })),
         hasMore && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { display: 'flex', justifyContent: 'center', marginTop: 24 } },
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: loadMore, onMouseEnter: function () { return setLoadMoreHovered(true); }, onMouseLeave: function () { return setLoadMoreHovered(false); }, style: {
                     padding: '8px 24px',
@@ -795,7 +1165,7 @@ var CardView = function (_a) {
                 } },
                 react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "currentColor", "aria-hidden": "true" },
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M7 1a1 1 0 0 1 1 1v4h4a1 1 0 1 1 0 2H8v4a1 1 0 1 1-2 0V8H2a1 1 0 1 1 0-2h4V2a1 1 0 0 1 1-1z" })),
-                "Voir plus de collaborateurs")))));
+                _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.LoadMore)))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CardView);
 
@@ -813,13 +1183,15 @@ var CardView = function (_a) {
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fluentui/react/lib/Persona */ 7020);
-/* harmony import */ var _fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fluentui/react/lib/Theme */ 3635);
-/* harmony import */ var _utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../../utils/teamsDeepLink */ 5666);
-/* harmony import */ var _utils_formatUtils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../../utils/formatUtils */ 6612);
-/* harmony import */ var _shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/PersonaAvatar */ 9336);
-/* harmony import */ var _shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/TeamsIcon */ 5187);
-/* harmony import */ var _shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../shared/OutlookIcon */ 8094);
+/* harmony import */ var _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @fluentui/react/lib/Persona */ 7020);
+/* harmony import */ var _fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fluentui/react/lib/Theme */ 3635);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../loc/mystrings */ 5126);
+/* harmony import */ var _utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../../../utils/teamsDeepLink */ 5666);
+/* harmony import */ var _utils_formatUtils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../../utils/formatUtils */ 6612);
+/* harmony import */ var _shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/PersonaAvatar */ 9336);
+/* harmony import */ var _shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../shared/TeamsIcon */ 5187);
+/* harmony import */ var _shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../shared/OutlookIcon */ 8094);
+
 
 
 
@@ -830,32 +1202,93 @@ var CardView = function (_a) {
 
 var MemberCard = function (_a) {
     var _b;
-    var member = _a.member, cardFields = _a.cardFields, onClick = _a.onClick;
-    var theme = (0,_fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_4__.useTheme)();
-    var primaryColor = ((_b = theme === null || theme === void 0 ? void 0 : theme.palette) === null || _b === void 0 ? void 0 : _b.themePrimary) || '#1B7A6E';
+    var member = _a.member, cardFieldOrder = _a.cardFieldOrder, members = _a.members, onClick = _a.onClick;
     var fullName = "".concat(member.givenName || '', " ").concat(member.surname || '').trim() ||
         member.displayName;
-    var fieldValue = function (field) {
-        switch (field) {
-            case 'email':
-                return member.email;
-            case 'phone':
-                return member.mobilePhone;
-            case 'jobTitle':
-                return member.jobTitle;
-            case 'department':
-                return member.department;
-            case 'officeLocation':
-                return member.officeLocation;
-            case 'manager':
-                return member.managerDisplayName;
-            default:
-                return undefined;
+    var theme = (0,_fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_5__.useTheme)();
+    var primaryColor = ((_b = theme === null || theme === void 0 ? void 0 : theme.palette) === null || _b === void 0 ? void 0 : _b.themePrimary) || '#1B7A6E';
+    var showPhoto = cardFieldOrder.includes('photo');
+    var showName = cardFieldOrder.includes('name');
+    var showFirst = cardFieldOrder.includes('firstName');
+    // Only photo/name/firstName are structurally fixed at the card top.
+    // All other fields (including outlook/teams) respect the declared order.
+    var STRUCTURAL = new Set(['photo', 'name', 'firstName']);
+    var contentFields = cardFieldOrder.filter(function (k) { return !STRUCTURAL.has(k); });
+    var ICON_KEYS = new Set(['outlook', 'teams']);
+    var contentGroups = [];
+    for (var _i = 0, contentFields_1 = contentFields; _i < contentFields_1.length; _i++) {
+        var key = contentFields_1[_i];
+        if (ICON_KEYS.has(key)) {
+            var last = contentGroups[contentGroups.length - 1];
+            if (last && last.type === 'icons') {
+                last.keys.push(key);
+            }
+            else {
+                contentGroups.push({ type: 'icons', keys: [key] });
+            }
         }
+        else {
+            contentGroups.push({ type: 'text', key: key });
+        }
+    }
+    var renderField = function (key) {
+        var _a;
+        var STANDARD = {
+            email: function (m) { return m.email; },
+            phone: function (m) { return m.mobilePhone; },
+            jobTitle: function (m) { return m.jobTitle; },
+            department: function (m) { return m.department; },
+            officeLocation: function (m) { return m.officeLocation; },
+        };
+        if (key === 'manager') {
+            if (!member.managerDisplayName)
+                return null;
+            var managerMember_1 = member.managerId
+                ? members.find(function (m) { return m.id === member.managerId; })
+                : undefined;
+            return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null,
+                react__WEBPACK_IMPORTED_MODULE_0__.createElement("style", null, "\n            .spdir-mgr-link { display: inline-block; width: fit-content; position: relative; padding-bottom: 2px; }\n            .spdir-mgr-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: currentColor; transform-origin: right; transform: scaleX(0); transition: transform 0.3s ease; }\n            .spdir-mgr-link:hover::after { transform: scaleX(1); }\n          "),
+                react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { className: "spdir-mgr-link", style: {
+                        fontSize: 13,
+                        color: managerMember_1 ? primaryColor : '#605e5c',
+                        lineHeight: 1.4,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        cursor: managerMember_1 ? 'pointer' : 'default',
+                    }, onClick: managerMember_1
+                        ? function (e) {
+                            e.stopPropagation();
+                            onClick(managerMember_1);
+                        }
+                        : undefined, title: managerMember_1 ? _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ViewProfile : undefined }, member.managerDisplayName)));
+        }
+        if (STANDARD[key]) {
+            var val_1 = STANDARD[key](member);
+            if (!val_1)
+                return null;
+            return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: {
+                    fontSize: 13,
+                    color: '#605e5c',
+                    lineHeight: 1.4,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                } }, val_1));
+        }
+        // EntraID / custom
+        var val = (_a = member.customProperties) === null || _a === void 0 ? void 0 : _a[key];
+        if (!val)
+            return null;
+        return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: {
+                fontSize: 13,
+                color: '#605e5c',
+                lineHeight: 1.4,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+            } }, val));
     };
-    var textFields = cardFields.filter(function (f) {
-        return !['photo', 'name', 'firstName', 'outlook', 'teams'].includes(f) && fieldValue(f);
-    });
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: {
             background: '#ffffff',
             borderRadius: 12,
@@ -881,15 +1314,15 @@ var MemberCard = function (_a) {
             ;
             e.currentTarget.style.boxShadow =
                 '0 2px 8px rgba(0,0,0,0.08)';
-        }, "aria-label": "".concat(fullName, " - Cliquez pour les d\u00E9tails") },
-        cardFields.includes('photo') && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_1__["default"], { photoUrl: member.photoUrl, displayName: member.displayName, givenName: member.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_5__.PersonaSize.size100, coinSize: 80 })),
+        }, "aria-label": "".concat(fullName, " - ").concat(_loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ClickForDetails) },
+        showPhoto && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_2__["default"], { photoUrl: member.photoUrl, displayName: member.displayName, givenName: member.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_6__.PersonaSize.size100, coinSize: 80 })),
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 2,
                 minWidth: 0,
             } },
-            (cardFields.includes('name') || cardFields.includes('firstName')) && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: {
+            (showName || showFirst) && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: {
                     fontSize: 16,
                     fontWeight: 600,
                     color: '#201f1e',
@@ -898,23 +1331,36 @@ var MemberCard = function (_a) {
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                 } },
-                cardFields.includes('firstName') && member.givenName ? member.givenName : '',
-                cardFields.includes('name') && cardFields.includes('firstName') && member.givenName && member.surname ? ' ' : '',
-                cardFields.includes('name') && member.surname ? member.surname : '',
+                showFirst && member.givenName ? member.givenName : '',
+                showName && showFirst && member.givenName && member.surname
+                    ? ' '
+                    : '',
+                showName && member.surname ? member.surname : '',
                 !member.givenName && !member.surname ? fullName : '')),
-            textFields.map(function (field) { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { key: field, style: {
-                    fontSize: 13,
-                    color: '#605e5c',
-                    lineHeight: 1.4,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                } }, fieldValue(field))); }),
-            (member.email || member.teamsId) && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { display: 'flex', gap: 8, marginTop: 4 } },
-                member.email && cardFields.includes('outlook') && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("a", { href: (0,_utils_formatUtils__WEBPACK_IMPORTED_MODULE_6__.getMailtoLink)(member.email), title: "Envoyer un email", "aria-label": "Envoyer un email", onClick: function (e) { return e.stopPropagation(); }, style: { display: 'flex', alignItems: 'center' } },
-                    react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_3__["default"], { size: 20 }))),
-                member.teamsId && cardFields.includes('teams') && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("a", { href: (0,_utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_7__.getTeamsDeepLink)(member.teamsId), target: "_blank", rel: "noopener noreferrer", title: "Contacter via Teams", "aria-label": "Contacter via Teams", onClick: function (e) { return e.stopPropagation(); }, style: { display: 'flex', alignItems: 'center' } },
-                    react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_2__["default"], { size: 20 }))))))));
+            contentGroups.map(function (group, gi) {
+                if (group.type === 'icons') {
+                    var iconNodes = group.keys
+                        .map(function (k) {
+                        if (k === 'outlook' && member.email) {
+                            return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("a", { key: "outlook", href: (0,_utils_formatUtils__WEBPACK_IMPORTED_MODULE_7__.getMailtoLink)(member.email), target: "_blank", rel: "noopener noreferrer", title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.SendEmail, "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.SendEmail, onClick: function (e) { return e.stopPropagation(); }, style: { display: 'flex', alignItems: 'center' } },
+                                react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_4__["default"], { size: 20 })));
+                        }
+                        if (k === 'teams' && member.teamsId) {
+                            return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("a", { key: "teams", href: (0,_utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_8__.getTeamsDeepLink)(member.teamsId), target: "_blank", rel: "noopener noreferrer", title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ContactViaTeams, "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ContactViaTeams, onClick: function (e) { return e.stopPropagation(); }, style: { display: 'flex', alignItems: 'center' } },
+                                react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_3__["default"], { size: 20 })));
+                        }
+                        return null;
+                    })
+                        .filter(Boolean);
+                    if (iconNodes.length === 0)
+                        return null;
+                    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { key: "icons_".concat(gi), style: { display: 'flex', gap: 8, marginTop: 4 } }, iconNodes));
+                }
+                var node = renderField(group.key);
+                if (!node)
+                    return null;
+                return react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, { key: group.key }, node);
+            }))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MemberCard);
 
@@ -933,6 +1379,8 @@ var MemberCard = function (_a) {
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _services_CsvService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../services/CsvService */ 5717);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../loc/mystrings */ 5126);
+
 
 
 var CsvExport = function (_a) {
@@ -944,7 +1392,7 @@ var CsvExport = function (_a) {
         var date = new Date().toISOString().split('T')[0];
         csvService.exportToCsv(members, "annuaire-sharepoint-".concat(date, ".csv"));
     };
-    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: handleExport, disabled: disabled, title: "Exporter en CSV", onMouseEnter: function () { return !disabled && setHovered(true); }, onMouseLeave: function () { return setHovered(false); }, style: {
+    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: handleExport, disabled: disabled, title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.ExportCsv, onMouseEnter: function () { return !disabled && setHovered(true); }, onMouseLeave: function () { return setHovered(false); }, style: {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
@@ -966,7 +1414,7 @@ var CsvExport = function (_a) {
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M8 12.5a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 1 0v9a.5.5 0 0 1-.5.5z" }),
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M4.646 9.146a.5.5 0 0 1 .708 0L8 11.793l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z" }),
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M2 14a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-1a.5.5 0 0 0-1 0v1H3v-1a.5.5 0 0 0-1 0v1z" })),
-        "Exporter en CSV"));
+        _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.ExportCsv));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CsvExport);
 
@@ -984,14 +1432,16 @@ var CsvExport = function (_a) {
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @fluentui/react/lib/Persona */ 7020);
-/* harmony import */ var _fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fluentui/react/lib/Theme */ 3635);
-/* harmony import */ var _hooks_usePagination__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../hooks/usePagination */ 8216);
-/* harmony import */ var _utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../../../utils/teamsDeepLink */ 5666);
-/* harmony import */ var _utils_formatUtils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../../utils/formatUtils */ 6612);
-/* harmony import */ var _shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/PersonaAvatar */ 9336);
-/* harmony import */ var _shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../shared/TeamsIcon */ 5187);
-/* harmony import */ var _shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../shared/OutlookIcon */ 8094);
+/* harmony import */ var _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @fluentui/react/lib/Persona */ 7020);
+/* harmony import */ var _fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @fluentui/react/lib/Theme */ 3635);
+/* harmony import */ var _models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../models/DirectoryConfig */ 5930);
+/* harmony import */ var _hooks_usePagination__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../hooks/usePagination */ 8216);
+/* harmony import */ var _utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../../../utils/teamsDeepLink */ 5666);
+/* harmony import */ var _utils_formatUtils__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../../../utils/formatUtils */ 6612);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../loc/mystrings */ 5126);
+/* harmony import */ var _shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../shared/PersonaAvatar */ 9336);
+/* harmony import */ var _shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../shared/TeamsIcon */ 5187);
+/* harmony import */ var _shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../shared/OutlookIcon */ 8094);
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -1012,6 +1462,8 @@ var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+
+
 
 
 
@@ -1043,9 +1495,9 @@ var cellStyle = {
 };
 var ListView = function (_a) {
     var _b;
-    var members = _a.members, listFields = _a.listFields, onMemberClick = _a.onMemberClick;
-    var _c = (0,_hooks_usePagination__WEBPACK_IMPORTED_MODULE_1__.usePagination)(members, 'list'), visibleItems = _c.visibleItems, hasMore = _c.hasMore, loadMore = _c.loadMore;
-    var theme = (0,_fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_5__.useTheme)();
+    var members = _a.members, listFieldOrder = _a.listFieldOrder, listFieldLabels = _a.listFieldLabels, onMemberClick = _a.onMemberClick;
+    var _c = (0,_hooks_usePagination__WEBPACK_IMPORTED_MODULE_2__.usePagination)(members, 'list'), visibleItems = _c.visibleItems, hasMore = _c.hasMore, loadMore = _c.loadMore;
+    var theme = (0,_fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_7__.useTheme)();
     var primaryColor = ((_b = theme === null || theme === void 0 ? void 0 : theme.palette) === null || _b === void 0 ? void 0 : _b.themePrimary) || '#1B7A6E';
     var _d = react__WEBPACK_IMPORTED_MODULE_0__.useState(false), loadMoreHovered = _d[0], setLoadMoreHovered = _d[1];
     var _e = react__WEBPACK_IMPORTED_MODULE_0__.useState({
@@ -1053,14 +1505,186 @@ var ListView = function (_a) {
         descending: false,
     }), sortState = _e[0], setSortState = _e[1];
     var _f = react__WEBPACK_IMPORTED_MODULE_0__.useState(null), hoveredCol = _f[0], setHoveredCol = _f[1];
+    var columns = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(function () {
+        var cols = [];
+        var nameGroupAdded = false;
+        var showFirstName = listFieldOrder.includes('firstName');
+        var showLastName = listFieldOrder.includes('name');
+        var _loop_1 = function (key) {
+            switch (key) {
+                case 'photo':
+                    cols.push({
+                        key: 'photo',
+                        renderHeader: function () { return null; },
+                        renderCell: function (m) { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_4__["default"], { photoUrl: m.photoUrl, displayName: m.displayName, givenName: m.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_8__.PersonaSize.size32 })); },
+                        headerStyle: __assign(__assign({}, headerCellStyle), { cursor: 'default', width: 44, padding: '10px 0 10px 16px' }),
+                        cellStyle: __assign(__assign({}, cellStyle), { width: 44, padding: '10px 0 10px 16px' }),
+                    });
+                    break;
+                case 'name':
+                case 'firstName':
+                    if (!nameGroupAdded) {
+                        nameGroupAdded = true;
+                        cols.push({
+                            key: 'name_group',
+                            sortKey: 'displayName',
+                            renderHeader: function () {
+                                return listFieldLabels['name'] || _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.HeaderCollaborator;
+                            },
+                            renderCell: function (m) {
+                                var fullName = "".concat(m.givenName || '', " ").concat(m.surname || '').trim() ||
+                                    m.displayName;
+                                if (showFirstName && showLastName)
+                                    return react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontWeight: 500 } }, fullName);
+                                if (showFirstName)
+                                    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontWeight: 500 } }, m.givenName || ''));
+                                return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontWeight: 500 } }, m.surname || m.displayName));
+                            },
+                        });
+                    }
+                    break;
+                case 'jobTitle':
+                    cols.push({
+                        key: 'jobTitle',
+                        sortKey: 'jobTitle',
+                        renderHeader: function () {
+                            return listFieldLabels['jobTitle'] || _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.HeaderJobTitle;
+                        },
+                        renderCell: function (m) { return m.jobTitle || ''; },
+                    });
+                    break;
+                case 'email':
+                    cols.push({
+                        key: 'email',
+                        sortKey: 'email',
+                        renderHeader: function () { return listFieldLabels['email'] || _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.HeaderEmail; },
+                        renderCell: function (m) { return m.email || ''; },
+                    });
+                    break;
+                case 'phone':
+                    cols.push({
+                        key: 'phone',
+                        sortKey: 'mobilePhone',
+                        renderHeader: function () { return listFieldLabels['phone'] || _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.HeaderPhone; },
+                        renderCell: function (m) { return m.mobilePhone || ''; },
+                    });
+                    break;
+                case 'department':
+                    cols.push({
+                        key: 'department',
+                        sortKey: 'department',
+                        renderHeader: function () {
+                            return listFieldLabels['department'] || _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.HeaderDepartment;
+                        },
+                        renderCell: function (m) { return m.department || ''; },
+                    });
+                    break;
+                case 'officeLocation':
+                    cols.push({
+                        key: 'officeLocation',
+                        sortKey: 'officeLocation',
+                        renderHeader: function () {
+                            return listFieldLabels['officeLocation'] || _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.HeaderLocation;
+                        },
+                        renderCell: function (m) { return m.officeLocation || ''; },
+                    });
+                    break;
+                case 'manager':
+                    cols.push({
+                        key: 'manager',
+                        sortKey: 'managerDisplayName',
+                        renderHeader: function () { return _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.HeaderManager; },
+                        renderCell: function (m) {
+                            var mgr = m.managerId
+                                ? members.find(function (x) { return x.id === m.managerId; })
+                                : undefined;
+                            if (mgr) {
+                                return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { className: "spdir-mgr-link", style: { color: primaryColor, cursor: 'pointer' }, onClick: function (e) {
+                                        e.stopPropagation();
+                                        onMemberClick(mgr);
+                                    }, title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.ViewProfile }, m.managerDisplayName || ''));
+                            }
+                            return m.managerDisplayName || '';
+                        },
+                    });
+                    break;
+                case 'outlook':
+                    cols.push({
+                        key: 'outlook',
+                        renderHeader: function () { return null; },
+                        renderCell: function (m) {
+                            return m.email ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement("a", { href: (0,_utils_formatUtils__WEBPACK_IMPORTED_MODULE_9__.getMailtoLink)(m.email), target: "_blank", rel: "noopener noreferrer", title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.SendEmail, "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.SendEmail, onClick: function (e) { return e.stopPropagation(); }, style: { display: 'flex', alignItems: 'center' } },
+                                react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_6__["default"], { size: 20 }))) : null;
+                        },
+                        headerStyle: __assign(__assign({}, headerCellStyle), { cursor: 'default', width: 48 }),
+                        cellStyle: __assign(__assign({}, cellStyle), { padding: '10px 8px' }),
+                    });
+                    break;
+                case 'teams':
+                    cols.push({
+                        key: 'teams',
+                        renderHeader: function () { return null; },
+                        renderCell: function (m) {
+                            return m.teamsId ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { style: {
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    padding: 4,
+                                    borderRadius: 4,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                }, title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.ContactViaTeams, "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.ContactViaTeams, onClick: function (e) {
+                                    e.stopPropagation();
+                                    window.open((0,_utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_10__.getTeamsDeepLink)(m.teamsId), '_blank');
+                                } },
+                                react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_5__["default"], { size: 20 }))) : null;
+                        },
+                        headerStyle: __assign(__assign({}, headerCellStyle), { cursor: 'default', width: 48 }),
+                        cellStyle: __assign(__assign({}, cellStyle), { padding: '10px 8px' }),
+                    });
+                    break;
+                default: {
+                    // Custom / EntraID field
+                    var label_1 = listFieldLabels[key] || (0,_models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_1__.getEntraFieldLabel)(key);
+                    cols.push({
+                        key: key,
+                        sortKey: key,
+                        renderHeader: function () { return label_1; },
+                        renderCell: function (m) { var _a; return ((_a = m.customProperties) === null || _a === void 0 ? void 0 : _a[key]) || ''; },
+                    });
+                    break;
+                }
+            }
+        };
+        for (var _i = 0, listFieldOrder_1 = listFieldOrder; _i < listFieldOrder_1.length; _i++) {
+            var key = listFieldOrder_1[_i];
+            _loop_1(key);
+        }
+        return cols;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [listFieldOrder, listFieldLabels, members, primaryColor]);
+    // ── Sorting ───────────────────────────────────────────────────────────────
     var sorted = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(function () {
         var result = __spreadArray([], visibleItems, true);
-        var key = sortState.key, descending = sortState.descending;
         result.sort(function (a, b) {
-            var aVal = String(a[key] || '');
-            var bVal = String(b[key] || '');
+            var _a, _b;
+            var aVal;
+            var bVal;
+            var k = sortState.key;
+            if (k === 'displayName') {
+                aVal = "".concat(a.givenName || '', " ").concat(a.surname || '').trim() || a.displayName;
+                bVal = "".concat(b.givenName || '', " ").concat(b.surname || '').trim() || b.displayName;
+            }
+            else if (a[k] !== undefined) {
+                aVal = String(a[k] || '');
+                bVal = String(b[k] || '');
+            }
+            else {
+                aVal = ((_a = a.customProperties) === null || _a === void 0 ? void 0 : _a[k]) || '';
+                bVal = ((_b = b.customProperties) === null || _b === void 0 ? void 0 : _b[k]) || '';
+            }
             var cmp = aVal.localeCompare(bVal, 'fr', { sensitivity: 'base' });
-            return descending ? -cmp : cmp;
+            return sortState.descending ? -cmp : cmp;
         });
         return result;
     }, [visibleItems, sortState]);
@@ -1082,25 +1706,9 @@ var ListView = function (_a) {
                 opacity: isActive ? 0.8 : 0.4,
             } }, isActive ? (sortState.descending ? '↓' : '↑') : isHovered ? '↕' : ''));
     };
-    var sortableThProps = function (key) { return ({
-        style: __assign(__assign({}, headerCellStyle), { backgroundColor: hoveredCol === key ? '#eef0f4' : '#F8F9FB', transition: 'background-color 0.15s ease' }),
-        onClick: function () { return toggleSort(key); },
-        onMouseEnter: function () { return setHoveredCol(key); },
-        onMouseLeave: function () { return setHoveredCol(null); },
-    }); };
-    var showJobTitle = listFields.includes('jobTitle');
-    var showEmail = listFields.includes('email');
-    var showPhone = listFields.includes('phone');
-    var showDepartment = listFields.includes('department');
-    var showLocation = listFields.includes('officeLocation');
-    var showManager = listFields.includes('manager');
-    var showTeams = listFields.includes('teams');
-    var showOutlook = listFields.includes('outlook');
-    var showPhoto = listFields.includes('photo');
-    var showName = listFields.includes('name');
-    var showFirstName = listFields.includes('firstName');
-    var showCollaborateur = showPhoto || showName || showFirstName;
+    // ── Render ────────────────────────────────────────────────────────────────
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { padding: '8px 24px 32px' } },
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("style", null, "\n        .spdir-mgr-link {\n          display: inline-block;\n          width: fit-content;\n          position: relative;\n          padding-bottom: 2px;\n        }\n        .spdir-mgr-link::after {\n          content: '';\n          position: absolute;\n          bottom: 0; left: 0;\n          width: 100%; height: 1px;\n          background: currentColor;\n          transform-origin: right;\n          transform: scaleX(0);\n          transition: transform 0.3s ease;\n        }\n        .spdir-mgr-link:hover::after { transform: scaleX(1); }\n      "),
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { overflowX: 'auto' } },
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("table", { style: {
                     width: '100%',
@@ -1108,76 +1716,25 @@ var ListView = function (_a) {
                     backgroundColor: '#ffffff',
                 } },
                 react__WEBPACK_IMPORTED_MODULE_0__.createElement("thead", null,
-                    react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", null,
-                        showPhoto && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", { style: __assign(__assign({}, headerCellStyle), { cursor: 'default', width: 44, padding: '10px 0 10px 16px' }) })),
-                        (showName || showFirstName) && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", __assign({}, sortableThProps('displayName')),
-                            "Collaborateur ",
-                            sortIndicator('displayName'))),
-                        showJobTitle && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", __assign({}, sortableThProps('jobTitle')),
-                            "Poste ",
-                            sortIndicator('jobTitle'))),
-                        showEmail && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", __assign({}, sortableThProps('email')),
-                            "E-mail ",
-                            sortIndicator('email'))),
-                        showPhone && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", __assign({}, sortableThProps('mobilePhone')),
-                            "T\u00E9l\u00E9phone ",
-                            sortIndicator('mobilePhone'))),
-                        showDepartment && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", __assign({}, sortableThProps('department')),
-                            "D\u00E9partement ",
-                            sortIndicator('department'))),
-                        showLocation && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", __assign({}, sortableThProps('officeLocation')),
-                            "Localisation ",
-                            sortIndicator('officeLocation'))),
-                        showManager && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", __assign({}, sortableThProps('managerDisplayName')),
-                            "Manager ",
-                            sortIndicator('managerDisplayName'))),
-                        showOutlook && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", { style: __assign(__assign({}, headerCellStyle), { cursor: 'default', width: 48 }) })),
-                        showTeams && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", { style: __assign(__assign({}, headerCellStyle), { cursor: 'default', width: 48 }) })))),
-                react__WEBPACK_IMPORTED_MODULE_0__.createElement("tbody", null, sorted.map(function (member) {
-                    var fullName = "".concat(member.givenName || '', " ").concat(member.surname || '').trim() ||
-                        member.displayName;
-                    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", { key: member.id, onClick: function () { return onMemberClick(member); }, style: {
-                            cursor: 'pointer',
-                            borderBottom: '1px solid #f3f2f1',
-                        }, onMouseEnter: function (e) {
-                            ;
-                            e.currentTarget.style.backgroundColor =
-                                '#faf9f8';
-                        }, onMouseLeave: function (e) {
-                            ;
-                            e.currentTarget.style.backgroundColor =
-                                'transparent';
-                        } },
-                        showPhoto && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: __assign(__assign({}, cellStyle), { width: 44, padding: '10px 0 10px 16px' }) },
-                            react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_2__["default"], { photoUrl: member.photoUrl, displayName: member.displayName, givenName: member.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_6__.PersonaSize.size32 }))),
-                        (showName || showFirstName) && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: cellStyle },
-                            react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontWeight: 500 } }, showFirstName && showName
-                                ? fullName
-                                : showFirstName
-                                    ? member.givenName || ''
-                                    : "".concat(member.surname || member.displayName)))),
-                        showJobTitle && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: cellStyle }, member.jobTitle || '')),
-                        showEmail && react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: cellStyle }, member.email || ''),
-                        showPhone && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: cellStyle }, member.mobilePhone || '')),
-                        showDepartment && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: cellStyle }, member.department || '')),
-                        showLocation && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: cellStyle }, member.officeLocation || '')),
-                        showManager && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: cellStyle }, member.managerDisplayName || '')),
-                        showOutlook && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: __assign(__assign({}, cellStyle), { padding: '10px 8px' }) }, member.email && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("a", { href: (0,_utils_formatUtils__WEBPACK_IMPORTED_MODULE_7__.getMailtoLink)(member.email), title: "Envoyer un email", "aria-label": "Envoyer un email", onClick: function (e) { return e.stopPropagation(); }, style: { display: 'flex', alignItems: 'center' } },
-                            react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_4__["default"], { size: 20 }))))),
-                        showTeams && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { style: __assign(__assign({}, cellStyle), { padding: '10px 8px' }) }, member.teamsId && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { style: {
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                padding: 4,
-                                borderRadius: 4,
-                                display: 'flex',
-                                alignItems: 'center',
-                            }, title: "Contacter via Teams", "aria-label": "Contacter via Teams", onClick: function (e) {
-                                e.stopPropagation();
-                                window.open((0,_utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_8__.getTeamsDeepLink)(member.teamsId), '_blank');
-                            } },
-                            react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_3__["default"], { size: 20 })))))));
-                })))),
+                    react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", null, columns.map(function (col) {
+                        var header = col.renderHeader();
+                        if (!col.sortKey || !header) {
+                            return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", { key: col.key, style: col.headerStyle || headerCellStyle }, header));
+                        }
+                        var sk = col.sortKey;
+                        return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", { key: col.key, style: __assign(__assign({}, (col.headerStyle || headerCellStyle)), { backgroundColor: hoveredCol === sk ? '#eef0f4' : '#F8F9FB', transition: 'background-color 0.15s ease' }), onClick: function () { return toggleSort(sk); }, onMouseEnter: function () { return setHoveredCol(sk); }, onMouseLeave: function () { return setHoveredCol(null); } },
+                            header,
+                            sortIndicator(sk)));
+                    }))),
+                react__WEBPACK_IMPORTED_MODULE_0__.createElement("tbody", null, sorted.map(function (member) { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", { key: member.id, onClick: function () { return onMemberClick(member); }, style: { cursor: 'pointer', borderBottom: '1px solid #f3f2f1' }, onMouseEnter: function (e) {
+                        ;
+                        e.currentTarget.style.backgroundColor =
+                            '#faf9f8';
+                    }, onMouseLeave: function (e) {
+                        ;
+                        e.currentTarget.style.backgroundColor =
+                            'transparent';
+                    } }, columns.map(function (col) { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("td", { key: col.key, style: col.cellStyle || cellStyle }, col.renderCell(member))); }))); })))),
         hasMore && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { display: 'flex', justifyContent: 'center', marginTop: 24 } },
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: loadMore, onMouseEnter: function () { return setLoadMoreHovered(true); }, onMouseLeave: function () { return setLoadMoreHovered(false); }, style: {
                     padding: '8px 24px',
@@ -1194,7 +1751,7 @@ var ListView = function (_a) {
                 } },
                 react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "14", height: "14", viewBox: "0 0 14 14", fill: "currentColor", "aria-hidden": "true" },
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M7 1a1 1 0 0 1 1 1v4h4a1 1 0 1 1 0 2H8v4a1 1 0 1 1-2 0V8H2a1 1 0 1 1 0-2h4V2a1 1 0 0 1 1-1z" })),
-                "Voir plus de collaborateurs")))));
+                _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.LoadMore)))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ListView);
 
@@ -1212,14 +1769,18 @@ var ListView = function (_a) {
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _fluentui_react_lib_Modal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @fluentui/react/lib/Modal */ 5736);
-/* harmony import */ var _fluentui_react_lib_Icon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fluentui/react/lib/Icon */ 3257);
-/* harmony import */ var _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @fluentui/react/lib/Persona */ 7020);
-/* harmony import */ var _utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../../../utils/teamsDeepLink */ 5666);
-/* harmony import */ var _utils_formatUtils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../../utils/formatUtils */ 6612);
-/* harmony import */ var _shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/PersonaAvatar */ 9336);
-/* harmony import */ var _shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/TeamsIcon */ 5187);
-/* harmony import */ var _shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../shared/OutlookIcon */ 8094);
+/* harmony import */ var _fluentui_react_lib_Modal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @fluentui/react/lib/Modal */ 5736);
+/* harmony import */ var _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @fluentui/react/lib/Persona */ 7020);
+/* harmony import */ var _fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @fluentui/react/lib/Theme */ 3635);
+/* harmony import */ var _models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../models/DirectoryConfig */ 5930);
+/* harmony import */ var _utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../../../utils/teamsDeepLink */ 5666);
+/* harmony import */ var _utils_formatUtils__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../../../utils/formatUtils */ 6612);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../loc/mystrings */ 5126);
+/* harmony import */ var _shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../shared/PersonaAvatar */ 9336);
+/* harmony import */ var _shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../shared/TeamsIcon */ 5187);
+/* harmony import */ var _shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../shared/OutlookIcon */ 8094);
+
+
 
 
 
@@ -1235,24 +1796,66 @@ var Divider = function () { return (react__WEBPACK_IMPORTED_MODULE_0__.createEle
         margin: '12px 0',
         width: '100%',
     } })); };
-var FieldIcon = function (_a) {
-    var name = _a.name;
-    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Icon__WEBPACK_IMPORTED_MODULE_4__.Icon, { iconName: name, styles: { root: { color: '#605e5c', fontSize: 16 } } }));
+/** Uniform label+value row used for every detail field */
+var FieldRow = function (_a) {
+    var label = _a.label, value = _a.value, link = _a.link;
+    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { display: 'flex', flexDirection: 'column', gap: 2 } },
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontSize: 12, color: '#a19f9d' } }, label),
+        link ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement("a", { href: link, target: "_blank", rel: "noopener noreferrer", style: { fontSize: 14, color: '#201f1e', textDecoration: 'none' }, onClick: function (e) { return e.stopPropagation(); } }, value)) : (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontSize: 14, color: '#201f1e' } }, value))));
 };
 var MemberModal = function (_a) {
-    var member = _a.member, modalFields = _a.modalFields, onDismiss = _a.onDismiss;
+    var _b;
+    var member = _a.member, members = _a.members, modalFieldOrder = _a.modalFieldOrder, modalFieldLabels = _a.modalFieldLabels, onDismiss = _a.onDismiss, onMemberClick = _a.onMemberClick;
+    var theme = (0,_fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_6__.useTheme)();
+    var primaryColor = ((_b = theme === null || theme === void 0 ? void 0 : theme.palette) === null || _b === void 0 ? void 0 : _b.themePrimary) || '#1B7A6E';
     if (!member)
         return null;
     var fullName = "".concat(member.givenName || '', " ").concat(member.surname || '').trim() ||
         member.displayName;
-    var hasDetailFields = (modalFields.includes('email') && !!member.email) ||
-        (modalFields.includes('phone') && !!member.mobilePhone) ||
-        (modalFields.includes('department') && !!member.department) ||
-        (modalFields.includes('officeLocation') && !!member.officeLocation) ||
-        (modalFields.includes('manager') && !!member.managerDisplayName);
-    var hasActionButtons = (modalFields.includes('outlook') && !!member.email) ||
-        (modalFields.includes('teams') && !!member.teamsId);
-    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Modal__WEBPACK_IMPORTED_MODULE_5__.Modal, { isOpen: !!member, onDismiss: onDismiss, isBlocking: false, styles: {
+    var managerMember = member.managerId
+        ? members.find(function (m) { return m.id === member.managerId; })
+        : undefined;
+    // Fields shown in the fixed header (position-based, not ordered)
+    var showPhoto = modalFieldOrder.includes('photo');
+    var showName = modalFieldOrder.includes('name') || modalFieldOrder.includes('firstName');
+    var showFirstName = modalFieldOrder.includes('firstName');
+    var showLastName = modalFieldOrder.includes('name');
+    // Detail fields: everything except photo / name / firstName (rendered in declared order)
+    var HEADER = new Set(['photo', 'name', 'firstName']);
+    var detailFields = modalFieldOrder.filter(function (k) { return !HEADER.has(k); });
+    var DETAIL_FIELDS = new Set([
+        'jobTitle',
+        'email',
+        'phone',
+        'department',
+        'officeLocation',
+        'manager',
+    ]);
+    var ACTION_FIELDS = new Set(['outlook', 'teams']);
+    var hasDetailSection = detailFields.some(function (k) {
+        var _a;
+        if (ACTION_FIELDS.has(k))
+            return false;
+        switch (k) {
+            case 'email':
+                return !!member.email;
+            case 'phone':
+                return !!member.mobilePhone;
+            case 'department':
+                return !!member.department;
+            case 'officeLocation':
+                return !!member.officeLocation;
+            case 'manager':
+                return !!member.managerDisplayName;
+            case 'jobTitle':
+                return !!member.jobTitle;
+            default:
+                return !!((_a = member.customProperties) === null || _a === void 0 ? void 0 : _a[k]);
+        }
+    });
+    var hasActionButtons = (detailFields.includes('outlook') && !!member.email) ||
+        (detailFields.includes('teams') && !!member.teamsId);
+    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Modal__WEBPACK_IMPORTED_MODULE_7__.Modal, { isOpen: !!member, onDismiss: onDismiss, isBlocking: false, styles: {
             main: {
                 maxWidth: 480,
                 minWidth: 340,
@@ -1269,8 +1872,8 @@ var MemberModal = function (_a) {
                 alignItems: 'center',
                 animation: 'spdir-modal-in 0.2s ease',
             } },
-            react__WEBPACK_IMPORTED_MODULE_0__.createElement("style", null, "\n          @keyframes spdir-modal-in {\n            from { opacity: 0; }\n            to   { opacity: 1; }\n          }\n        "),
-            react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: onDismiss, "aria-label": "Fermer", style: {
+            react__WEBPACK_IMPORTED_MODULE_0__.createElement("style", null, "\n          @keyframes spdir-modal-in {\n            from { opacity: 0; }\n            to   { opacity: 1; }\n          }\n          .spdir-mgr-link {\n            display: inline-block;\n            width: fit-content;\n            align-self: flex-start;\n            position: relative;\n            padding-bottom: 2px;\n          }\n          .spdir-mgr-link::after {\n            content: '';\n            position: absolute;\n            bottom: 0;\n            left: 0;\n            width: 100%;\n            height: 1px;\n            background: currentColor;\n            transform-origin: right;\n            transform: scaleX(0);\n            transition: transform 0.3s ease;\n          }\n          .spdir-mgr-link:hover::after {\n            transform: scaleX(1);\n          }\n        "),
+            react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: onDismiss, "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.CloseModal, style: {
                     position: 'absolute',
                     top: 12,
                     right: 12,
@@ -1286,53 +1889,71 @@ var MemberModal = function (_a) {
                 } },
                 react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "currentColor", "aria-hidden": "true" },
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M.293.293a1 1 0 0 1 1.414 0L6 4.586 10.293.293a1 1 0 1 1 1.414 1.414L7.414 6l4.293 4.293a1 1 0 0 1-1.414 1.414L6 7.414l-4.293 4.293A1 1 0 0 1 .293 10.707L4.586 6 .293 1.707A1 1 0 0 1 .293.293Z" }))),
-            modalFields.includes('photo') && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_1__["default"], { photoUrl: member.photoUrl, displayName: member.displayName, givenName: member.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_6__.PersonaSize.size100, coinSize: 80, imageShouldFadeIn: false })),
-            (modalFields.includes('name') ||
-                modalFields.includes('firstName')) && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("h2", { style: {
+            showPhoto && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_3__["default"], { photoUrl: member.photoUrl, displayName: member.displayName, givenName: member.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_8__.PersonaSize.size100, coinSize: 80, imageShouldFadeIn: false })),
+            showName && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("h2", { style: {
                     margin: '16px 0 4px',
                     fontSize: 20,
                     fontWeight: 600,
                     color: '#201f1e',
                     textAlign: 'center',
-                } }, fullName)),
-            modalFields.includes('jobTitle') && member.jobTitle && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("p", { style: {
-                    margin: '0 0 4px',
-                    fontSize: 14,
-                    color: '#605e5c',
-                    textAlign: 'center',
-                } }, member.jobTitle)),
-            modalFields.includes('officeLocation') && member.officeLocation && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: {
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    marginBottom: 4,
                 } },
-                react__WEBPACK_IMPORTED_MODULE_0__.createElement(FieldIcon, { name: "MapPin" }),
-                react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontSize: 13, color: '#605e5c' } }, member.officeLocation))),
-            hasDetailFields && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null,
+                showFirstName && member.givenName ? member.givenName : '',
+                showFirstName && showLastName && member.givenName && member.surname
+                    ? ' '
+                    : '',
+                showLastName && member.surname ? member.surname : '',
+                !member.givenName && !member.surname ? fullName : '')),
+            hasDetailSection && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null,
                 react__WEBPACK_IMPORTED_MODULE_0__.createElement(Divider, null),
                 react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: {
                         width: '100%',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 12,
-                    } },
-                    modalFields.includes('email') && member.email && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { display: 'flex', alignItems: 'center', gap: 10 } },
-                        react__WEBPACK_IMPORTED_MODULE_0__.createElement(FieldIcon, { name: "Mail" }),
-                        react__WEBPACK_IMPORTED_MODULE_0__.createElement("a", { href: (0,_utils_formatUtils__WEBPACK_IMPORTED_MODULE_7__.getMailtoLink)(member.email), style: {
-                                fontSize: 14,
-                                color: '#201f1e',
-                                textDecoration: 'none',
-                            }, onClick: function (e) { return e.stopPropagation(); } }, member.email))),
-                    modalFields.includes('phone') && member.mobilePhone && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { display: 'flex', alignItems: 'center', gap: 10 } },
-                        react__WEBPACK_IMPORTED_MODULE_0__.createElement(FieldIcon, { name: "Phone" }),
-                        react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontSize: 14, color: '#201f1e' } }, member.mobilePhone))),
-                    modalFields.includes('department') && member.department && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { display: 'flex', alignItems: 'center', gap: 10 } },
-                        react__WEBPACK_IMPORTED_MODULE_0__.createElement(FieldIcon, { name: "Org" }),
-                        react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontSize: 14, color: '#201f1e' } }, member.department))),
-                    modalFields.includes('manager') && member.managerDisplayName && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { display: 'flex', alignItems: 'center', gap: 10 } },
-                        react__WEBPACK_IMPORTED_MODULE_0__.createElement(FieldIcon, { name: "Contact" }),
-                        react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontSize: 14, color: '#201f1e' } }, member.managerDisplayName)))))),
+                    } }, detailFields.map(function (key) {
+                    var _a;
+                    if (ACTION_FIELDS.has(key))
+                        return null;
+                    switch (key) {
+                        case 'jobTitle':
+                            return member.jobTitle ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(FieldRow, { key: key, label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.FieldJobTitle, value: member.jobTitle })) : null;
+                        case 'email':
+                            return member.email ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(FieldRow, { key: key, label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.FieldEmail, value: member.email, link: (0,_utils_formatUtils__WEBPACK_IMPORTED_MODULE_9__.getMailtoLink)(member.email) })) : null;
+                        case 'phone':
+                            return member.mobilePhone ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(FieldRow, { key: key, label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.FieldPhone, value: member.mobilePhone })) : null;
+                        case 'department':
+                            return member.department ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(FieldRow, { key: key, label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.LabelDepartment, value: member.department })) : null;
+                        case 'officeLocation':
+                            return member.officeLocation ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(FieldRow, { key: key, label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.LabelLocation, value: member.officeLocation })) : null;
+                        case 'manager':
+                            return member.managerDisplayName ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { key: key, style: {
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 2,
+                                } },
+                                react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: {
+                                        fontSize: 12,
+                                        color: '#a19f9d',
+                                        marginBottom: 4,
+                                    } }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.LabelManager),
+                                managerMember ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { className: "spdir-mgr-link", style: {
+                                        fontSize: 14,
+                                        color: primaryColor,
+                                        cursor: 'pointer',
+                                    }, onClick: function (e) {
+                                        e.stopPropagation();
+                                        onDismiss();
+                                        setTimeout(function () { return onMemberClick(managerMember); }, 100);
+                                    } }, member.managerDisplayName)) : (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontSize: 14, color: '#201f1e' } }, member.managerDisplayName)))) : null;
+                        default: {
+                            var val = (_a = member.customProperties) === null || _a === void 0 ? void 0 : _a[key];
+                            if (!val)
+                                return null;
+                            var label = modalFieldLabels[key] || (0,_models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_1__.getEntraFieldLabel)(key);
+                            return react__WEBPACK_IMPORTED_MODULE_0__.createElement(FieldRow, { key: key, label: label, value: val });
+                        }
+                    }
+                })))),
             hasActionButtons && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: {
                     width: '100%',
                     display: 'flex',
@@ -1340,8 +1961,8 @@ var MemberModal = function (_a) {
                     gap: 10,
                     marginTop: 16,
                 } },
-                modalFields.includes('teams') && member.teamsId && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: function () {
-                        return window.open((0,_utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_8__.getTeamsDeepLink)(member.teamsId), '_blank');
+                detailFields.includes('teams') && member.teamsId && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: function () {
+                        return window.open((0,_utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_10__.getTeamsDeepLink)(member.teamsId), '_blank');
                     }, onMouseEnter: function (e) {
                         e.currentTarget.style.backgroundColor = '#f3f4f6';
                     }, onMouseLeave: function (e) {
@@ -1354,18 +1975,18 @@ var MemberModal = function (_a) {
                         gap: 10,
                         padding: '12px 20px',
                         borderRadius: 30,
-                        border: '1.5px solid #0099a4',
+                        border: '1.5px solid #6264A7',
                         background: 'transparent',
-                        color: '#0099a4',
+                        color: '#6264A7',
                         fontSize: 15,
                         fontWeight: 500,
                         cursor: 'pointer',
                         transition: 'background-color 0.15s ease',
                     } },
-                    react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_2__["default"], { size: 20 }),
-                    "Contacter via Teams")),
-                modalFields.includes('outlook') && member.email && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: function () {
-                        return window.open((0,_utils_formatUtils__WEBPACK_IMPORTED_MODULE_7__.getMailtoLink)(member.email), '_blank');
+                    react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_4__["default"], { size: 20 }),
+                    _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.ContactViaTeams)),
+                detailFields.includes('outlook') && member.email && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: function () {
+                        return window.open((0,_utils_formatUtils__WEBPACK_IMPORTED_MODULE_9__.getMailtoLink)(member.email), '_blank');
                     }, onMouseEnter: function (e) {
                         e.currentTarget.style.backgroundColor = '#f3f4f6';
                     }, onMouseLeave: function (e) {
@@ -1386,10 +2007,479 @@ var MemberModal = function (_a) {
                         cursor: 'pointer',
                         transition: 'background-color 0.15s ease',
                     } },
-                    react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_3__["default"], { size: 20 }),
-                    "Envoyer un email")))))));
+                    react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_5__["default"], { size: 20 }),
+                    _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.SendEmail)))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MemberModal);
+
+
+/***/ }),
+
+/***/ 1115:
+/*!**************************************************************************************!*\
+  !*** ./lib/webparts/sharepointDirectory/components/propertyPane/DnDFieldSelector.js ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../loc/mystrings */ 5126);
+/* harmony import */ var _models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../models/DirectoryConfig */ 5930);
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+
+
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+var LOCKED_ORDER = ['photo', 'firstName', 'name'];
+/** Fields that cannot be reordered and whose labels cannot be customized — applies to all views */
+var LOCKED_KEYS = new Set(LOCKED_ORDER);
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function parseLabels(json) {
+    try {
+        return JSON.parse(json) || {};
+    }
+    catch (_a) {
+        return {};
+    }
+}
+function defaultLabel(key) {
+    switch (key) {
+        case 'photo':
+            return _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldPhoto;
+        case 'name':
+            return _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldName;
+        case 'firstName':
+            return _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldFirstName;
+        case 'email':
+            return _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldEmail;
+        case 'phone':
+            return _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldPhone;
+        case 'jobTitle':
+            return _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldJobTitle;
+        case 'department':
+            return _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldDepartment;
+        case 'officeLocation':
+            return _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldOfficeLocation;
+        case 'manager':
+            return _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldManager;
+        case 'outlook':
+            return _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldOutlook;
+        case 'teams':
+            return _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldTeams;
+        default:
+            return (0,_models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_2__.getEntraFieldLabel)(key);
+    }
+}
+/** Ensure locked fields (photo, firstName, name) always come first in their predefined order */
+function reorderWithLockedPrefix(keys) {
+    var locked = LOCKED_ORDER.filter(function (k) { return keys.includes(k); });
+    var rest = keys.filter(function (k) { return !LOCKED_KEYS.has(k); });
+    return __spreadArray(__spreadArray([], locked, true), rest, true);
+}
+// ─── Style factory (dynamic — depends on primaryColor) ────────────────────────
+function createStyles(primary) {
+    return {
+        root: { fontSize: 13, padding: '4px 0' },
+        sectionLabel: {
+            display: 'block',
+            fontSize: 12,
+            fontWeight: 600,
+            color: '#323130',
+            marginBottom: 4,
+        },
+        // ── Fluent UI dropdown trigger ──────────────────────────────────────────
+        selectTrigger: function (open) { return ({
+            height: 32,
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 30px 0 8px',
+            appearance: 'none',
+            WebkitAppearance: 'none',
+            borderRadius: 'var(--borderRadiusMedium, 4px)',
+            border: '1px solid var(--colorNeutralStroke1, #d1d1d1)',
+            borderBottom: open
+                ? "2px solid ".concat(primary)
+                : "1px solid var(--colorNeutralStrokeAccessiblePressed, #616161)",
+            background: open ? '#f3f2f1' : '#ffffff',
+            fontSize: 14,
+            fontFamily: '"Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif',
+            fontWeight: 400,
+            color: '#323130',
+            cursor: 'pointer',
+            textAlign: 'left',
+            boxSizing: 'border-box',
+            outline: 'none',
+        }); },
+        dropdownPanel: {
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            right: 0,
+            zIndex: 9999,
+            background: '#ffffff',
+            border: '1px solid #c7c9cc',
+            borderRadius: 2,
+            maxHeight: 300,
+            overflowY: 'auto',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+        },
+        groupHeader: {
+            fontSize: 11,
+            fontWeight: 700,
+            color: '#a19f9d',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            padding: '8px 8px 3px',
+            background: '#faf9f8',
+            borderBottom: '1px solid #f3f2f1',
+            position: 'sticky',
+            top: 0,
+            zIndex: 1,
+        },
+        checkItem: function (checked, hovered) { return ({
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '0 8px',
+            height: 36,
+            cursor: 'pointer',
+            background: hovered ? '#f3f2f1' : 'transparent',
+            userSelect: 'none',
+            color: '#201f1e',
+            fontSize: 14,
+        }); },
+        checkBox: function (checked) { return ({
+            width: 16,
+            height: 16,
+            border: checked ? "2px solid ".concat(primary) : '1.5px solid #8a8886',
+            borderRadius: 2,
+            background: checked ? primary : '#fff',
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        }); },
+        // ── DnD ordered list ──────────────────────────────────────────────────
+        divider: {
+            height: 1,
+            background: '#edebe9',
+            margin: '12px 0 8px',
+        },
+        dragRow: function (isDragging, isDragOver) { return ({
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 8,
+            padding: '6px 8px',
+            marginBottom: 4,
+            background: isDragOver ? '#f0f6ff' : isDragging ? '#f3f2f1' : '#faf9f8',
+            border: isDragOver ? "1.5px dashed ".concat(primary) : '1px solid #edebe9',
+            borderRadius: 4,
+            opacity: isDragging ? 0.5 : 1,
+            transition: 'background 0.1s, border 0.1s',
+        }); },
+        lockedRow: {
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 8,
+            padding: '6px 8px',
+            marginBottom: 4,
+            background: '#faf9f8',
+            border: '1px solid #edebe9',
+            borderRadius: 4,
+            opacity: 0.7,
+        },
+        handle: {
+            color: '#c8c6c4',
+            cursor: 'grab',
+            userSelect: 'none',
+            flexShrink: 0,
+            paddingTop: 2,
+        },
+        handleLocked: {
+            color: '#e1dfdd',
+            cursor: 'default',
+            userSelect: 'none',
+            flexShrink: 0,
+            paddingTop: 2,
+        },
+        fieldLabel: {
+            flex: 1,
+            fontSize: 13,
+            color: '#201f1e',
+            paddingTop: 1,
+        },
+        labelRow: {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4,
+            marginTop: 6,
+        },
+        labelCaption: {
+            fontSize: 11,
+            fontWeight: 600,
+            color: '#605e5c',
+            marginBottom: 2,
+        },
+        labelInput: {
+            width: '100%',
+            height: 28,
+            fontSize: 13,
+            padding: '0 6px',
+            border: '1px solid #8a8886',
+            borderRadius: 2,
+            color: '#201f1e',
+            background: '#fff',
+            boxSizing: 'border-box',
+            outline: 'none',
+        },
+        lockedLabel: {
+            fontSize: 13,
+            color: '#605e5c',
+            padding: '4px 6px',
+            background: '#f3f2f1',
+            borderRadius: 2,
+            userSelect: 'none',
+        },
+        removeBtn: {
+            background: 'none',
+            border: 'none',
+            padding: '2px 4px',
+            cursor: 'pointer',
+            color: '#a19f9d',
+            fontSize: 16,
+            lineHeight: '1',
+            flexShrink: 0,
+        },
+        hint: {
+            fontSize: 11,
+            color: '#a19f9d',
+            marginBottom: 6,
+        },
+    };
+}
+// ─── Main component ──────────────────────────────────────────────────────────
+var DnDFieldSelector = function (_a) {
+    var view = _a.view, initialKeys = _a.selectedKeys, initialLabelsJson = _a.labelsJson, detectedExtAttrs = _a.detectedExtAttrs, primaryColor = _a.primaryColor, onUpdateKeys = _a.onUpdateKeys, onUpdateLabels = _a.onUpdateLabels;
+    var S = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(function () { return createStyles(primaryColor); }, [primaryColor]);
+    // ── Inner sub‑components (closed over S) ────────────────────────────────
+    var DragHandle = function () { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "10", height: "16", viewBox: "0 0 10 16", fill: "#c8c6c4", style: S.handle, "aria-hidden": true },
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "3", cy: "3", r: "1.5" }),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "7", cy: "3", r: "1.5" }),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "3", cy: "8", r: "1.5" }),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "7", cy: "8", r: "1.5" }),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "3", cy: "13", r: "1.5" }),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "7", cy: "13", r: "1.5" }))); };
+    var CheckItem = function (_a) {
+        var label = _a.label, checked = _a.checked, onToggle = _a.onToggle;
+        var _b = react__WEBPACK_IMPORTED_MODULE_0__.useState(false), hovered = _b[0], setHovered = _b[1];
+        return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.checkItem(checked, hovered), onClick: onToggle, onMouseEnter: function () { return setHovered(true); }, onMouseLeave: function () { return setHovered(false); }, role: "checkbox", "aria-checked": checked, tabIndex: 0, onKeyDown: function (e) {
+                if (e.key === ' ' || e.key === 'Enter') {
+                    e.preventDefault();
+                    onToggle();
+                }
+            } },
+            react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.checkBox(checked) }, checked && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "10", height: "8", viewBox: "0 0 10 8", fill: "#fff", "aria-hidden": true },
+                react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M1 3.5L4 6.5L9 1", stroke: "#fff", strokeWidth: "1.5", fill: "none", strokeLinecap: "round", strokeLinejoin: "round" })))),
+            react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", null, label)));
+    };
+    var _b = react__WEBPACK_IMPORTED_MODULE_0__.useState(function () {
+        return reorderWithLockedPrefix(initialKeys);
+    }), keys = _b[0], setKeys = _b[1];
+    var _c = react__WEBPACK_IMPORTED_MODULE_0__.useState(function () { return parseLabels(initialLabelsJson); }), labels = _c[0], setLabels = _c[1];
+    var _d = react__WEBPACK_IMPORTED_MODULE_0__.useState(false), dropdownOpen = _d[0], setDropdownOpen = _d[1];
+    var dropdownRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef(null);
+    // Drag state — indices are relative to draggableKeys only
+    var dragFromRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef(null);
+    var _e = react__WEBPACK_IMPORTED_MODULE_0__.useState(null), dragOver = _e[0], setDragOver = _e[1];
+    var _f = react__WEBPACK_IMPORTED_MODULE_0__.useState(null), dragging = _f[0], setDragging = _f[1];
+    var groups = (0,_models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_2__.getAvailableEntraIdFieldGroups)();
+    var isSelected = function (k) { return keys.includes(k); };
+    var lockedCount = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(function () { return LOCKED_ORDER.filter(function (k) { return keys.includes(k); }).length; }, [keys]);
+    var draggableKeys = keys;
+    // Close dropdown on outside click
+    react__WEBPACK_IMPORTED_MODULE_0__.useEffect(function () {
+        if (!dropdownOpen)
+            return;
+        var handler = function (e) {
+            if (dropdownRef.current &&
+                !dropdownRef.current.contains(e.target)) {
+                setDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        return function () { return document.removeEventListener('mousedown', handler); };
+    }, [dropdownOpen]);
+    // ── Toggle ────────────────────────────────────────────────────────────────
+    var toggle = function (k) {
+        var removing = isSelected(k);
+        var newKeys = removing
+            ? reorderWithLockedPrefix(keys.filter(function (x) { return x !== k; }))
+            : reorderWithLockedPrefix(__spreadArray(__spreadArray([], keys, true), [k], false));
+        setKeys(newKeys);
+        onUpdateKeys(newKeys);
+        if (removing) {
+            var nl = __assign({}, labels);
+            delete nl[k];
+            setLabels(nl);
+            onUpdateLabels(JSON.stringify(nl));
+        }
+    };
+    // ── Drag & drop ───────────────────────────────────────────────────────────
+    var handleDragStart = function (idx) {
+        dragFromRef.current = idx;
+        setDragging(idx);
+    };
+    var handleDragOver = function (e, idx) {
+        e.preventDefault();
+        setDragOver(idx);
+    };
+    var handleDrop = function (toIdx) {
+        var fromIdx = dragFromRef.current;
+        dragFromRef.current = null;
+        setDragging(null);
+        setDragOver(null);
+        // Prevent dropping into locked area (indices 0..lockedCount-1)
+        if (fromIdx === null || fromIdx === toIdx || toIdx < lockedCount)
+            return;
+        var next = __spreadArray([], draggableKeys, true);
+        var moved = next.splice(fromIdx, 1)[0];
+        next.splice(toIdx, 0, moved);
+        onUpdateKeys(next);
+        setKeys(next);
+    };
+    var handleDragEnd = function () {
+        dragFromRef.current = null;
+        setDragging(null);
+        setDragOver(null);
+    };
+    // ── Labels ────────────────────────────────────────────────────────────────
+    var updateLabelLocal = function (k, lang, val) {
+        setLabels(function (prev) {
+            var _a, _b;
+            var next = __assign(__assign({}, prev), (_a = {}, _a[k] = __assign(__assign({}, (prev[k] || { fr: '', en: '' })), (_b = {}, _b[lang] = val, _b)), _a));
+            onUpdateLabels(JSON.stringify(next));
+            return next;
+        });
+    };
+    // ── Select trigger text ───────────────────────────────────────────────────
+    var selectedCount = keys.length;
+    var buttonText = selectedCount === 0
+        ? _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_NoSelection
+        : "".concat(selectedCount, " ").concat(_loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_AvailableFields.toLowerCase());
+    var standardFields = [
+        { key: 'photo', label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldPhoto },
+        { key: 'name', label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldName },
+        { key: 'firstName', label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldFirstName },
+        { key: 'email', label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldEmail },
+        { key: 'phone', label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldPhone },
+        { key: 'jobTitle', label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldJobTitle },
+        { key: 'department', label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldDepartment },
+        { key: 'officeLocation', label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldOfficeLocation },
+        { key: 'manager', label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldManager },
+        { key: 'outlook', label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldOutlook },
+        { key: 'teams', label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.FieldTeams },
+    ];
+    // ── Render ────────────────────────────────────────────────────────────────
+    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.root },
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: S.sectionLabel }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_AvailableFields),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { ref: dropdownRef, style: { position: 'relative', marginBottom: 16 } },
+            react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { position: 'relative' } },
+                react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { type: "button", style: S.selectTrigger(dropdownOpen), onClick: function () { return setDropdownOpen(function (o) { return !o; }); }, "aria-haspopup": "listbox", "aria-expanded": dropdownOpen },
+                    react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: {
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            flex: 1,
+                            color: selectedCount === 0 ? '#605e5c' : '#323130',
+                        } }, buttonText)),
+                react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { fill: "currentColor", "aria-hidden": "true", width: "1em", height: "1em", viewBox: "0 0 20 20", xmlns: "http://www.w3.org/2000/svg", style: {
+                        position: 'absolute',
+                        right: 8,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        pointerEvents: 'none',
+                        fontSize: 14,
+                        color: '#605e5c',
+                    } },
+                    react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M15.85 7.65c.2.2.2.5 0 .7l-5.46 5.49a.55.55 0 0 1-.78 0L4.15 8.35a.5.5 0 1 1 .7-.7L10 12.8l5.15-5.16c.2-.2.5-.2.7 0Z", fill: "currentColor" }))),
+            dropdownOpen && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.dropdownPanel, role: "listbox", "aria-multiselectable": true },
+                react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.groupHeader }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_StandardGroup),
+                standardFields.map(function (f) { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(CheckItem, { key: f.key, label: f.label, checked: isSelected(f.key), onToggle: function () { return toggle(f.key); } })); }),
+                groups.map(function (group) { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { key: group.groupKey },
+                    react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.groupHeader }, group.label),
+                    group.fields.map(function (f) { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(CheckItem, { key: f.key, label: f.label, checked: isSelected(f.key), onToggle: function () { return toggle(f.key); } })); }))); }),
+                detectedExtAttrs.length > 0 && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null,
+                    react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.groupHeader }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_ExtAttrGroup),
+                    detectedExtAttrs.map(function (k) { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(CheckItem, { key: k, label: (0,_models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_2__.getEntraFieldLabel)(k), checked: isSelected(k), onToggle: function () { return toggle(k); } })); })))))),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: S.sectionLabel }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_DisplayOrder),
+        keys.length === 0 ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.hint }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_NoSelection)) : (react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null,
+            react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.hint }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_DragHint),
+            draggableKeys.map(function (key, idx) {
+                var _a, _b;
+                var isLocked = LOCKED_KEYS.has(key);
+                var isDraggingThis = dragging === idx;
+                var isDragOverThis = dragOver === idx && dragging !== idx;
+                var showLabels = view !== 'card';
+                return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", __assign({ key: key }, (!isLocked
+                    ? {
+                        draggable: true,
+                        onDragStart: function () { return handleDragStart(idx); },
+                        onDragOver: function (e) {
+                            return handleDragOver(e, idx);
+                        },
+                        onDrop: function () { return handleDrop(idx); },
+                        onDragEnd: handleDragEnd,
+                    }
+                    : {}), { style: isLocked
+                        ? S.lockedRow
+                        : S.dragRow(isDraggingThis, isDragOverThis) }),
+                    isLocked ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "10", height: "16", viewBox: "0 0 10 16", fill: "#e1dfdd", style: S.handleLocked, "aria-hidden": true },
+                        react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "3", cy: "3", r: "1.5" }),
+                        react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "7", cy: "3", r: "1.5" }),
+                        react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "3", cy: "8", r: "1.5" }),
+                        react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "7", cy: "8", r: "1.5" }),
+                        react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "3", cy: "13", r: "1.5" }),
+                        react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "7", cy: "13", r: "1.5" }))) : (react__WEBPACK_IMPORTED_MODULE_0__.createElement(DragHandle, null)),
+                    react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { flex: 1, minWidth: 0 } },
+                        react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: S.fieldLabel }, defaultLabel(key)),
+                        showLabels && !isLocked && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.labelRow },
+                            react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null,
+                                react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.labelCaption }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_LabelFr),
+                                react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", { type: "text", style: S.labelInput, defaultValue: ((_a = labels[key]) === null || _a === void 0 ? void 0 : _a.fr) || '', placeholder: defaultLabel(key), onChange: function (e) {
+                                        return updateLabelLocal(key, 'fr', e.target.value);
+                                    } })),
+                            react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null,
+                                react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.labelCaption }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_LabelEn),
+                                react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", { type: "text", style: S.labelInput, defaultValue: ((_b = labels[key]) === null || _b === void 0 ? void 0 : _b.en) || '', placeholder: defaultLabel(key), onChange: function (e) {
+                                        return updateLabelLocal(key, 'en', e.target.value);
+                                    } }))))),
+                    react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { style: S.removeBtn, onClick: function () { return toggle(key); }, title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_RemoveField, "aria-label": "".concat(_loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_RemoveField, ": ").concat(defaultLabel(key)) }, "\u00D7")));
+            })))));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DnDFieldSelector);
 
 
 /***/ }),
@@ -1414,7 +2504,8 @@ var FilterBar = function (_a) {
     var getDistinctValues = function (fieldName) {
         var unique = new Set();
         members.forEach(function (member) {
-            var value = member[fieldName];
+            var _a;
+            var value = (_a = member[fieldName]) !== null && _a !== void 0 ? _a : (member.customProperties && member.customProperties[fieldName]);
             if (value)
                 unique.add(String(value));
         });
@@ -1498,9 +2589,12 @@ var FilterBar = function (_a) {
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../loc/mystrings */ 5126);
+
 
 var SearchBar = function (_a) {
-    var value = _a.value, onChange = _a.onChange, _b = _a.placeholder, placeholder = _b === void 0 ? 'Rechercher un collaborateur...' : _b;
+    var value = _a.value, onChange = _a.onChange, placeholder = _a.placeholder;
+    var resolvedPlaceholder = placeholder !== null && placeholder !== void 0 ? placeholder : _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.SearchPlaceholder;
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: {
             display: 'flex',
             alignItems: 'center',
@@ -1517,7 +2611,7 @@ var SearchBar = function (_a) {
         } },
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "14", height: "14", viewBox: "0 0 16 16", fill: "#6B7280", "aria-hidden": "true", style: { flexShrink: 0 } },
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z" })),
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", { type: "text", placeholder: placeholder, value: value, onChange: function (e) { return onChange(e.target.value); }, style: {
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", { type: "text", placeholder: resolvedPlaceholder, value: value, onChange: function (e) { return onChange(e.target.value); }, style: {
                 border: 'none',
                 outline: 'none',
                 background: 'transparent',
@@ -1526,7 +2620,7 @@ var SearchBar = function (_a) {
                 width: '100%',
                 lineHeight: '1',
             } }),
-        value && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: function () { return onChange(''); }, "aria-label": "Effacer la recherche", style: {
+        value && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: function () { return onChange(''); }, "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ClearSearch, style: {
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
@@ -1555,18 +2649,20 @@ var SearchBar = function (_a) {
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _fluentui_react_lib_Stack__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @fluentui/react/lib/Stack */ 277);
-/* harmony import */ var _fluentui_react_lib_Icon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fluentui/react/lib/Icon */ 3257);
-/* harmony import */ var _fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fluentui/react/lib/Text */ 6667);
+/* harmony import */ var _fluentui_react_lib_Stack__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fluentui/react/lib/Stack */ 277);
+/* harmony import */ var _fluentui_react_lib_Icon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fluentui/react/lib/Icon */ 3257);
+/* harmony import */ var _fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fluentui/react/lib/Text */ 6667);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../loc/mystrings */ 5126);
+
 
 
 
 
 var EmptyState = function () {
-    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Stack__WEBPACK_IMPORTED_MODULE_1__.Stack, { horizontalAlign: "center", verticalAlign: "center", tokens: { padding: 40, childrenGap: 12 } },
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Icon__WEBPACK_IMPORTED_MODULE_2__.Icon, { iconName: "SearchIssue", style: { fontSize: 48, color: '#a19f9d' }, "aria-hidden": "true" }),
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_3__.Text, { variant: "large", role: "status" }, "Aucun r\u00E9sultat trouv\u00E9"),
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_3__.Text, { variant: "medium", style: { color: '#605e5c' } }, "Essayez de modifier vos crit\u00E8res de recherche ou vos filtres.")));
+    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Stack__WEBPACK_IMPORTED_MODULE_2__.Stack, { horizontalAlign: "center", verticalAlign: "center", tokens: { padding: 40, childrenGap: 12 } },
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Icon__WEBPACK_IMPORTED_MODULE_3__.Icon, { iconName: "SearchIssue", style: { fontSize: 48, color: '#a19f9d' }, "aria-hidden": "true" }),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_4__.Text, { variant: "large", role: "status" }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.NoResults),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_4__.Text, { variant: "medium", style: { color: '#605e5c' } }, "Essayez de modifier vos crit\u00E8res de recherche ou vos filtres.")));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (EmptyState);
 
@@ -1584,15 +2680,17 @@ var EmptyState = function () {
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @fluentui/react/lib/MessageBar */ 5906);
-/* harmony import */ var _fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fluentui/react/lib/MessageBar */ 7456);
-/* harmony import */ var _fluentui_react_lib_Button__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fluentui/react/lib/Button */ 2821);
+/* harmony import */ var _fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fluentui/react/lib/MessageBar */ 5906);
+/* harmony import */ var _fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fluentui/react/lib/MessageBar */ 7456);
+/* harmony import */ var _fluentui_react_lib_Button__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fluentui/react/lib/Button */ 2821);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../loc/mystrings */ 5126);
+
 
 
 
 var ErrorState = function (_a) {
-    var _b = _a.message, message = _b === void 0 ? 'Une erreur est survenue lors du chargement de l\'annuaire.' : _b, onRetry = _a.onRetry;
-    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_1__.MessageBar, { messageBarType: _fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_2__.MessageBarType.error, isMultiline: false, actions: react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Button__WEBPACK_IMPORTED_MODULE_3__.DefaultButton, { onClick: onRetry }, "R\u00E9essayer") }, message));
+    var message = _a.message, onRetry = _a.onRetry;
+    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_2__.MessageBar, { messageBarType: _fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_3__.MessageBarType.error, isMultiline: false, actions: react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Button__WEBPACK_IMPORTED_MODULE_4__.DefaultButton, { onClick: onRetry }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.Retry) }, message || _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ErrorLoading));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ErrorState);
 
@@ -1610,15 +2708,17 @@ var ErrorState = function (_a) {
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _fluentui_react_lib_Spinner__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fluentui/react/lib/Spinner */ 9964);
-/* harmony import */ var _fluentui_react_lib_Spinner__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fluentui/react/lib/Spinner */ 250);
-/* harmony import */ var _fluentui_react_lib_Stack__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @fluentui/react/lib/Stack */ 277);
+/* harmony import */ var _fluentui_react_lib_Spinner__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fluentui/react/lib/Spinner */ 9964);
+/* harmony import */ var _fluentui_react_lib_Spinner__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fluentui/react/lib/Spinner */ 250);
+/* harmony import */ var _fluentui_react_lib_Stack__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fluentui/react/lib/Stack */ 277);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../loc/mystrings */ 5126);
+
 
 
 
 var LoadingState = function () {
-    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Stack__WEBPACK_IMPORTED_MODULE_1__.Stack, { horizontalAlign: "center", verticalAlign: "center", tokens: { padding: 40 } },
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Spinner__WEBPACK_IMPORTED_MODULE_2__.Spinner, { size: _fluentui_react_lib_Spinner__WEBPACK_IMPORTED_MODULE_3__.SpinnerSize.large, label: "Chargement de l'annuaire..." })));
+    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Stack__WEBPACK_IMPORTED_MODULE_2__.Stack, { horizontalAlign: "center", verticalAlign: "center", tokens: { padding: 40 } },
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Spinner__WEBPACK_IMPORTED_MODULE_3__.Spinner, { size: _fluentui_react_lib_Spinner__WEBPACK_IMPORTED_MODULE_4__.SpinnerSize.large, label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.LoadingText })));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LoadingState);
 
@@ -1694,6 +2794,335 @@ var TeamsIcon = function (_a) {
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("img", { src: teamsLogoUrl, width: size, height: size, alt: "Microsoft Teams", style: { display: 'block', objectFit: 'contain' } }));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TeamsIcon);
+
+
+/***/ }),
+
+/***/ 5126:
+/*!***********************************************************!*\
+  !*** ./lib/webparts/sharepointDirectory/loc/mystrings.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setLanguage: () => (/* binding */ setLanguage),
+/* harmony export */   strings: () => (/* binding */ strings)
+/* harmony export */ });
+var fr = {
+    PropertyPaneDescription: "Configuration de l'annuaire",
+    ViewGroupName: 'Affichage',
+    DefaultViewLabel: 'Vue par défaut',
+    ViewTrombinoscope: 'Vue Trombinoscope',
+    ViewList: 'Vue Liste',
+    SortOrderLabel: 'Tri des utilisateurs',
+    SortLastNameAsc: 'Alphabétique Nom',
+    SortLastNameDesc: 'Anti-alphabétique Nom',
+    SortFirstNameAsc: 'Alphabétique Prénom',
+    SortFirstNameDesc: 'Anti-alphabétique Prénom',
+    SortRandom: 'Aléatoire',
+    FilterGroupName: 'Filtres',
+    NoFilter: 'Aucun filtre configuré',
+    FilterLabel: 'Filtre',
+    FilterFieldLabel: 'Champ',
+    FilterTextFieldLabel: 'Libellé',
+    AddFilter: 'Ajouter un filtre',
+    RemoveFilter: 'Supprimer',
+    FieldPhoto: 'Photo',
+    FieldName: 'Nom',
+    FieldFirstName: 'Prénom',
+    FieldEmail: 'E-mail',
+    FieldPhone: 'Téléphone',
+    FieldJobTitle: 'Poste',
+    FieldDepartment: 'Département',
+    FieldOfficeLocation: 'Localisation',
+    FieldManager: 'Manager',
+    FieldOutlook: 'Outlook',
+    FieldTeams: 'Teams',
+    CustomFieldsCardGroup: 'Vue Trombinoscope',
+    CustomFieldsListGroup: 'Vue Liste',
+    CustomFieldsModalGroup: 'Vue Modale',
+    CustomFieldsEntraID: 'Champs EntraID',
+    CustomFieldDropdown: 'Champ EntraID',
+    CustomFieldLabelInput: 'Libellé personnalisé (optionnel)',
+    CustomFieldLabelFr: 'Libellé (FR)',
+    CustomFieldLabelEn: 'Libellé (EN)',
+    AddCustomField: 'Ajouter un champ EntraID',
+    RemoveCustomField: 'Supprimer ce champ',
+    SelectPlaceholder: 'Sélectionner...',
+    CustomFieldsPrefix: '— Champs EntraID',
+    SearchPlaceholder: 'Rechercher un collaborateur...',
+    ResultCount: '{0} résultat(s)',
+    LoadMore: 'Voir plus de collaborateurs',
+    ViewProfile: 'Voir la fiche',
+    ClickForDetails: 'Cliquez pour les détails',
+    HeaderCollaborator: 'Collaborateur',
+    HeaderJobTitle: 'Poste',
+    HeaderEmail: 'E-mail',
+    HeaderPhone: 'Téléphone',
+    HeaderDepartment: 'Département',
+    HeaderLocation: 'Localisation',
+    HeaderManager: 'Manager',
+    SendEmail: 'Envoyer un email',
+    ContactViaTeams: 'Contacter via Teams',
+    LabelDepartment: 'Département',
+    LabelLocation: 'Localisation',
+    LabelManager: 'Manager',
+    CloseModal: 'Fermer',
+    ErrorLoading: "Impossible de charger les données de l'annuaire. Veuillez réessayer.",
+    Retry: 'Réessayer',
+    NoResults: 'Aucun collaborateur trouvé',
+    LoadingText: 'Chargement...',
+    ResultsLabel: 'Résultats :',
+    CollaboratorSingular: 'collaborateur',
+    CollaboratorPlural: 'collaborateurs',
+    ExportCsv: 'Exporter en CSV',
+    ClearSearch: 'Effacer la recherche',
+    PropertyPaneHeader: 'Paramètres',
+    FilterLabelInput: 'Libellé affiché',
+    None: 'Aucun',
+    RemoveFilterLabel: 'Supprimer ce filtre',
+    // EntraID field labels
+    EntraField_aboutMe: 'À propos',
+    EntraField_birthday: 'Date de naissance',
+    EntraField_interests: "Centres d'intérêt",
+    EntraField_pastProjects: 'Projets passés',
+    EntraField_responsibilities: 'Responsabilités',
+    EntraField_schools: 'Écoles',
+    EntraField_skills: 'Compétences',
+    EntraField_streetAddress: 'Adresse',
+    EntraField_city: 'Ville',
+    EntraField_state: 'Région',
+    EntraField_postalCode: 'Code postal',
+    EntraField_country: 'Pays',
+    EntraField_businessPhones: 'Téléphone pro',
+    EntraField_faxNumber: 'Fax',
+    EntraField_otherMails: 'Autres emails',
+    EntraField_imAddresses: 'Adresses IM',
+    EntraField_mySite: 'Site personnel',
+    EntraField_companyName: 'Société',
+    EntraField_employeeId: 'ID Employé',
+    EntraField_employeeType: "Type d'employé",
+    EntraField_employeeHireDate: "Date d'embauche (MS)",
+    EntraField_hireDate: "Date d'embauche (SP)",
+    EntraField_employeeLeaveDateTime: 'Date de départ',
+    EntraField_division: 'Division',
+    EntraField_costCenter: 'Centre de coût',
+    EntraField_preferredLanguage: 'Langue',
+    EntraField_usageLocation: "Localisation d'usage",
+    EntraField_createdDateTime: 'Date de création',
+    EntraField_ageGroup: "Groupe d'âge",
+    EntraField_consentProvidedForMinor: 'Consentement mineur',
+    EntraField_legalAgeGroupClassification: 'Classification âge légal',
+    EntraField_externalUserState: 'État utilisateur externe',
+    EntraField_mailNickname: 'Alias mail',
+    EntraField_lastPasswordChangeDateTime: 'Dernier changement MDP',
+    EntraField_onPremisesDistinguishedName: 'DN On-Prem',
+    EntraField_onPremisesDomainName: 'Domaine On-Prem',
+    EntraField_onPremisesSamAccountName: 'SAM Account',
+    EntraField_onPremisesUserPrincipalName: 'UPN On-Prem',
+    EntraField_extensionAttribute1: 'Extension Attribute 1',
+    EntraField_extensionAttribute2: 'Extension Attribute 2',
+    EntraField_extensionAttribute3: 'Extension Attribute 3',
+    EntraField_extensionAttribute4: 'Extension Attribute 4',
+    EntraField_extensionAttribute5: 'Extension Attribute 5',
+    EntraField_extensionAttribute6: 'Extension Attribute 6',
+    EntraField_extensionAttribute7: 'Extension Attribute 7',
+    EntraField_extensionAttribute8: 'Extension Attribute 8',
+    EntraField_extensionAttribute9: 'Extension Attribute 9',
+    EntraField_extensionAttribute10: 'Extension Attribute 10',
+    EntraField_extensionAttribute11: 'Extension Attribute 11',
+    EntraField_extensionAttribute12: 'Extension Attribute 12',
+    EntraField_extensionAttribute13: 'Extension Attribute 13',
+    EntraField_extensionAttribute14: 'Extension Attribute 14',
+    EntraField_extensionAttribute15: 'Extension Attribute 15',
+    // Property pane tabs
+    TabCard: 'Carte',
+    TabList: 'Liste',
+    TabModal: 'Modale',
+    ViewTabLabel: 'Vue à configurer',
+    // DnD field selector
+    DnD_AvailableFields: 'Champs disponibles',
+    DnD_DisplayOrder: "Ordre d'affichage",
+    DnD_DragHint: 'Glisser-déposer pour réordonner',
+    DnD_StandardGroup: 'Standards',
+    DnD_ExtAttrGroup: "Attributs d'extension",
+    DnD_AddExtAttr: 'Ajouter un attribut…',
+    DnD_AddField: 'Ajouter',
+    DnD_RemoveField: 'Retirer',
+    DnD_LabelFr: 'Libellé FR',
+    DnD_LabelEn: 'Libellé EN',
+    DnD_Group_Profile: 'Profil',
+    DnD_Group_Contact: 'Coordonnées',
+    DnD_Group_Company: 'Entreprise',
+    DnD_Group_Region: 'Langue & Région',
+    DnD_Group_OnPrem: 'On-premises',
+    DnD_Group_Other: 'Divers',
+    DnD_NoSelection: 'Aucun champ sélectionné.',
+};
+var en = {
+    PropertyPaneDescription: 'Directory Settings',
+    ViewGroupName: 'Display',
+    DefaultViewLabel: 'Default view',
+    ViewTrombinoscope: 'Card View',
+    ViewList: 'List View',
+    SortOrderLabel: 'Sort users',
+    SortLastNameAsc: 'Alphabetical Last Name',
+    SortLastNameDesc: 'Reverse Last Name',
+    SortFirstNameAsc: 'Alphabetical First Name',
+    SortFirstNameDesc: 'Reverse First Name',
+    SortRandom: 'Random',
+    FilterGroupName: 'Filters',
+    NoFilter: 'No filter configured',
+    FilterLabel: 'Filter',
+    FilterFieldLabel: 'Field',
+    FilterTextFieldLabel: 'Label',
+    AddFilter: 'Add filter',
+    RemoveFilter: 'Remove',
+    FieldPhoto: 'Photo',
+    FieldName: 'Last Name',
+    FieldFirstName: 'First Name',
+    FieldEmail: 'Email',
+    FieldPhone: 'Phone',
+    FieldJobTitle: 'Job Title',
+    FieldDepartment: 'Department',
+    FieldOfficeLocation: 'Office Location',
+    FieldManager: 'Manager',
+    FieldOutlook: 'Outlook',
+    FieldTeams: 'Teams',
+    CustomFieldsCardGroup: 'Card View',
+    CustomFieldsListGroup: 'List View',
+    CustomFieldsModalGroup: 'Modal',
+    CustomFieldsEntraID: 'Entra ID Fields',
+    CustomFieldDropdown: 'Entra ID Field',
+    CustomFieldLabelInput: 'Custom label (optional)',
+    CustomFieldLabelFr: 'Label (FR)',
+    CustomFieldLabelEn: 'Label (EN)',
+    AddCustomField: 'Add Entra ID field',
+    RemoveCustomField: 'Remove this field',
+    SelectPlaceholder: 'Select...',
+    CustomFieldsPrefix: '— Entra ID Fields',
+    SearchPlaceholder: 'Search a collaborator...',
+    ResultCount: '{0} result(s)',
+    LoadMore: 'Load more',
+    ViewProfile: 'View profile',
+    ClickForDetails: 'Click for details',
+    HeaderCollaborator: 'Collaborator',
+    HeaderJobTitle: 'Job Title',
+    HeaderEmail: 'Email',
+    HeaderPhone: 'Phone',
+    HeaderDepartment: 'Department',
+    HeaderLocation: 'Location',
+    HeaderManager: 'Manager',
+    SendEmail: 'Send email',
+    ContactViaTeams: 'Contact via Teams',
+    LabelDepartment: 'Department',
+    LabelLocation: 'Location',
+    LabelManager: 'Manager',
+    CloseModal: 'Close',
+    ErrorLoading: 'Unable to load directory data. Please try again.',
+    Retry: 'Retry',
+    NoResults: 'No collaborators found',
+    LoadingText: 'Loading...',
+    ResultsLabel: 'Results:',
+    CollaboratorSingular: 'collaborator',
+    CollaboratorPlural: 'collaborators',
+    ExportCsv: 'Export to CSV',
+    ClearSearch: 'Clear search',
+    PropertyPaneHeader: 'Settings',
+    FilterLabelInput: 'Display label',
+    None: 'None',
+    RemoveFilterLabel: 'Remove this filter',
+    // EntraID field labels
+    EntraField_aboutMe: 'About me',
+    EntraField_birthday: 'Birthday',
+    EntraField_interests: 'Interests',
+    EntraField_pastProjects: 'Past projects',
+    EntraField_responsibilities: 'Responsibilities',
+    EntraField_schools: 'Schools',
+    EntraField_skills: 'Skills',
+    EntraField_streetAddress: 'Street address',
+    EntraField_city: 'City',
+    EntraField_state: 'State / Region',
+    EntraField_postalCode: 'Postal code',
+    EntraField_country: 'Country',
+    EntraField_businessPhones: 'Business phone',
+    EntraField_faxNumber: 'Fax',
+    EntraField_otherMails: 'Other emails',
+    EntraField_imAddresses: 'IM addresses',
+    EntraField_mySite: 'Personal site',
+    EntraField_companyName: 'Company',
+    EntraField_employeeId: 'Employee ID',
+    EntraField_employeeType: 'Employee type',
+    EntraField_employeeHireDate: 'Hire date (MS)',
+    EntraField_hireDate: 'Hire date (SP)',
+    EntraField_employeeLeaveDateTime: 'Leave date',
+    EntraField_division: 'Division',
+    EntraField_costCenter: 'Cost center',
+    EntraField_preferredLanguage: 'Language',
+    EntraField_usageLocation: 'Usage location',
+    EntraField_createdDateTime: 'Created date',
+    EntraField_ageGroup: 'Age group',
+    EntraField_consentProvidedForMinor: 'Minor consent',
+    EntraField_legalAgeGroupClassification: 'Legal age classification',
+    EntraField_externalUserState: 'External user state',
+    EntraField_mailNickname: 'Mail alias',
+    EntraField_lastPasswordChangeDateTime: 'Last password change',
+    EntraField_onPremisesDistinguishedName: 'DN On-Prem',
+    EntraField_onPremisesDomainName: 'On-Prem domain',
+    EntraField_onPremisesSamAccountName: 'SAM account',
+    EntraField_onPremisesUserPrincipalName: 'On-Prem UPN',
+    EntraField_extensionAttribute1: 'Extension Attribute 1',
+    EntraField_extensionAttribute2: 'Extension Attribute 2',
+    EntraField_extensionAttribute3: 'Extension Attribute 3',
+    EntraField_extensionAttribute4: 'Extension Attribute 4',
+    EntraField_extensionAttribute5: 'Extension Attribute 5',
+    EntraField_extensionAttribute6: 'Extension Attribute 6',
+    EntraField_extensionAttribute7: 'Extension Attribute 7',
+    EntraField_extensionAttribute8: 'Extension Attribute 8',
+    EntraField_extensionAttribute9: 'Extension Attribute 9',
+    EntraField_extensionAttribute10: 'Extension Attribute 10',
+    EntraField_extensionAttribute11: 'Extension Attribute 11',
+    EntraField_extensionAttribute12: 'Extension Attribute 12',
+    EntraField_extensionAttribute13: 'Extension Attribute 13',
+    EntraField_extensionAttribute14: 'Extension Attribute 14',
+    EntraField_extensionAttribute15: 'Extension Attribute 15',
+    // Property pane tabs
+    TabCard: 'Card',
+    TabList: 'List',
+    TabModal: 'Modal',
+    ViewTabLabel: 'View to configure',
+    // DnD field selector
+    DnD_AvailableFields: 'Available fields',
+    DnD_DisplayOrder: 'Display order',
+    DnD_DragHint: 'Drag and drop to reorder',
+    DnD_StandardGroup: 'Standard',
+    DnD_ExtAttrGroup: 'Extension attributes',
+    DnD_AddExtAttr: 'Add an attribute…',
+    DnD_AddField: 'Add',
+    DnD_RemoveField: 'Remove',
+    DnD_LabelFr: 'Label FR',
+    DnD_LabelEn: 'Label EN',
+    DnD_Group_Profile: 'Profile',
+    DnD_Group_Contact: 'Contact',
+    DnD_Group_Company: 'Company',
+    DnD_Group_Region: 'Language & Region',
+    DnD_Group_OnPrem: 'On-premises',
+    DnD_Group_Other: 'Other',
+    DnD_NoSelection: 'No fields selected.',
+};
+// ── Locale registry — add new languages here ────────────────────────────────
+var locales = { fr: fr, en: en };
+var current = fr;
+var strings = new Proxy({}, {
+    get: function (_target, prop) {
+        return current[prop];
+    },
+});
+/** Call once at startup with the SharePoint currentCultureName (e.g. "fr-fr", "en-us"). */
+function setLanguage(locale) {
+    var lang = (locale || '').split('-')[0].toLowerCase();
+    current = locales[lang] || en;
+}
 
 
 /***/ }),
@@ -25877,6 +27306,16 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__3878__;
 
 /***/ }),
 
+/***/ 4723:
+/*!**********************************************!*\
+  !*** external "@microsoft/sp-property-pane" ***!
+  \**********************************************/
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__4723__;
+
+/***/ }),
+
 /***/ 3134:
 /*!*********************************************!*\
   !*** external "@microsoft/sp-webpart-base" ***!
@@ -30166,11 +31605,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _microsoft_sp_core_library__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @microsoft/sp-core-library */ 3878);
 /* harmony import */ var _microsoft_sp_core_library__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_microsoft_sp_core_library__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @fluentui/react/lib/Theme */ 3635);
 /* harmony import */ var _microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @microsoft/sp-webpart-base */ 3134);
 /* harmony import */ var _microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _components_Directory__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/Directory */ 646);
-/* harmony import */ var _hooks_useMembers__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../hooks/useMembers */ 6693);
-/* harmony import */ var _hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../hooks/useDirectoryConfig */ 5106);
+/* harmony import */ var _microsoft_sp_property_pane__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @microsoft/sp-property-pane */ 4723);
+/* harmony import */ var _microsoft_sp_property_pane__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_microsoft_sp_property_pane__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _components_Directory__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/Directory */ 646);
+/* harmony import */ var _models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../models/DirectoryConfig */ 5930);
+/* harmony import */ var _hooks_useMembers__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../hooks/useMembers */ 6693);
+/* harmony import */ var _hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../hooks/useDirectoryConfig */ 5106);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./loc/mystrings */ 5126);
+/* harmony import */ var _components_propertyPane_DnDFieldSelector__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/propertyPane/DnDFieldSelector */ 1115);
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -30202,74 +31647,31 @@ var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from
 
 
 
-var AVAILABLE_FILTER_FIELDS = [
-    { key: '', text: 'Aucun' },
-    { key: 'givenName', text: 'Prénom' },
-    { key: 'surname', text: 'Nom' },
-    { key: 'email', text: 'E-mail' },
-    { key: 'mobilePhone', text: 'Téléphone' },
-    { key: 'jobTitle', text: 'Poste' },
-    { key: 'department', text: 'Département' },
-    { key: 'officeLocation', text: 'Localisation' },
-    { key: 'managerDisplayName', text: 'Manager' },
-];
-var CARD_FIELDS = [
-    { key: 'photo', text: 'Photo' },
-    { key: 'name', text: 'Nom' },
-    { key: 'firstName', text: 'Prénom' },
-    { key: 'email', text: 'E-mail' },
-    { key: 'phone', text: 'Téléphone' },
-    { key: 'jobTitle', text: 'Poste' },
-    { key: 'department', text: 'Département' },
-    { key: 'officeLocation', text: 'Localisation' },
-    { key: 'manager', text: 'Manager' },
-    { key: 'outlook', text: 'Outlook' },
-    { key: 'teams', text: 'Teams' },
-];
-var LIST_FIELDS = [
-    { key: 'photo', text: 'Photo' },
-    { key: 'name', text: 'Nom' },
-    { key: 'firstName', text: 'Prénom' },
-    { key: 'email', text: 'E-mail' },
-    { key: 'phone', text: 'Téléphone' },
-    { key: 'jobTitle', text: 'Poste' },
-    { key: 'department', text: 'Département' },
-    { key: 'officeLocation', text: 'Localisation' },
-    { key: 'manager', text: 'Manager' },
-    { key: 'outlook', text: 'Outlook' },
-    { key: 'teams', text: 'Teams' },
-];
-var MODAL_FIELDS = [
-    { key: 'photo', text: 'Photo' },
-    { key: 'name', text: 'Nom' },
-    { key: 'firstName', text: 'Prénom' },
-    { key: 'email', text: 'E-mail' },
-    { key: 'phone', text: 'Téléphone' },
-    { key: 'jobTitle', text: 'Poste' },
-    { key: 'department', text: 'Département' },
-    { key: 'officeLocation', text: 'Localisation' },
-    { key: 'manager', text: 'Manager' },
-    { key: 'outlook', text: 'Outlook' },
-    { key: 'teams', text: 'Teams' },
-];
-var CARD_DEFAULTS = ['photo', 'name', 'firstName', 'outlook', 'teams'];
-var LIST_DEFAULTS = ['photo', 'name', 'firstName', 'email', 'phone', 'jobTitle', 'department', 'manager'];
-var MODAL_DEFAULTS = ['photo', 'name', 'firstName', 'outlook', 'teams'];
-function getCheckedFields(properties, prefix, availableFields, defaults) {
-    var checked = [];
-    var hasExplicitValues = availableFields.some(function (f) { return properties["".concat(prefix, "_").concat(f.key)] !== undefined; });
-    availableFields.forEach(function (f) {
-        var val = properties["".concat(prefix, "_").concat(f.key)];
-        if (val === true || (val === undefined && !hasExplicitValues && defaults.includes(f.key))) {
-            checked.push(f.key);
-        }
-    });
-    return checked;
-}
+
+
+
+
+
+var ALL_FIELD_KEYS_SET = _models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_6__.STANDARD_FIELD_KEYS;
+// Backward-compat references used only by migrateOldFieldOrder
+var CARD_DEFAULTS = _hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_10__.DEFAULT_CARD_ORDER;
+var LIST_DEFAULTS = _hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_10__.DEFAULT_LIST_ORDER;
+var MODAL_DEFAULTS = _hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_10__.DEFAULT_MODAL_ORDER;
 var DirectoryContainer = function (_a) {
-    var context = _a.context, config = _a.config;
-    var _b = (0,_hooks_useMembers__WEBPACK_IMPORTED_MODULE_5__.useMembers)(context), members = _b.members, isLoading = _b.isLoading, error = _b.error, retry = _b.retry;
-    return react__WEBPACK_IMPORTED_MODULE_0__.createElement(_components_Directory__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    var context = _a.context, config = _a.config, onDetectedExtAttrs = _a.onDetectedExtAttrs;
+    var customFieldKeys = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(function () {
+        var all = __spreadArray(__spreadArray(__spreadArray([], config.cardFieldOrder, true), config.listFieldOrder, true), config.modalFieldOrder, true);
+        var filtered = all.filter(function (k) { return !ALL_FIELD_KEYS_SET.has(k); });
+        var seen = {};
+        return filtered.filter(function (k) {
+            if (seen[k])
+                return false;
+            seen[k] = true;
+            return true;
+        });
+    }, [config.cardFieldOrder, config.listFieldOrder, config.modalFieldOrder]);
+    var _b = (0,_hooks_useMembers__WEBPACK_IMPORTED_MODULE_7__.useMembers)(context, customFieldKeys, onDetectedExtAttrs), members = _b.members, isLoading = _b.isLoading, error = _b.error, retry = _b.retry;
+    return react__WEBPACK_IMPORTED_MODULE_0__.createElement(_components_Directory__WEBPACK_IMPORTED_MODULE_5__["default"], {
         config: config,
         members: members,
         isLoading: isLoading,
@@ -30280,24 +31682,53 @@ var DirectoryContainer = function (_a) {
 var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     __extends(SharepointDirectoryWebPart, _super);
     function SharepointDirectoryWebPart() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._themePrimary = '#1B7A6E';
+        _this.detectedExtAttrs = [];
+        return _this;
     }
+    SharepointDirectoryWebPart.prototype.onInit = function () {
+        (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.setLanguage)(this.context.pageContext.cultureInfo.currentCultureName);
+        if (!this.properties.activeViewTab)
+            this.properties.activeViewTab = 'card';
+        return _super.prototype.onInit.call(this);
+    };
     SharepointDirectoryWebPart.prototype.render = function () {
-        var cardFields = (this.properties.cardFields && this.properties.cardFields.length > 0)
-            ? this.properties.cardFields : CARD_DEFAULTS;
-        var listFields = (this.properties.listFields && this.properties.listFields.length > 0)
-            ? this.properties.listFields : LIST_DEFAULTS;
-        var modalFields = (this.properties.modalFields && this.properties.modalFields.length > 0)
-            ? this.properties.modalFields : MODAL_DEFAULTS;
+        var _this = this;
+        var isFr = this.isCurrentLocaleFr();
+        // Extract the Fluent UI theme primary — stored on the class so the
+        // property pane (which lives in a separate iframe) can read it.
+        var ThemeExtractor = function () {
+            var theme = (0,_fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_11__.useTheme)();
+            react__WEBPACK_IMPORTED_MODULE_0__.useEffect(function () {
+                var _a;
+                var c = (_a = theme === null || theme === void 0 ? void 0 : theme.palette) === null || _a === void 0 ? void 0 : _a.themePrimary;
+                if (c)
+                    _this._themePrimary = c;
+            });
+            return null;
+        };
         var rawConfig = {
             defaultView: this.properties.defaultView || 'card',
-            cardFields: cardFields,
-            listFields: listFields,
-            modalFields: modalFields,
+            sortOrder: (this.properties.sortOrder || 'lastNameAsc'),
+            cardFieldOrder: this.getEffectiveFieldOrder('card'),
+            listFieldOrder: this.getEffectiveFieldOrder('list'),
+            modalFieldOrder: this.getEffectiveFieldOrder('modal'),
+            listFieldLabels: this.getLocalizedLabels('list', isFr),
+            modalFieldLabels: this.getLocalizedLabels('modal', isFr),
             filters: this.getFiltersFromProperties(),
         };
-        var config = (0,_hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_6__.useDirectoryConfig)(rawConfig);
-        react_dom__WEBPACK_IMPORTED_MODULE_1__.render(react__WEBPACK_IMPORTED_MODULE_0__.createElement(DirectoryContainer, { context: this.context, config: config }), this.domElement);
+        var config = (0,_hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_10__.useDirectoryConfig)(rawConfig);
+        react_dom__WEBPACK_IMPORTED_MODULE_1__.render(react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0__.createElement(ThemeExtractor), react__WEBPACK_IMPORTED_MODULE_0__.createElement(DirectoryContainer, {
+            context: this.context,
+            config: config,
+            onDetectedExtAttrs: function (attrs) {
+                if (JSON.stringify(_this.detectedExtAttrs) !== JSON.stringify(attrs)) {
+                    _this.detectedExtAttrs = attrs;
+                    _this.context.propertyPane.refresh();
+                }
+            },
+        })), this.domElement);
     };
     SharepointDirectoryWebPart.prototype.onDispose = function () {
         react_dom__WEBPACK_IMPORTED_MODULE_1__.unmountComponentAtNode(this.domElement);
@@ -30312,59 +31743,166 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     SharepointDirectoryWebPart.prototype.getFiltersFromProperties = function () {
         var filters = [];
         var count = this.properties.filterCount || 0;
+        var isFr = this.isCurrentLocaleFr();
+        var pickLabel = function (fr, en) {
+            return isFr ? fr : en;
+        };
         if (count >= 1 && this.properties.filterField1) {
-            filters.push({ fieldName: this.properties.filterField1, label: this.properties.filterLabel1 || this.properties.filterField1 });
+            filters.push({
+                fieldName: this.properties.filterField1,
+                label: pickLabel(this.properties.filterLabelFr1, this.properties.filterLabelEn1),
+            });
         }
         if (count >= 2 && this.properties.filterField2) {
-            filters.push({ fieldName: this.properties.filterField2, label: this.properties.filterLabel2 || this.properties.filterField2 });
+            filters.push({
+                fieldName: this.properties.filterField2,
+                label: pickLabel(this.properties.filterLabelFr2, this.properties.filterLabelEn2),
+            });
         }
         if (count >= 3 && this.properties.filterField3) {
-            filters.push({ fieldName: this.properties.filterField3, label: this.properties.filterLabel3 || this.properties.filterField3 });
+            filters.push({
+                fieldName: this.properties.filterField3,
+                label: pickLabel(this.properties.filterLabelFr3, this.properties.filterLabelEn3),
+            });
         }
         return filters;
     };
-    SharepointDirectoryWebPart.prototype.getCheckboxKey = function (targetProperty) {
-        for (var _i = 0, _a = ['cardField', 'listField', 'modalField']; _i < _a.length; _i++) {
-            var prefix = _a[_i];
-            for (var _b = 0, _c = __spreadArray(__spreadArray(__spreadArray([], CARD_FIELDS, true), LIST_FIELDS, true), MODAL_FIELDS, true); _b < _c.length; _b++) {
-                var f = _c[_b];
-                if ("".concat(prefix, "_").concat(f.key) === targetProperty) {
-                    return { prefix: prefix, field: f.key };
-                }
+    // ─── New helper methods ──────────────────────────────────────────────────
+    SharepointDirectoryWebPart.prototype.isCurrentLocaleFr = function () {
+        return (this.context.pageContext.cultureInfo.currentCultureName || '').startsWith('fr');
+    };
+    /** Parse the JSON stored in *FieldsJson — migrate from old flat props if absent */
+    SharepointDirectoryWebPart.prototype.getEffectiveFieldOrder = function (view) {
+        var prop = view === 'card'
+            ? 'cardFieldsJson'
+            : view === 'list'
+                ? 'listFieldsJson'
+                : 'modalFieldsJson';
+        var json = this.properties[prop];
+        if (json) {
+            try {
+                return JSON.parse(json);
+            }
+            catch (_a) {
+                /* fall through */
             }
         }
-        return null;
+        return this.migrateOldFieldOrder(view);
+    };
+    /** Build initial order from the old flat customCardField1-5 properties */
+    SharepointDirectoryWebPart.prototype.migrateOldFieldOrder = function (view) {
+        var defaults = view === 'card'
+            ? CARD_DEFAULTS
+            : view === 'list'
+                ? LIST_DEFAULTS
+                : MODAL_DEFAULTS;
+        var fieldsProp = view === 'card'
+            ? 'cardFields'
+            : view === 'list'
+                ? 'listFields'
+                : 'modalFields';
+        var saved = this.properties[fieldsProp];
+        var standard = saved && saved.length > 0 ? saved : defaults;
+        var prefix = view === 'card'
+            ? 'customCardField'
+            : view === 'list'
+                ? 'customListField'
+                : 'customModalField';
+        var count = this.properties["".concat(prefix, "Count")] || 0;
+        var custom = [];
+        for (var i = 1; i <= count; i++) {
+            var v = this.properties["".concat(prefix).concat(i)];
+            if (v)
+                custom.push(v);
+        }
+        return __spreadArray(__spreadArray([], standard, true), custom, true);
+    };
+    /** Parse labels JSON — migrate from old LabelFr/LabelEn flat props if absent */
+    SharepointDirectoryWebPart.prototype.parseFieldLabelsRecord = function (view) {
+        var prop = view === 'list' ? 'listFieldLabelsJson' : 'modalFieldLabelsJson';
+        var json = this.properties[prop];
+        if (json) {
+            try {
+                return JSON.parse(json);
+            }
+            catch (_a) {
+                /* fall through */
+            }
+        }
+        // Migrate from old flat properties
+        var prefix = view === 'list' ? 'customListField' : 'customModalField';
+        var count = this.properties["".concat(prefix, "Count")] || 0;
+        var result = {};
+        for (var i = 1; i <= count; i++) {
+            var key = this.properties["".concat(prefix).concat(i)];
+            if (key) {
+                result[key] = {
+                    fr: this.properties["".concat(prefix, "LabelFr").concat(i)] || '',
+                    en: this.properties["".concat(prefix, "LabelEn").concat(i)] || '',
+                };
+            }
+        }
+        return result;
+    };
+    /** Return localized (single string) labels per field key for the given view */
+    SharepointDirectoryWebPart.prototype.getLocalizedLabels = function (view, isFr) {
+        var record = this.parseFieldLabelsRecord(view);
+        var result = {};
+        for (var _i = 0, _a = Object.entries(record); _i < _a.length; _i++) {
+            var _b = _a[_i], key = _b[0], labels = _b[1];
+            result[key] = isFr ? labels.fr : labels.en;
+        }
+        return result;
     };
     SharepointDirectoryWebPart.prototype.onPropertyPaneFieldChanged = function (propertyPath, oldValue, newValue) {
-        var checkbox = this.getCheckboxKey(propertyPath);
-        if (checkbox) {
-            var prefix = checkbox.prefix, field_1 = checkbox.field;
-            var propKey = prefix === 'cardField' ? 'cardFields' : prefix === 'listField' ? 'listFields' : 'modalFields';
-            var currentArray = this.properties[propKey] || [];
-            if (newValue === true && !currentArray.includes(field_1)) {
-                this.properties[propKey] = __spreadArray(__spreadArray([], currentArray, true), [field_1], false);
-            }
-            else if (newValue === false && currentArray.includes(field_1)) {
-                this.properties[propKey] = currentArray.filter(function (f) { return f !== field_1; });
-            }
-        }
         _super.prototype.onPropertyPaneFieldChanged.call(this, propertyPath, oldValue, newValue);
         this.context.propertyPane.refresh();
     };
     SharepointDirectoryWebPart.prototype.getPropertyPaneConfiguration = function () {
         var _this = this;
         var filterCount = this.properties.filterCount || 0;
+        var activeTab = (this.properties.activeViewTab || 'card');
+        // ── Filter field options (base + EntraID + detected ext attrs) ──────────
+        var buildFilterOptions = function () {
+            var options = [
+                { key: '', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.None },
+                { key: 'givenName', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.FieldFirstName },
+                { key: 'surname', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.FieldName },
+                { key: 'mail', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.FieldEmail },
+                { key: 'mobilePhone', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.FieldPhone },
+                { key: 'jobTitle', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.FieldJobTitle },
+                { key: 'department', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.FieldDepartment },
+                { key: 'officeLocation', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.FieldOfficeLocation },
+                { key: 'managerDisplayName', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.FieldManager },
+            ];
+            for (var _i = 0, _a = (0,_models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_6__.getAvailableEntraIdFieldGroups)(); _i < _a.length; _i++) {
+                var group = _a[_i];
+                for (var _b = 0, _c = group.fields; _b < _c.length; _b++) {
+                    var f = _c[_b];
+                    options.push({ key: f.key, text: f.label });
+                }
+            }
+            for (var _d = 0, _e = _this.detectedExtAttrs; _d < _e.length; _d++) {
+                var k = _e[_d];
+                options.push({ key: k, text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings["EntraField_".concat(k)] || k });
+            }
+            return options;
+        };
+        var FILTER_OPTIONS = buildFilterOptions();
         var filterGroupFields = [];
         for (var i = 1; i <= filterCount; i++) {
-            filterGroupFields.push((0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneLabel)("filterSeparator".concat(i), { text: "Filtre ".concat(i) }), (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneDropdown)("filterField".concat(i), {
-                label: 'Champ',
-                options: AVAILABLE_FILTER_FIELDS,
+            filterGroupFields.push((0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneDropdown)("filterField".concat(i), {
+                label: "".concat(_loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.FilterLabel, " ").concat(i, " \u2014 ").concat(_loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.FilterFieldLabel),
+                options: FILTER_OPTIONS,
                 selectedKey: this.properties["filterField".concat(i)] || '',
-            }), (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneTextField)("filterLabel".concat(i), {
-                label: 'Libellé',
-                value: this.properties["filterLabel".concat(i)] || '',
+            }), (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneTextField)("filterLabelFr".concat(i), {
+                label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.CustomFieldLabelFr,
+                value: this.properties["filterLabelFr".concat(i)] || '',
+            }), (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneTextField)("filterLabelEn".concat(i), {
+                label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.CustomFieldLabelEn,
+                value: this.properties["filterLabelEn".concat(i)] || '',
             }), (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneButton)("removeFilter".concat(i), {
-                text: 'Supprimer',
+                text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.RemoveFilterLabel,
                 buttonType: _microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneButtonType.Command,
                 icon: 'Delete',
                 onClick: function () {
@@ -30375,7 +31913,7 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
         }
         if (filterCount < 3) {
             filterGroupFields.push((0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneButton)('addFilter', {
-                text: 'Ajouter un filtre',
+                text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.AddFilter,
                 buttonType: _microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneButtonType.Command,
                 icon: 'Add',
                 onClick: function () {
@@ -30384,66 +31922,121 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
                 },
             }));
         }
-        var buildCheckboxes = function (prefix, fields, defaults) {
-            var propKey = prefix === 'cardField' ? 'cardFields' : prefix === 'listField' ? 'listFields' : 'modalFields';
-            var currentArray = _this.properties[propKey];
-            var effectiveArray = (currentArray && currentArray.length > 0) ? currentArray : defaults;
-            return fields.map(function (f) {
-                return (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneCheckbox)("".concat(prefix, "_").concat(f.key), {
-                    text: f.text,
-                    checked: effectiveArray.includes(f.key),
-                    key: "".concat(prefix, "_").concat(f.key),
-                });
-            });
+        // ── DnD custom field — remounts when activeTab changes (via key prop) ─────
+        var dndCustomField = {
+            type: _microsoft_sp_property_pane__WEBPACK_IMPORTED_MODULE_4__.PropertyPaneFieldType.Custom,
+            targetProperty: 'dnd_selector',
+            shouldFocus: false,
+            properties: {
+                key: 'dnd_selector',
+                onRender: function (elem) {
+                    var primaryColor = _this._themePrimary;
+                    // Inject CSS override — use primary color instead of blue for choice group buttons
+                    var doc = elem.ownerDocument;
+                    if (!doc.getElementById('spdir-chocegroup-override')) {
+                        var style = doc.createElement('style');
+                        style.id = 'spdir-chocegroup-override';
+                        style.textContent = "\n            .ms-ChoiceField--image.is-checked::before { border-color: ".concat(primaryColor, " !important; }\n            .ms-ChoiceField--image.is-checked .ms-ChoiceField-icon { color: ").concat(primaryColor, " !important; }\n            .ms-ChoiceField--image:hover::before { border-color: ").concat(primaryColor, " !important; }\n            .ms-ChoiceField-field.is-checked::before { border-color: ").concat(primaryColor, " !important; }\n            .ms-ChoiceField-field.is-checked .ms-ChoiceField-icon { color: ").concat(primaryColor, " !important; }\n          ");
+                        doc.head.appendChild(style);
+                    }
+                    var tab = (_this.properties.activeViewTab || 'card');
+                    var selectedKeys = _this.getEffectiveFieldOrder(tab);
+                    var labelsJson = tab === 'list'
+                        ? _this.properties.listFieldLabelsJson || '{}'
+                        : tab === 'modal'
+                            ? _this.properties.modalFieldLabelsJson || '{}'
+                            : '{}';
+                    var onUpdateKeys = function (newKeys) {
+                        var prop = tab === 'card'
+                            ? 'cardFieldsJson'
+                            : tab === 'list'
+                                ? 'listFieldsJson'
+                                : 'modalFieldsJson';
+                        _this.properties[prop] = JSON.stringify(newKeys);
+                        _this.render();
+                    };
+                    var onUpdateLabels = function (newLabelsJson) {
+                        var prop = tab === 'list' ? 'listFieldLabelsJson' : 'modalFieldLabelsJson';
+                        _this.properties[prop] = newLabelsJson;
+                        _this.render();
+                    };
+                    react_dom__WEBPACK_IMPORTED_MODULE_1__.render(react__WEBPACK_IMPORTED_MODULE_0__.createElement(_components_propertyPane_DnDFieldSelector__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                        key: tab,
+                        view: tab,
+                        selectedKeys: selectedKeys,
+                        labelsJson: labelsJson,
+                        detectedExtAttrs: _this.detectedExtAttrs,
+                        primaryColor: primaryColor,
+                        onUpdateKeys: onUpdateKeys,
+                        onUpdateLabels: onUpdateLabels,
+                    }), elem);
+                },
+                onDispose: function (elem) {
+                    react_dom__WEBPACK_IMPORTED_MODULE_1__.unmountComponentAtNode(elem);
+                },
+            },
         };
         return {
             pages: [
                 {
-                    header: { description: 'Paramètres généraux' },
+                    header: { description: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.PropertyPaneHeader },
                     groups: [
                         {
-                            groupName: 'Affichage',
+                            groupName: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.ViewGroupName,
                             groupFields: [
                                 (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneDropdown)('defaultView', {
-                                    label: 'Vue par défaut',
+                                    label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.DefaultViewLabel,
                                     options: [
-                                        { key: 'card', text: 'Vue Carte' },
-                                        { key: 'list', text: 'Vue Liste' },
+                                        { key: 'card', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.ViewTrombinoscope },
+                                        { key: 'list', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.ViewList },
                                     ],
                                     selectedKey: this.properties.defaultView || 'card',
+                                }),
+                                (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneDropdown)('sortOrder', {
+                                    label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.SortOrderLabel,
+                                    options: [
+                                        { key: 'lastNameAsc', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.SortLastNameAsc },
+                                        { key: 'lastNameDesc', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.SortLastNameDesc },
+                                        { key: 'firstNameAsc', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.SortFirstNameAsc },
+                                        { key: 'firstNameDesc', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.SortFirstNameDesc },
+                                        { key: 'random', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.SortRandom },
+                                    ],
+                                    selectedKey: this.properties.sortOrder || 'lastNameAsc',
                                 }),
                             ],
                         },
                         {
-                            groupName: 'Filtres',
-                            groupFields: filterGroupFields,
+                            groupName: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.FilterGroupName,
+                            groupFields: filterGroupFields.length > 0
+                                ? filterGroupFields
+                                : [(0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneLabel)('noFilter', { text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.NoFilter })],
                         },
-                    ],
-                },
-                {
-                    header: { description: 'Vue Carte' },
-                    groups: [
                         {
-                            groupName: 'Champs affichés',
-                            groupFields: buildCheckboxes('cardField', CARD_FIELDS, CARD_DEFAULTS),
-                        },
-                    ],
-                },
-                {
-                    header: { description: 'Vue Liste' },
-                    groups: [
-                        {
-                            groupName: 'Champs affichés',
-                            groupFields: buildCheckboxes('listField', LIST_FIELDS, LIST_DEFAULTS),
-                        },
-                    ],
-                },
-                {
-                    header: { description: 'Vue Modale' },
-                    groups: [
-                        {
-                            groupName: 'Champs affichés',
-                            groupFields: buildCheckboxes('modalField', MODAL_FIELDS, MODAL_DEFAULTS),
+                            // Tab selector — 3 icon buttons Card / List / Modal
+                            groupName: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.ViewTabLabel,
+                            groupFields: [
+                                (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneChoiceGroup)('activeViewTab', {
+                                    label: '',
+                                    options: [
+                                        {
+                                            key: 'card',
+                                            text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.TabCard,
+                                            iconProps: { officeFabricIconFontName: 'GridViewMedium' },
+                                        },
+                                        {
+                                            key: 'list',
+                                            text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.TabList,
+                                            iconProps: { officeFabricIconFontName: 'BulletedList2' },
+                                        },
+                                        {
+                                            key: 'modal',
+                                            text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.TabModal,
+                                            iconProps: { officeFabricIconFontName: 'ContactInfo' },
+                                        },
+                                    ],
+                                }),
+                                dndCustomField,
+                            ],
                         },
                     ],
                 },

@@ -10,7 +10,11 @@ interface UseMembersResult {
   retry: () => void;
 }
 
-export function useMembers(context: WebPartContext): UseMembersResult {
+export function useMembers(
+  context: WebPartContext,
+  customFieldKeys: string[] = [],
+  onDetectedExtensionAttrs?: (attrs: string[]) => void,
+): UseMembersResult {
   const [members, setMembers] = useState<Member[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +30,11 @@ export function useMembers(context: WebPartContext): UseMembersResult {
       const service = new GraphService(context);
       serviceRef.current = service;
 
-      const data = await service.getMembers();
+      const { members: data, detectedExtensionAttrs } = await service.getMembers(customFieldKeys);
+
+      if (detectedExtensionAttrs.length > 0 && onDetectedExtensionAttrs) {
+        onDetectedExtensionAttrs(detectedExtensionAttrs);
+      }
 
       const membersWithPhotos = await Promise.all(
         data.map(async (member) => {
@@ -44,7 +52,7 @@ export function useMembers(context: WebPartContext): UseMembersResult {
     } finally {
       setIsLoading(false);
     }
-  }, [context, retryCount]);
+  }, [context, retryCount, customFieldKeys.join(',')]);
 
   useEffect(() => {
     loadMembers();

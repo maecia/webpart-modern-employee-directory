@@ -2,29 +2,26 @@ import * as React from 'react'
 import { PersonaSize } from '@fluentui/react/lib/Persona'
 import { useTheme } from '@fluentui/react/lib/Theme'
 import { Member } from '../../../../models/Member'
-import { CardFieldName } from '../../../../models/DirectoryConfig'
+import { getEntraFieldLabel } from '../../../../models/DirectoryConfig'
 import { usePagination } from '../../../../hooks/usePagination'
 import { getTeamsDeepLink } from '../../../../utils/teamsDeepLink'
 import { getMailtoLink } from '../../../../utils/formatUtils'
+import { strings } from '../../loc/mystrings'
 import PersonaAvatar from '../shared/PersonaAvatar'
 import TeamsIcon from '../shared/TeamsIcon'
 import OutlookIcon from '../shared/OutlookIcon'
 
 interface ListViewProps {
   members: Member[]
-  listFields: CardFieldName[]
+  /** Ordered field keys (CardFieldName + custom) */
+  listFieldOrder: string[]
+  /** Localized labels for custom fields */
+  listFieldLabels: Record<string, string>
   onMemberClick: (member: Member) => void
 }
 
 interface SortState {
-  key:
-    | 'displayName'
-    | 'jobTitle'
-    | 'email'
-    | 'mobilePhone'
-    | 'department'
-    | 'officeLocation'
-    | 'managerDisplayName'
+  key: string
   descending: boolean
 }
 
@@ -52,7 +49,8 @@ const cellStyle: React.CSSProperties = {
 
 const ListView: React.FC<ListViewProps> = ({
   members,
-  listFields,
+  listFieldOrder,
+  listFieldLabels,
   onMemberClick,
 }) => {
   const { visibleItems, hasMore, loadMore } = usePagination(members, 'list')
@@ -63,23 +61,251 @@ const ListView: React.FC<ListViewProps> = ({
     key: 'displayName',
     descending: false,
   })
-  const [hoveredCol, setHoveredCol] = React.useState<SortState['key'] | null>(
-    null,
-  )
+  const [hoveredCol, setHoveredCol] = React.useState<string | null>(null)
 
+  // ── Column definitions built from listFieldOrder ──────────────────────────
+  // `name` and `firstName` are merged into a single "name group" column at
+  // whichever position comes first.
+  type ColDef = {
+    key: string
+    sortKey?: string
+    renderHeader: () => React.ReactNode
+    renderCell: (member: Member) => React.ReactNode
+    headerStyle?: React.CSSProperties
+    cellStyle?: React.CSSProperties
+  }
+
+  const columns = React.useMemo<ColDef[]>(() => {
+    const cols: ColDef[] = []
+    let nameGroupAdded = false
+    const showFirstName = listFieldOrder.includes('firstName')
+    const showLastName = listFieldOrder.includes('name')
+
+    for (const key of listFieldOrder) {
+      switch (key) {
+        case 'photo':
+          cols.push({
+            key: 'photo',
+            renderHeader: () => null,
+            renderCell: (m) => (
+              <PersonaAvatar
+                photoUrl={m.photoUrl}
+                displayName={m.displayName}
+                givenName={m.givenName}
+                size={PersonaSize.size32}
+              />
+            ),
+            headerStyle: {
+              ...headerCellStyle,
+              cursor: 'default',
+              width: 44,
+              padding: '10px 0 10px 16px',
+            },
+            cellStyle: { ...cellStyle, width: 44, padding: '10px 0 10px 16px' },
+          })
+          break
+
+        case 'name':
+        case 'firstName':
+          if (!nameGroupAdded) {
+            nameGroupAdded = true
+            cols.push({
+              key: 'name_group',
+              sortKey: 'displayName',
+              renderHeader: () =>
+                listFieldLabels['name'] || strings.HeaderCollaborator,
+              renderCell: (m) => {
+                const fullName =
+                  `${m.givenName || ''} ${m.surname || ''}`.trim() ||
+                  m.displayName
+                if (showFirstName && showLastName)
+                  return <span style={{ fontWeight: 500 }}>{fullName}</span>
+                if (showFirstName)
+                  return (
+                    <span style={{ fontWeight: 500 }}>{m.givenName || ''}</span>
+                  )
+                return (
+                  <span style={{ fontWeight: 500 }}>
+                    {m.surname || m.displayName}
+                  </span>
+                )
+              },
+            })
+          }
+          break
+
+        case 'jobTitle':
+          cols.push({
+            key: 'jobTitle',
+            sortKey: 'jobTitle',
+            renderHeader: () =>
+              listFieldLabels['jobTitle'] || strings.HeaderJobTitle,
+            renderCell: (m) => m.jobTitle || '',
+          })
+          break
+
+        case 'email':
+          cols.push({
+            key: 'email',
+            sortKey: 'email',
+            renderHeader: () => listFieldLabels['email'] || strings.HeaderEmail,
+            renderCell: (m) => m.email || '',
+          })
+          break
+
+        case 'phone':
+          cols.push({
+            key: 'phone',
+            sortKey: 'mobilePhone',
+            renderHeader: () => listFieldLabels['phone'] || strings.HeaderPhone,
+            renderCell: (m) => m.mobilePhone || '',
+          })
+          break
+
+        case 'department':
+          cols.push({
+            key: 'department',
+            sortKey: 'department',
+            renderHeader: () =>
+              listFieldLabels['department'] || strings.HeaderDepartment,
+            renderCell: (m) => m.department || '',
+          })
+          break
+
+        case 'officeLocation':
+          cols.push({
+            key: 'officeLocation',
+            sortKey: 'officeLocation',
+            renderHeader: () =>
+              listFieldLabels['officeLocation'] || strings.HeaderLocation,
+            renderCell: (m) => m.officeLocation || '',
+          })
+          break
+
+        case 'manager':
+          cols.push({
+            key: 'manager',
+            sortKey: 'managerDisplayName',
+            renderHeader: () => strings.HeaderManager,
+            renderCell: (m) => {
+              const mgr = m.managerId
+                ? members.find((x) => x.id === m.managerId)
+                : undefined
+              if (mgr) {
+                return (
+                  <span
+                    className="spdir-mgr-link"
+                    style={{ color: primaryColor, cursor: 'pointer' }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onMemberClick(mgr)
+                    }}
+                    title={strings.ViewProfile}
+                  >
+                    {m.managerDisplayName || ''}
+                  </span>
+                )
+              }
+              return m.managerDisplayName || ''
+            },
+          })
+          break
+
+        case 'outlook':
+          cols.push({
+            key: 'outlook',
+            renderHeader: () => null,
+            renderCell: (m) =>
+              m.email ? (
+                <a
+                  href={getMailtoLink(m.email)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={strings.SendEmail}
+                  aria-label={strings.SendEmail}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{ display: 'flex', alignItems: 'center' }}
+                >
+                  <OutlookIcon size={20} />
+                </a>
+              ) : null,
+            headerStyle: { ...headerCellStyle, cursor: 'default', width: 48 },
+            cellStyle: { ...cellStyle, padding: '10px 8px' },
+          })
+          break
+
+        case 'teams':
+          cols.push({
+            key: 'teams',
+            renderHeader: () => null,
+            renderCell: (m) =>
+              m.teamsId ? (
+                <button
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 4,
+                    borderRadius: 4,
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                  title={strings.ContactViaTeams}
+                  aria-label={strings.ContactViaTeams}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    window.open(getTeamsDeepLink(m.teamsId!), '_blank')
+                  }}
+                >
+                  <TeamsIcon size={20} />
+                </button>
+              ) : null,
+            headerStyle: { ...headerCellStyle, cursor: 'default', width: 48 },
+            cellStyle: { ...cellStyle, padding: '10px 8px' },
+          })
+          break
+
+        default: {
+          // Custom / EntraID field
+          const label = listFieldLabels[key] || getEntraFieldLabel(key)
+          cols.push({
+            key,
+            sortKey: key,
+            renderHeader: () => label,
+            renderCell: (m) => m.customProperties?.[key] || '',
+          })
+          break
+        }
+      }
+    }
+    return cols
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listFieldOrder, listFieldLabels, members, primaryColor])
+
+  // ── Sorting ───────────────────────────────────────────────────────────────
   const sorted = React.useMemo(() => {
     const result = [...visibleItems]
-    const { key, descending } = sortState
     result.sort((a, b) => {
-      const aVal = String((a as any)[key] || '')
-      const bVal = String((b as any)[key] || '')
+      let aVal: string
+      let bVal: string
+      const k = sortState.key
+      if (k === 'displayName') {
+        aVal = `${a.givenName || ''} ${a.surname || ''}`.trim() || a.displayName
+        bVal = `${b.givenName || ''} ${b.surname || ''}`.trim() || b.displayName
+      } else if ((a as any)[k] !== undefined) {
+        aVal = String((a as any)[k] || '')
+        bVal = String((b as any)[k] || '')
+      } else {
+        aVal = a.customProperties?.[k] || ''
+        bVal = b.customProperties?.[k] || ''
+      }
       const cmp = aVal.localeCompare(bVal, 'fr', { sensitivity: 'base' })
-      return descending ? -cmp : cmp
+      return sortState.descending ? -cmp : cmp
     })
     return result
   }, [visibleItems, sortState])
 
-  const toggleSort = (key: SortState['key']) => {
+  const toggleSort = (key: string) => {
     setSortState((prev) =>
       prev.key === key
         ? { key, descending: !prev.descending }
@@ -87,7 +313,7 @@ const ListView: React.FC<ListViewProps> = ({
     )
   }
 
-  const sortIndicator = (key: SortState['key']) => {
+  const sortIndicator = (key: string) => {
     const isActive = sortState.key === key
     const isHovered = hoveredCol === key
     return (
@@ -105,32 +331,29 @@ const ListView: React.FC<ListViewProps> = ({
     )
   }
 
-  const sortableThProps = (key: SortState['key']) => ({
-    style: {
-      ...headerCellStyle,
-      backgroundColor: hoveredCol === key ? '#eef0f4' : '#F8F9FB',
-      transition: 'background-color 0.15s ease',
-    },
-    onClick: () => toggleSort(key),
-    onMouseEnter: () => setHoveredCol(key),
-    onMouseLeave: () => setHoveredCol(null),
-  })
-
-  const showJobTitle = listFields.includes('jobTitle')
-  const showEmail = listFields.includes('email')
-  const showPhone = listFields.includes('phone')
-  const showDepartment = listFields.includes('department')
-  const showLocation = listFields.includes('officeLocation')
-  const showManager = listFields.includes('manager')
-  const showTeams = listFields.includes('teams')
-  const showOutlook = listFields.includes('outlook')
-  const showPhoto = listFields.includes('photo')
-  const showName = listFields.includes('name')
-  const showFirstName = listFields.includes('firstName')
-  const showCollaborateur = showPhoto || showName || showFirstName
-
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div style={{ padding: '8px 24px 32px' }}>
+      <style>{`
+        .spdir-mgr-link {
+          display: inline-block;
+          width: fit-content;
+          position: relative;
+          padding-bottom: 2px;
+        }
+        .spdir-mgr-link::after {
+          content: '';
+          position: absolute;
+          bottom: 0; left: 0;
+          width: 100%; height: 1px;
+          background: currentColor;
+          transform-origin: right;
+          transform: scaleX(0);
+          transition: transform 0.3s ease;
+        }
+        .spdir-mgr-link:hover::after { transform: scaleX(1); }
+      `}</style>
+
       <div style={{ overflowX: 'auto' }}>
         <table
           style={{
@@ -141,174 +364,61 @@ const ListView: React.FC<ListViewProps> = ({
         >
           <thead>
             <tr>
-              {showPhoto && (
-                <th
-                  style={{
-                    ...headerCellStyle,
-                    cursor: 'default',
-                    width: 44,
-                    padding: '10px 0 10px 16px',
-                  }}
-                />
-              )}
-              {(showName || showFirstName) && (
-                <th {...sortableThProps('displayName')}>
-                  Collaborateur {sortIndicator('displayName')}
-                </th>
-              )}
-              {showJobTitle && (
-                <th {...sortableThProps('jobTitle')}>
-                  Poste {sortIndicator('jobTitle')}
-                </th>
-              )}
-              {showEmail && (
-                <th {...sortableThProps('email')}>
-                  E-mail {sortIndicator('email')}
-                </th>
-              )}
-              {showPhone && (
-                <th {...sortableThProps('mobilePhone')}>
-                  Téléphone {sortIndicator('mobilePhone')}
-                </th>
-              )}
-              {showDepartment && (
-                <th {...sortableThProps('department')}>
-                  Département {sortIndicator('department')}
-                </th>
-              )}
-              {showLocation && (
-                <th {...sortableThProps('officeLocation')}>
-                  Localisation {sortIndicator('officeLocation')}
-                </th>
-              )}
-              {showManager && (
-                <th {...sortableThProps('managerDisplayName')}>
-                  Manager {sortIndicator('managerDisplayName')}
-                </th>
-              )}
-              {showOutlook && (
-                <th
-                  style={{ ...headerCellStyle, cursor: 'default', width: 48 }}
-                />
-              )}
-              {showTeams && (
-                <th
-                  style={{ ...headerCellStyle, cursor: 'default', width: 48 }}
-                />
-              )}
+              {columns.map((col) => {
+                const header = col.renderHeader()
+                if (!col.sortKey || !header) {
+                  return (
+                    <th
+                      key={col.key}
+                      style={col.headerStyle || headerCellStyle}
+                    >
+                      {header}
+                    </th>
+                  )
+                }
+                const sk = col.sortKey
+                return (
+                  <th
+                    key={col.key}
+                    style={{
+                      ...(col.headerStyle || headerCellStyle),
+                      backgroundColor:
+                        hoveredCol === sk ? '#eef0f4' : '#F8F9FB',
+                      transition: 'background-color 0.15s ease',
+                    }}
+                    onClick={() => toggleSort(sk)}
+                    onMouseEnter={() => setHoveredCol(sk)}
+                    onMouseLeave={() => setHoveredCol(null)}
+                  >
+                    {header}
+                    {sortIndicator(sk)}
+                  </th>
+                )
+              })}
             </tr>
           </thead>
           <tbody>
-            {sorted.map((member) => {
-              const fullName =
-                `${member.givenName || ''} ${member.surname || ''}`.trim() ||
-                member.displayName
-              return (
-                <tr
-                  key={member.id}
-                  onClick={() => onMemberClick(member)}
-                  style={{
-                    cursor: 'pointer',
-                    borderBottom: '1px solid #f3f2f1',
-                  }}
-                  onMouseEnter={(e) => {
-                    ;(e.currentTarget as HTMLElement).style.backgroundColor =
-                      '#faf9f8'
-                  }}
-                  onMouseLeave={(e) => {
-                    ;(e.currentTarget as HTMLElement).style.backgroundColor =
-                      'transparent'
-                  }}
-                >
-                  {showPhoto && (
-                    <td
-                      style={{
-                        ...cellStyle,
-                        width: 44,
-                        padding: '10px 0 10px 16px',
-                      }}
-                    >
-                      <PersonaAvatar
-                        photoUrl={member.photoUrl}
-                        displayName={member.displayName}
-                        givenName={member.givenName}
-                        size={PersonaSize.size32}
-                      />
-                    </td>
-                  )}
-                  {(showName || showFirstName) && (
-                    <td style={cellStyle}>
-                      <span style={{ fontWeight: 500 }}>
-                        {showFirstName && showName
-                          ? fullName
-                          : showFirstName
-                            ? member.givenName || ''
-                            : `${member.surname || member.displayName}`}
-                      </span>
-                    </td>
-                  )}
-                  {showJobTitle && (
-                    <td style={cellStyle}>{member.jobTitle || ''}</td>
-                  )}
-                  {showEmail && <td style={cellStyle}>{member.email || ''}</td>}
-                  {showPhone && (
-                    <td style={cellStyle}>{member.mobilePhone || ''}</td>
-                  )}
-                  {showDepartment && (
-                    <td style={cellStyle}>{member.department || ''}</td>
-                  )}
-                  {showLocation && (
-                    <td style={cellStyle}>{member.officeLocation || ''}</td>
-                  )}
-                  {showManager && (
-                    <td style={cellStyle}>{member.managerDisplayName || ''}</td>
-                  )}
-                  {showOutlook && (
-                    <td style={{ ...cellStyle, padding: '10px 8px' }}>
-                      {member.email && (
-                        <a
-                          href={getMailtoLink(member.email!)}
-                          title="Envoyer un email"
-                          aria-label="Envoyer un email"
-                          onClick={(e) => e.stopPropagation()}
-                          style={{ display: 'flex', alignItems: 'center' }}
-                        >
-                          <OutlookIcon size={20} />
-                        </a>
-                      )}
-                    </td>
-                  )}
-                  {showTeams && (
-                    <td style={{ ...cellStyle, padding: '10px 8px' }}>
-                      {member.teamsId && (
-                        <button
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            padding: 4,
-                            borderRadius: 4,
-                            display: 'flex',
-                            alignItems: 'center',
-                          }}
-                          title="Contacter via Teams"
-                          aria-label="Contacter via Teams"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            window.open(
-                              getTeamsDeepLink(member.teamsId!),
-                              '_blank',
-                            )
-                          }}
-                        >
-                          <TeamsIcon size={20} />
-                        </button>
-                      )}
-                    </td>
-                  )}
-                </tr>
-              )
-            })}
+            {sorted.map((member) => (
+              <tr
+                key={member.id}
+                onClick={() => onMemberClick(member)}
+                style={{ cursor: 'pointer', borderBottom: '1px solid #f3f2f1' }}
+                onMouseEnter={(e) => {
+                  ;(e.currentTarget as HTMLElement).style.backgroundColor =
+                    '#faf9f8'
+                }}
+                onMouseLeave={(e) => {
+                  ;(e.currentTarget as HTMLElement).style.backgroundColor =
+                    'transparent'
+                }}
+              >
+                {columns.map((col) => (
+                  <td key={col.key} style={col.cellStyle || cellStyle}>
+                    {col.renderCell(member)}
+                  </td>
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -344,7 +454,7 @@ const ListView: React.FC<ListViewProps> = ({
             >
               <path d="M7 1a1 1 0 0 1 1 1v4h4a1 1 0 1 1 0 2H8v4a1 1 0 1 1-2 0V8H2a1 1 0 1 1 0-2h4V2a1 1 0 0 1 1-1z" />
             </svg>
-            Voir plus de collaborateurs
+            {strings.LoadMore}
           </button>
         </div>
       )}

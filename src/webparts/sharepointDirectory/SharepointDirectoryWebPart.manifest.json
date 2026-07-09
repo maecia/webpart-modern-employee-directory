@@ -19,36 +19,23 @@
       "officeFabricIconFontName": "People",
       "properties": {
         "defaultView": "card",
-        "cardFields": ["photo", "name", "firstName", "outlook", "teams"],
-        "listFields": [
-          "photo",
-          "name",
-          "firstName",
-          "email",
-          "phone",
-          "jobTitle",
-          "department",
-          "manager"
-        ],
-        "modalFields": [
-          "photo",
-          "name",
-          "firstName",
-          "email",
-          "phone",
-          "jobTitle",
-          "department",
-          "officeLocation",
-          "outlook",
-          "teams"
-        ],
+        "sortOrder": "lastNameAsc",
+        "activeViewTab": "card",
+        "cardFieldsJson": "",
+        "listFieldsJson": "",
+        "modalFieldsJson": "",
+        "listFieldLabelsJson": "",
+        "modalFieldLabelsJson": "",
         "filterCount": 0,
         "filterField1": "",
-        "filterLabel1": "",
+        "filterLabelFr1": "",
+        "filterLabelEn1": "",
         "filterField2": "",
-        "filterLabel2": "",
+        "filterLabelFr2": "",
+        "filterLabelEn2": "",
         "filterField3": "",
-        "filterLabel3": ""
+        "filterLabelFr3": "",
+        "filterLabelEn3": ""
       }
     }
   ]

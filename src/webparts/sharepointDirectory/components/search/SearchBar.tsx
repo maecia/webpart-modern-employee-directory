@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { strings } from '../../loc/mystrings'
 
 interface SearchBarProps {
   value: string
@@ -9,8 +10,9 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({
   value,
   onChange,
-  placeholder = 'Rechercher un collaborateur...',
+  placeholder,
 }) => {
+  const resolvedPlaceholder = placeholder ?? strings.SearchPlaceholder
   return (
     <div
       style={{
@@ -40,7 +42,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       </svg>
       <input
         type="text"
-        placeholder={placeholder}
+        placeholder={resolvedPlaceholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         style={{
@@ -56,7 +58,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       {value && (
         <button
           onClick={() => onChange('')}
-          aria-label="Effacer la recherche"
+          aria-label={strings.ClearSearch}
           style={{
             background: 'none',
             border: 'none',

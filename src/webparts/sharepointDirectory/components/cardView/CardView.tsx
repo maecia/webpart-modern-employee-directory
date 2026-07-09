@@ -1,19 +1,19 @@
 import * as React from 'react'
 import { useTheme } from '@fluentui/react/lib/Theme'
 import { Member } from '../../../../models/Member'
-import { CardFieldName } from '../../../../models/DirectoryConfig'
 import { usePagination } from '../../../../hooks/usePagination'
+import { strings } from '../../loc/mystrings'
 import MemberCard from './MemberCard'
 
 interface CardViewProps {
   members: Member[]
-  cardFields: CardFieldName[]
+  cardFieldOrder: string[]
   onMemberClick: (member: Member) => void
 }
 
 const CardView: React.FC<CardViewProps> = ({
   members,
-  cardFields,
+  cardFieldOrder,
   onMemberClick,
 }) => {
   const { visibleItems, hasMore, loadMore } = usePagination(members, 'card')
@@ -35,7 +35,8 @@ const CardView: React.FC<CardViewProps> = ({
           <MemberCard
             key={member.id}
             member={member}
-            cardFields={cardFields}
+            cardFieldOrder={cardFieldOrder}
+            members={members}
             onClick={onMemberClick}
           />
         ))}
@@ -72,7 +73,7 @@ const CardView: React.FC<CardViewProps> = ({
             >
               <path d="M7 1a1 1 0 0 1 1 1v4h4a1 1 0 1 1 0 2H8v4a1 1 0 1 1-2 0V8H2a1 1 0 1 1 0-2h4V2a1 1 0 0 1 1-1z" />
             </svg>
-            Voir plus de collaborateurs
+            {strings.LoadMore}
           </button>
         </div>
       )}

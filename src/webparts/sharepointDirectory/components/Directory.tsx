@@ -71,64 +71,6 @@ function createSeededRng(seed: number): () => number {
   }
 }
 
-function applySortOrder(members: Member[], sortOrder: SortOrder): Member[] {
-  const copy = [...members]
-  switch (sortOrder) {
-    case 'firstNameAsc':
-      copy.sort((a, b) =>
-        (a.givenName || a.displayName || '').localeCompare(
-          b.givenName || b.displayName || '',
-          'fr',
-          { sensitivity: 'base' },
-        ),
-      )
-      break
-    case 'firstNameDesc':
-      copy.sort((a, b) =>
-        (b.givenName || b.displayName || '').localeCompare(
-          a.givenName || a.displayName || '',
-          'fr',
-          { sensitivity: 'base' },
-        ),
-      )
-      break
-    case 'lastNameAsc':
-      copy.sort((a, b) =>
-        (a.surname || a.displayName || '').localeCompare(
-          b.surname || b.displayName || '',
-          'fr',
-          { sensitivity: 'base' },
-        ),
-      )
-      break
-    case 'lastNameDesc':
-      copy.sort((a, b) =>
-        (b.surname || b.displayName || '').localeCompare(
-          a.surname || a.displayName || '',
-          'fr',
-          { sensitivity: 'base' },
-        ),
-      )
-      break
-    case 'random':
-      const rng = createSeededRng(members.length)
-      for (let i = copy.length - 1; i > 0; i--) {
-        const j = rng() % (i + 1)
-        ;[copy[i], copy[j]] = [copy[j], copy[i]]
-      }
-      break
-  }
-  return copy
-}
-
-function createSeededRng(seed: number): () => number {
-  let s = seed
-  return () => {
-    s = (s * 1664525 + 1013904223) & 0xffffffff
-    return s >>> 0
-  }
-}
-
 function searchScore(member: any, query: string): number {
   let score = 0
   const fields = [

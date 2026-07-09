@@ -79,15 +79,16 @@ function createStyles(primary: string) {
 
     sectionLabel: {
       display: 'block',
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: 600,
       color: '#323130',
+      marginTop: 12,
       marginBottom: 4,
     } as React.CSSProperties,
 
     // ── Fluent UI dropdown trigger ──────────────────────────────────────────
     selectTrigger: (open: boolean): React.CSSProperties => ({
-      height: 32,
+      height: open ? 33 : 32,
       width: '100%',
       display: 'flex',
       alignItems: 'center',
@@ -96,10 +97,10 @@ function createStyles(primary: string) {
       WebkitAppearance: 'none' as any,
       borderRadius: 'var(--borderRadiusMedium, 4px)',
       border: '1px solid var(--colorNeutralStroke1, #d1d1d1)',
-      borderBottom: open
-        ? `2px solid ${primary}`
-        : `1px solid var(--colorNeutralStrokeAccessiblePressed, #616161)`,
-      background: open ? '#f3f2f1' : '#ffffff',
+      borderBottomWidth: open ? '2px' : '1px',
+      borderBottomStyle: 'solid',
+      borderBottomColor: open ? primary : 'var(--colorNeutralStrokeAccessiblePressed, #616161)',
+      background: '#ffffff',
       fontSize: 14,
       fontFamily:
         '"Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif',
@@ -118,7 +119,7 @@ function createStyles(primary: string) {
       right: 0,
       zIndex: 9999,
       background: '#ffffff',
-      border: '1px solid #c7c9cc',
+      border: '1px solid #8a8886',
       borderRadius: 2,
       maxHeight: 300,
       overflowY: 'auto' as const,
@@ -146,7 +147,7 @@ function createStyles(primary: string) {
       padding: '0 8px',
       height: 36,
       cursor: 'pointer',
-      background: hovered ? '#f3f2f1' : 'transparent',
+      background: 'transparent',
       userSelect: 'none' as const,
       color: '#201f1e',
       fontSize: 14,
@@ -200,8 +201,8 @@ function createStyles(primary: string) {
     } as React.CSSProperties,
 
     handle: {
-      color: '#c8c6c4',
-      cursor: 'grab',
+    color: '#8a8886',
+    cursor: 'grab',
       userSelect: 'none' as const,
       flexShrink: 0,
       paddingTop: 2,
@@ -263,7 +264,7 @@ function createStyles(primary: string) {
       border: 'none',
       padding: '2px 4px',
       cursor: 'pointer',
-      color: '#a19f9d',
+      color: '#605e5c',
       fontSize: 16,
       lineHeight: '1',
       flexShrink: 0,
@@ -271,7 +272,7 @@ function createStyles(primary: string) {
 
     hint: {
       fontSize: 11,
-      color: '#a19f9d',
+      color: '#605e5c',
       marginBottom: 6,
     } as React.CSSProperties,
   }
@@ -296,7 +297,7 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
       width="10"
       height="16"
       viewBox="0 0 10 16"
-      fill="#c8c6c4"
+      fill="#8a8886"
       style={S.handle}
       aria-hidden
     >

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Member } from '../models/Member';
 import { GraphService } from '../services/GraphService';
+import { strings } from '../webparts/sharepointDirectory/loc/mystrings';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 interface UseMembersResult {
@@ -48,7 +49,7 @@ export function useMembers(
 
       setMembers(membersWithPhotos);
     } catch (err) {
-      setError('Impossible de charger les données de l\'annuaire. Veuillez réessayer.');
+      setError(strings.ErrorLoading);
     } finally {
       setIsLoading(false);
     }

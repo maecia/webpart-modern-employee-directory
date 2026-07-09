@@ -362,6 +362,21 @@ const ListView: React.FC<ListViewProps> = ({
             backgroundColor: '#ffffff',
           }}
         >
+          <caption
+            style={{
+              border: 0,
+              clip: 'rect(0 0 0 0)',
+              height: 1,
+              margin: -1,
+              overflow: 'hidden',
+              padding: 0,
+              position: 'absolute',
+              width: 1,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {strings.ResultsLabel}
+          </caption>
           <thead>
             <tr>
               {columns.map((col) => {
@@ -370,6 +385,7 @@ const ListView: React.FC<ListViewProps> = ({
                   return (
                     <th
                       key={col.key}
+                      scope="col"
                       style={col.headerStyle || headerCellStyle}
                     >
                       {header}
@@ -380,6 +396,7 @@ const ListView: React.FC<ListViewProps> = ({
                 return (
                   <th
                     key={col.key}
+                    scope="col"
                     style={{
                       ...(col.headerStyle || headerCellStyle),
                       backgroundColor:
@@ -401,7 +418,16 @@ const ListView: React.FC<ListViewProps> = ({
             {sorted.map((member) => (
               <tr
                 key={member.id}
+                tabIndex={0}
+                role="button"
+                aria-label={`${(member.givenName || '')} ${(member.surname || '')}`.trim() || member.displayName}
                 onClick={() => onMemberClick(member)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onMemberClick(member)
+                  }
+                }}
                 style={{ cursor: 'pointer', borderBottom: '1px solid #f3f2f1' }}
                 onMouseEnter={(e) => {
                   ;(e.currentTarget as HTMLElement).style.backgroundColor =

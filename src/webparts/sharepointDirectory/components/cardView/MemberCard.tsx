@@ -80,6 +80,8 @@ const MemberCard: React.FC<MemberCardProps> = ({
           `}</style>
           <span
             className="spdir-mgr-link"
+            role={managerMember ? 'button' : undefined}
+            tabIndex={managerMember ? 0 : undefined}
             style={{
               fontSize: 13,
               color: managerMember ? primaryColor : '#605e5c',
@@ -94,6 +96,17 @@ const MemberCard: React.FC<MemberCardProps> = ({
                 ? (e) => {
                     e.stopPropagation()
                     onClick(managerMember)
+                  }
+                : undefined
+            }
+            onKeyDown={
+              managerMember
+                ? (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      onClick(managerMember)
+                    }
                   }
                 : undefined
             }

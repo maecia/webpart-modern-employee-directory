@@ -72,6 +72,7 @@ function useDirectoryConfig(rawConfig) {
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _services_GraphService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/GraphService */ 4819);
+/* harmony import */ var _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../webparts/sharepointDirectory/loc/mystrings */ 5126);
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -119,6 +120,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+
 
 
 function useMembers(context, customFieldKeys, onDetectedExtensionAttrs) {
@@ -170,7 +172,7 @@ function useMembers(context, customFieldKeys, onDetectedExtensionAttrs) {
                     return [3 /*break*/, 6];
                 case 4:
                     err_1 = _c.sent();
-                    setError('Impossible de charger les données de l\'annuaire. Veuillez réessayer.');
+                    setError(_webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.ErrorLoading);
                     return [3 /*break*/, 6];
                 case 5:
                     setIsLoading(false);
@@ -858,7 +860,7 @@ var Banner = function (_a) {
         react__WEBPACK_IMPORTED_MODULE_0__.createElement(_search_SearchBar__WEBPACK_IMPORTED_MODULE_2__["default"], { value: searchQuery, onChange: onSearchChange }),
         filters.length > 0 && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_search_FilterBar__WEBPACK_IMPORTED_MODULE_3__["default"], { filters: filters, members: members, values: filterValues, onChange: onFilterChange })),
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { flex: 1, minWidth: 16 } }),
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_6__.Text, { variant: "small", styles: { root: { whiteSpace: 'nowrap', color: '#6B7280' } } },
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_6__.Text, { variant: "small", styles: { root: { whiteSpace: 'nowrap', color: '#605e5c' } } },
             _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ResultsLabel,
             " ",
             resultCount,
@@ -884,10 +886,9 @@ var Banner = function (_a) {
                     justifyContent: 'center',
                     borderRadius: '50%',
                     backgroundColor: activeView === 'card' ? primaryColor : 'transparent',
-                    color: activeView === 'card' ? '#ffffff' : '#a8a8a8',
+                    color: activeView === 'card' ? '#ffffff' : '#605e5c',
                     cursor: 'pointer',
                     border: 'none',
-                    outline: 'none',
                     padding: 0,
                     flexShrink: 0,
                     transition: 'background-color 0.2s ease, color 0.2s ease',
@@ -905,10 +906,9 @@ var Banner = function (_a) {
                     justifyContent: 'center',
                     borderRadius: '50%',
                     backgroundColor: activeView === 'list' ? primaryColor : 'transparent',
-                    color: activeView === 'list' ? '#ffffff' : '#a8a8a8',
+                    color: activeView === 'list' ? '#ffffff' : '#605e5c',
                     cursor: 'pointer',
                     border: 'none',
-                    outline: 'none',
                     padding: 0,
                     flexShrink: 0,
                     transition: 'background-color 0.2s ease, color 0.2s ease',
@@ -935,6 +935,7 @@ var Banner = function (_a) {
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @fluentui/react/lib/Theme */ 3635);
 /* harmony import */ var _cardView_CardView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./cardView/CardView */ 5252);
 /* harmony import */ var _listView_ListView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./listView/ListView */ 5430);
 /* harmony import */ var _modal_MemberModal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modal/MemberModal */ 5804);
@@ -942,6 +943,8 @@ var Banner = function (_a) {
 /* harmony import */ var _shared_LoadingState__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./shared/LoadingState */ 5943);
 /* harmony import */ var _shared_ErrorState__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./shared/ErrorState */ 9280);
 /* harmony import */ var _shared_EmptyState__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./shared/EmptyState */ 6731);
+/* harmony import */ var _shared_ErrorBoundary__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./shared/ErrorBoundary */ 2299);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../loc/mystrings */ 5126);
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -962,6 +965,9 @@ var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+
+
+
 
 
 
@@ -1041,11 +1047,14 @@ function searchScore(member, query) {
     return score;
 }
 var Directory = function (_a) {
+    var _b;
     var config = _a.config, members = _a.members, isLoading = _a.isLoading, error = _a.error, onRetry = _a.onRetry;
-    var _b = react__WEBPACK_IMPORTED_MODULE_0__.useState(config.defaultView), view = _b[0], setView = _b[1];
-    var _c = react__WEBPACK_IMPORTED_MODULE_0__.useState(''), searchQuery = _c[0], setSearchQuery = _c[1];
-    var _d = react__WEBPACK_IMPORTED_MODULE_0__.useState({}), filterValues = _d[0], setFilterValues = _d[1];
-    var _e = react__WEBPACK_IMPORTED_MODULE_0__.useState(null), selectedMember = _e[0], setSelectedMember = _e[1];
+    var _c = react__WEBPACK_IMPORTED_MODULE_0__.useState(config.defaultView), view = _c[0], setView = _c[1];
+    var _d = react__WEBPACK_IMPORTED_MODULE_0__.useState(''), searchQuery = _d[0], setSearchQuery = _d[1];
+    var _e = react__WEBPACK_IMPORTED_MODULE_0__.useState({}), filterValues = _e[0], setFilterValues = _e[1];
+    var _f = react__WEBPACK_IMPORTED_MODULE_0__.useState(null), selectedMember = _f[0], setSelectedMember = _f[1];
+    var theme = (0,_fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_10__.useTheme)();
+    var primaryColor = ((_b = theme === null || theme === void 0 ? void 0 : theme.palette) === null || _b === void 0 ? void 0 : _b.themePrimary) || '#1B7A6E';
     react__WEBPACK_IMPORTED_MODULE_0__.useEffect(function () {
         setView(config.defaultView);
     }, [config.defaultView]);
@@ -1101,14 +1110,15 @@ var Directory = function (_a) {
     if (error) {
         return react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_ErrorState__WEBPACK_IMPORTED_MODULE_6__["default"], { message: error, onRetry: onRetry });
     }
-    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { role: "region", "aria-label": "Annuaire SharePoint", "aria-live": "polite", style: { backgroundColor: '#faf9f8', minHeight: '100%' } },
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Banner__WEBPACK_IMPORTED_MODULE_4__["default"], { searchQuery: searchQuery, onSearchChange: setSearchQuery, filters: config.filters, members: members, filterValues: filterValues, onFilterChange: handleFilterChange, resultCount: resultCount, activeView: view, onViewChange: setView, filteredMembers: filteredMembers }),
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { key: view, style: {
-                animation: 'spdir-fadein 0.18s ease',
-            } },
-            react__WEBPACK_IMPORTED_MODULE_0__.createElement("style", null, "\n          @keyframes spdir-fadein {\n            from { opacity: 0; transform: translateY(6px); }\n            to   { opacity: 1; transform: translateY(0); }\n          }\n        "),
-            filteredMembers.length === 0 ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_EmptyState__WEBPACK_IMPORTED_MODULE_7__["default"], null)) : view === 'card' ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_cardView_CardView__WEBPACK_IMPORTED_MODULE_1__["default"], { members: filteredMembers, cardFieldOrder: config.cardFieldOrder, onMemberClick: setSelectedMember })) : (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_listView_ListView__WEBPACK_IMPORTED_MODULE_2__["default"], { members: filteredMembers, listFieldOrder: config.listFieldOrder, listFieldLabels: config.listFieldLabels, onMemberClick: setSelectedMember }))),
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_modal_MemberModal__WEBPACK_IMPORTED_MODULE_3__["default"], { member: selectedMember, members: members, modalFieldOrder: config.modalFieldOrder, modalFieldLabels: config.modalFieldLabels, onDismiss: function () { return setSelectedMember(null); }, onMemberClick: setSelectedMember })));
+    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_ErrorBoundary__WEBPACK_IMPORTED_MODULE_8__["default"], null,
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { role: "region", "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_9__.strings.DirectoryRegionLabel, "aria-live": "polite", style: { backgroundColor: '#faf9f8', minHeight: '100%' } },
+            react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Banner__WEBPACK_IMPORTED_MODULE_4__["default"], { searchQuery: searchQuery, onSearchChange: setSearchQuery, filters: config.filters, members: members, filterValues: filterValues, onFilterChange: handleFilterChange, resultCount: resultCount, activeView: view, onViewChange: setView, filteredMembers: filteredMembers }),
+            react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { key: view, style: {
+                    animation: 'spdir-fadein 0.18s ease',
+                } },
+                react__WEBPACK_IMPORTED_MODULE_0__.createElement("style", null, "\n          @keyframes spdir-fadein {\n            from { opacity: 0; transform: translateY(6px); }\n            to   { opacity: 1; transform: translateY(0); }\n          }\n          @media (prefers-reduced-motion: reduce) {\n            *, *::before, *::after {\n              animation-duration: 0.01ms !important;\n              animation-iteration-count: 1 !important;\n              transition-duration: 0.01ms !important;\n            }\n          }\n          *:focus-visible {\n            outline: 2px solid ".concat(primaryColor, " !important;\n            outline-offset: 2px;\n          }\n        ")),
+                filteredMembers.length === 0 ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_EmptyState__WEBPACK_IMPORTED_MODULE_7__["default"], null)) : view === 'card' ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_cardView_CardView__WEBPACK_IMPORTED_MODULE_1__["default"], { members: filteredMembers, cardFieldOrder: config.cardFieldOrder, onMemberClick: setSelectedMember })) : (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_listView_ListView__WEBPACK_IMPORTED_MODULE_2__["default"], { members: filteredMembers, listFieldOrder: config.listFieldOrder, listFieldLabels: config.listFieldLabels, onMemberClick: setSelectedMember }))),
+            react__WEBPACK_IMPORTED_MODULE_0__.createElement(_modal_MemberModal__WEBPACK_IMPORTED_MODULE_3__["default"], { member: selectedMember, members: members, modalFieldOrder: config.modalFieldOrder, modalFieldLabels: config.modalFieldLabels, onDismiss: function () { return setSelectedMember(null); }, onMemberClick: setSelectedMember }))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Directory);
 
@@ -1248,7 +1258,7 @@ var MemberCard = function (_a) {
                 : undefined;
             return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null,
                 react__WEBPACK_IMPORTED_MODULE_0__.createElement("style", null, "\n            .spdir-mgr-link { display: inline-block; width: fit-content; position: relative; padding-bottom: 2px; }\n            .spdir-mgr-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: currentColor; transform-origin: right; transform: scaleX(0); transition: transform 0.3s ease; }\n            .spdir-mgr-link:hover::after { transform: scaleX(1); }\n          "),
-                react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { className: "spdir-mgr-link", style: {
+                react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { className: "spdir-mgr-link", role: managerMember_1 ? 'button' : undefined, tabIndex: managerMember_1 ? 0 : undefined, style: {
                         fontSize: 13,
                         color: managerMember_1 ? primaryColor : '#605e5c',
                         lineHeight: 1.4,
@@ -1260,6 +1270,14 @@ var MemberCard = function (_a) {
                         ? function (e) {
                             e.stopPropagation();
                             onClick(managerMember_1);
+                        }
+                        : undefined, onKeyDown: managerMember_1
+                        ? function (e) {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onClick(managerMember_1);
+                            }
                         }
                         : undefined, title: managerMember_1 ? _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ViewProfile : undefined }, member.managerDisplayName)));
         }
@@ -1392,7 +1410,7 @@ var CsvExport = function (_a) {
         var date = new Date().toISOString().split('T')[0];
         csvService.exportToCsv(members, "annuaire-sharepoint-".concat(date, ".csv"));
     };
-    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: handleExport, disabled: disabled, title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.ExportCsv, onMouseEnter: function () { return !disabled && setHovered(true); }, onMouseLeave: function () { return setHovered(false); }, style: {
+    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: handleExport, disabled: disabled, title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.ExportCsv, "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.ExportCsv, onMouseEnter: function () { return !disabled && setHovered(true); }, onMouseLeave: function () { return setHovered(false); }, style: {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
@@ -1402,7 +1420,7 @@ var CsvExport = function (_a) {
             borderRadius: 20,
             border: '1px solid #c7c9cc',
             backgroundColor: hovered ? '#f3f2f1' : '#ffffff',
-            color: disabled ? '#a19f9d' : '#6B7280',
+            color: disabled ? '#605e5c' : '#605e5c',
             fontSize: 13,
             cursor: disabled ? 'not-allowed' : 'pointer',
             whiteSpace: 'nowrap',
@@ -1715,18 +1733,34 @@ var ListView = function (_a) {
                     borderCollapse: 'collapse',
                     backgroundColor: '#ffffff',
                 } },
+                react__WEBPACK_IMPORTED_MODULE_0__.createElement("caption", { style: {
+                        border: 0,
+                        clip: 'rect(0 0 0 0)',
+                        height: 1,
+                        margin: -1,
+                        overflow: 'hidden',
+                        padding: 0,
+                        position: 'absolute',
+                        width: 1,
+                        whiteSpace: 'nowrap',
+                    } }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.ResultsLabel),
                 react__WEBPACK_IMPORTED_MODULE_0__.createElement("thead", null,
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", null, columns.map(function (col) {
                         var header = col.renderHeader();
                         if (!col.sortKey || !header) {
-                            return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", { key: col.key, style: col.headerStyle || headerCellStyle }, header));
+                            return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", { key: col.key, scope: "col", style: col.headerStyle || headerCellStyle }, header));
                         }
                         var sk = col.sortKey;
-                        return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", { key: col.key, style: __assign(__assign({}, (col.headerStyle || headerCellStyle)), { backgroundColor: hoveredCol === sk ? '#eef0f4' : '#F8F9FB', transition: 'background-color 0.15s ease' }), onClick: function () { return toggleSort(sk); }, onMouseEnter: function () { return setHoveredCol(sk); }, onMouseLeave: function () { return setHoveredCol(null); } },
+                        return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("th", { key: col.key, scope: "col", style: __assign(__assign({}, (col.headerStyle || headerCellStyle)), { backgroundColor: hoveredCol === sk ? '#eef0f4' : '#F8F9FB', transition: 'background-color 0.15s ease' }), onClick: function () { return toggleSort(sk); }, onMouseEnter: function () { return setHoveredCol(sk); }, onMouseLeave: function () { return setHoveredCol(null); } },
                             header,
                             sortIndicator(sk)));
                     }))),
-                react__WEBPACK_IMPORTED_MODULE_0__.createElement("tbody", null, sorted.map(function (member) { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", { key: member.id, onClick: function () { return onMemberClick(member); }, style: { cursor: 'pointer', borderBottom: '1px solid #f3f2f1' }, onMouseEnter: function (e) {
+                react__WEBPACK_IMPORTED_MODULE_0__.createElement("tbody", null, sorted.map(function (member) { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", { key: member.id, tabIndex: 0, role: "button", "aria-label": "".concat((member.givenName || ''), " ").concat((member.surname || '')).trim() || member.displayName, onClick: function () { return onMemberClick(member); }, onKeyDown: function (e) {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onMemberClick(member);
+                        }
+                    }, style: { cursor: 'pointer', borderBottom: '1px solid #f3f2f1' }, onMouseEnter: function (e) {
                         ;
                         e.currentTarget.style.backgroundColor =
                             '#faf9f8';
@@ -1800,7 +1834,7 @@ var Divider = function () { return (react__WEBPACK_IMPORTED_MODULE_0__.createEle
 var FieldRow = function (_a) {
     var label = _a.label, value = _a.value, link = _a.link;
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { display: 'flex', flexDirection: 'column', gap: 2 } },
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontSize: 12, color: '#a19f9d' } }, label),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontSize: 12, color: '#605e5c' } }, label),
         link ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement("a", { href: link, target: "_blank", rel: "noopener noreferrer", style: { fontSize: 14, color: '#201f1e', textDecoration: 'none' }, onClick: function (e) { return e.stopPropagation(); } }, value)) : (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontSize: 14, color: '#201f1e' } }, value))));
 };
 var MemberModal = function (_a) {
@@ -1855,7 +1889,7 @@ var MemberModal = function (_a) {
     });
     var hasActionButtons = (detailFields.includes('outlook') && !!member.email) ||
         (detailFields.includes('teams') && !!member.teamsId);
-    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Modal__WEBPACK_IMPORTED_MODULE_7__.Modal, { isOpen: !!member, onDismiss: onDismiss, isBlocking: false, styles: {
+    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Modal__WEBPACK_IMPORTED_MODULE_7__.Modal, { isOpen: !!member, onDismiss: onDismiss, isBlocking: false, titleAriaId: "spdir-modal-title", styles: {
             main: {
                 maxWidth: 480,
                 minWidth: 340,
@@ -1890,7 +1924,7 @@ var MemberModal = function (_a) {
                 react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "currentColor", "aria-hidden": "true" },
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M.293.293a1 1 0 0 1 1.414 0L6 4.586 10.293.293a1 1 0 1 1 1.414 1.414L7.414 6l4.293 4.293a1 1 0 0 1-1.414 1.414L6 7.414l-4.293 4.293A1 1 0 0 1 .293 10.707L4.586 6 .293 1.707A1 1 0 0 1 .293.293Z" }))),
             showPhoto && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_3__["default"], { photoUrl: member.photoUrl, displayName: member.displayName, givenName: member.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_8__.PersonaSize.size100, coinSize: 80, imageShouldFadeIn: false })),
-            showName && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("h2", { style: {
+            showName && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("h2", { id: "spdir-modal-title", style: {
                     margin: '16px 0 4px',
                     fontSize: 20,
                     fontWeight: 600,
@@ -1933,10 +1967,10 @@ var MemberModal = function (_a) {
                                 } },
                                 react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: {
                                         fontSize: 12,
-                                        color: '#a19f9d',
+                                        color: '#605e5c',
                                         marginBottom: 4,
                                     } }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.LabelManager),
-                                managerMember ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { className: "spdir-mgr-link", style: {
+                                managerMember ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { className: "spdir-mgr-link", role: "button", tabIndex: 0, style: {
                                         fontSize: 14,
                                         color: primaryColor,
                                         cursor: 'pointer',
@@ -1944,6 +1978,13 @@ var MemberModal = function (_a) {
                                         e.stopPropagation();
                                         onDismiss();
                                         setTimeout(function () { return onMemberClick(managerMember); }, 100);
+                                    }, onKeyDown: function (e) {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            onDismiss();
+                                            setTimeout(function () { return onMemberClick(managerMember); }, 100);
+                                        }
                                     } }, member.managerDisplayName)) : (react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: { fontSize: 14, color: '#201f1e' } }, member.managerDisplayName)))) : null;
                         default: {
                             var val = (_a = member.customProperties) === null || _a === void 0 ? void 0 : _a[key];
@@ -2104,14 +2145,15 @@ function createStyles(primary) {
         root: { fontSize: 13, padding: '4px 0' },
         sectionLabel: {
             display: 'block',
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: 600,
             color: '#323130',
+            marginTop: 12,
             marginBottom: 4,
         },
         // ── Fluent UI dropdown trigger ──────────────────────────────────────────
         selectTrigger: function (open) { return ({
-            height: 32,
+            height: open ? 33 : 32,
             width: '100%',
             display: 'flex',
             alignItems: 'center',
@@ -2120,10 +2162,10 @@ function createStyles(primary) {
             WebkitAppearance: 'none',
             borderRadius: 'var(--borderRadiusMedium, 4px)',
             border: '1px solid var(--colorNeutralStroke1, #d1d1d1)',
-            borderBottom: open
-                ? "2px solid ".concat(primary)
-                : "1px solid var(--colorNeutralStrokeAccessiblePressed, #616161)",
-            background: open ? '#f3f2f1' : '#ffffff',
+            borderBottomWidth: open ? '2px' : '1px',
+            borderBottomStyle: 'solid',
+            borderBottomColor: open ? primary : 'var(--colorNeutralStrokeAccessiblePressed, #616161)',
+            background: '#ffffff',
             fontSize: 14,
             fontFamily: '"Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif',
             fontWeight: 400,
@@ -2140,7 +2182,7 @@ function createStyles(primary) {
             right: 0,
             zIndex: 9999,
             background: '#ffffff',
-            border: '1px solid #c7c9cc',
+            border: '1px solid #8a8886',
             borderRadius: 2,
             maxHeight: 300,
             overflowY: 'auto',
@@ -2166,7 +2208,7 @@ function createStyles(primary) {
             padding: '0 8px',
             height: 36,
             cursor: 'pointer',
-            background: hovered ? '#f3f2f1' : 'transparent',
+            background: 'transparent',
             userSelect: 'none',
             color: '#201f1e',
             fontSize: 14,
@@ -2212,7 +2254,7 @@ function createStyles(primary) {
             opacity: 0.7,
         },
         handle: {
-            color: '#c8c6c4',
+            color: '#8a8886',
             cursor: 'grab',
             userSelect: 'none',
             flexShrink: 0,
@@ -2268,14 +2310,14 @@ function createStyles(primary) {
             border: 'none',
             padding: '2px 4px',
             cursor: 'pointer',
-            color: '#a19f9d',
+            color: '#605e5c',
             fontSize: 16,
             lineHeight: '1',
             flexShrink: 0,
         },
         hint: {
             fontSize: 11,
-            color: '#a19f9d',
+            color: '#605e5c',
             marginBottom: 6,
         },
     };
@@ -2285,7 +2327,7 @@ var DnDFieldSelector = function (_a) {
     var view = _a.view, initialKeys = _a.selectedKeys, initialLabelsJson = _a.labelsJson, detectedExtAttrs = _a.detectedExtAttrs, primaryColor = _a.primaryColor, onUpdateKeys = _a.onUpdateKeys, onUpdateLabels = _a.onUpdateLabels;
     var S = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(function () { return createStyles(primaryColor); }, [primaryColor]);
     // ── Inner sub‑components (closed over S) ────────────────────────────────
-    var DragHandle = function () { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "10", height: "16", viewBox: "0 0 10 16", fill: "#c8c6c4", style: S.handle, "aria-hidden": true },
+    var DragHandle = function () { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "10", height: "16", viewBox: "0 0 10 16", fill: "#8a8886", style: S.handle, "aria-hidden": true },
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "3", cy: "3", r: "1.5" }),
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "7", cy: "3", r: "1.5" }),
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "3", cy: "8", r: "1.5" }),
@@ -2495,6 +2537,8 @@ var DnDFieldSelector = function (_a) {
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../loc/mystrings */ 5126);
+
 
 var FilterBar = function (_a) {
     var filters = _a.filters, members = _a.members, values = _a.values, onChange = _a.onChange;
@@ -2521,7 +2565,7 @@ var FilterBar = function (_a) {
                 alignItems: 'center',
                 flexShrink: 0,
             } },
-            react__WEBPACK_IMPORTED_MODULE_0__.createElement("select", { value: selected, disabled: disabled, onChange: function (e) {
+            react__WEBPACK_IMPORTED_MODULE_0__.createElement("select", { "aria-label": filter.label, value: selected, disabled: disabled, onChange: function (e) {
                     var val = e.target.value;
                     onChange(filter.fieldName, val || null);
                 }, style: {
@@ -2531,7 +2575,7 @@ var FilterBar = function (_a) {
                     borderRadius: 20,
                     border: '1px solid #c7c9cc',
                     backgroundColor: disabled ? '#f3f2f1' : '#ffffff',
-                    color: selected ? '#323130' : '#6B7280',
+                    color: selected ? '#323130' : '#605e5c',
                     fontSize: 13,
                     paddingLeft: 16,
                     paddingRight: selected ? 52 : 36,
@@ -2546,13 +2590,13 @@ var FilterBar = function (_a) {
                     position: 'absolute',
                     right: selected ? 30 : 14,
                     pointerEvents: 'none',
-                    color: disabled ? '#a19f9d' : '#6B7280',
+                    color: disabled ? '#605e5c' : '#605e5c',
                 } },
                 react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M1 1l4 4 4-4", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" })),
             selected && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: function (e) {
                     e.stopPropagation();
                     onChange(filter.fieldName, null);
-                }, "aria-label": "Effacer le filtre", title: "Effacer le filtre", style: {
+                }, "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ClearSearch, title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ClearSearch, style: {
                     position: 'absolute',
                     right: 10,
                     top: '50%',
@@ -2564,7 +2608,7 @@ var FilterBar = function (_a) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#6B7280',
+                    color: '#605e5c',
                     borderRadius: '50%',
                     width: 16,
                     height: 16,
@@ -2609,9 +2653,9 @@ var SearchBar = function (_a) {
             flexShrink: 0,
             minWidth: 240,
         } },
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "14", height: "14", viewBox: "0 0 16 16", fill: "#6B7280", "aria-hidden": "true", style: { flexShrink: 0 } },
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "14", height: "14", viewBox: "0 0 16 16", fill: "#605e5c", "aria-hidden": "true", style: { flexShrink: 0 } },
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z" })),
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", { type: "text", placeholder: resolvedPlaceholder, value: value, onChange: function (e) { return onChange(e.target.value); }, style: {
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", { type: "text", placeholder: resolvedPlaceholder, "aria-label": resolvedPlaceholder, value: value, onChange: function (e) { return onChange(e.target.value); }, style: {
                 border: 'none',
                 outline: 'none',
                 background: 'transparent',
@@ -2627,7 +2671,7 @@ var SearchBar = function (_a) {
                 padding: 0,
                 display: 'flex',
                 alignItems: 'center',
-                color: '#6B7280',
+                color: '#605e5c',
                 flexShrink: 0,
             } },
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "10", height: "10", viewBox: "0 0 12 12", fill: "currentColor", "aria-hidden": "true" },
@@ -2660,11 +2704,71 @@ var SearchBar = function (_a) {
 
 var EmptyState = function () {
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Stack__WEBPACK_IMPORTED_MODULE_2__.Stack, { horizontalAlign: "center", verticalAlign: "center", tokens: { padding: 40, childrenGap: 12 } },
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Icon__WEBPACK_IMPORTED_MODULE_3__.Icon, { iconName: "SearchIssue", style: { fontSize: 48, color: '#a19f9d' }, "aria-hidden": "true" }),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Icon__WEBPACK_IMPORTED_MODULE_3__.Icon, { iconName: "SearchIssue", style: { fontSize: 48, color: '#605e5c' }, "aria-hidden": "true" }),
         react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_4__.Text, { variant: "large", role: "status" }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.NoResults),
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_4__.Text, { variant: "medium", style: { color: '#605e5c' } }, "Essayez de modifier vos crit\u00E8res de recherche ou vos filtres.")));
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Text__WEBPACK_IMPORTED_MODULE_4__.Text, { variant: "medium", style: { color: '#605e5c' } }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.EmptyStateHint)));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (EmptyState);
+
+
+/***/ }),
+
+/***/ 2299:
+/*!*****************************************************************************!*\
+  !*** ./lib/webparts/sharepointDirectory/components/shared/ErrorBoundary.js ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 2650);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @fluentui/react/lib/MessageBar */ 5906);
+/* harmony import */ var _fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @fluentui/react/lib/MessageBar */ 7456);
+/* harmony import */ var _fluentui_react_lib_Button__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @fluentui/react/lib/Button */ 2821);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../loc/mystrings */ 5126);
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+var ErrorBoundary = /** @class */ (function (_super) {
+    __extends(ErrorBoundary, _super);
+    function ErrorBoundary(props) {
+        var _this = _super.call(this, props) || this;
+        _this.handleRetry = function () {
+            _this.setState({ hasError: false });
+        };
+        _this.state = { hasError: false };
+        return _this;
+    }
+    ErrorBoundary.prototype.componentDidCatch = function (_error, _errorInfo) {
+        this.setState({ hasError: true });
+    };
+    ErrorBoundary.prototype.render = function () {
+        if (this.state.hasError) {
+            return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_2__.MessageBar, { messageBarType: _fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_3__.MessageBarType.error, isMultiline: false, actions: react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Button__WEBPACK_IMPORTED_MODULE_4__.DefaultButton, { onClick: this.handleRetry }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.Retry) }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ErrorBoundaryMessage));
+        }
+        return this.props.children;
+    };
+    return ErrorBoundary;
+}(react__WEBPACK_IMPORTED_MODULE_0__.Component));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ErrorBoundary);
 
 
 /***/ }),
@@ -2869,8 +2973,11 @@ var fr = {
     LabelManager: 'Manager',
     CloseModal: 'Fermer',
     ErrorLoading: "Impossible de charger les données de l'annuaire. Veuillez réessayer.",
+    ErrorBoundaryMessage: "Une erreur inattendue s'est produite. Veuillez réessayer.",
     Retry: 'Réessayer',
     NoResults: 'Aucun collaborateur trouvé',
+    EmptyStateHint: 'Essayez de modifier vos critères de recherche ou vos filtres.',
+    AccessDeniedMessage: "Vous n'avez pas les droits nécessaires pour accéder à cet annuaire.",
     LoadingText: 'Chargement...',
     ResultsLabel: 'Résultats :',
     CollaboratorSingular: 'collaborateur',
@@ -2936,7 +3043,7 @@ var fr = {
     EntraField_extensionAttribute14: 'Extension Attribute 14',
     EntraField_extensionAttribute15: 'Extension Attribute 15',
     // Property pane tabs
-    TabCard: 'Carte',
+    TabCard: 'Trombinoscope',
     TabList: 'Liste',
     TabModal: 'Modale',
     ViewTabLabel: 'Vue à configurer',
@@ -2958,6 +3065,7 @@ var fr = {
     DnD_Group_OnPrem: 'On-premises',
     DnD_Group_Other: 'Divers',
     DnD_NoSelection: 'Aucun champ sélectionné.',
+    DirectoryRegionLabel: 'Annuaire SharePoint',
 };
 var en = {
     PropertyPaneDescription: 'Directory Settings',
@@ -3020,8 +3128,11 @@ var en = {
     LabelManager: 'Manager',
     CloseModal: 'Close',
     ErrorLoading: 'Unable to load directory data. Please try again.',
+    ErrorBoundaryMessage: 'An unexpected error occurred. Please try again.',
     Retry: 'Retry',
     NoResults: 'No collaborators found',
+    EmptyStateHint: 'Try modifying your search criteria or filters.',
+    AccessDeniedMessage: 'You do not have the necessary permissions to access this directory.',
     LoadingText: 'Loading...',
     ResultsLabel: 'Results:',
     CollaboratorSingular: 'collaborator',
@@ -3087,7 +3198,7 @@ var en = {
     EntraField_extensionAttribute14: 'Extension Attribute 14',
     EntraField_extensionAttribute15: 'Extension Attribute 15',
     // Property pane tabs
-    TabCard: 'Card',
+    TabCard: 'Trombinoscope',
     TabList: 'List',
     TabModal: 'Modal',
     ViewTabLabel: 'View to configure',
@@ -3109,6 +3220,7 @@ var en = {
     DnD_Group_OnPrem: 'On-premises',
     DnD_Group_Other: 'Other',
     DnD_NoSelection: 'No fields selected.',
+    DirectoryRegionLabel: 'SharePoint Directory',
 };
 // ── Locale registry — add new languages here ────────────────────────────────
 var locales = { fr: fr, en: en };
@@ -31931,13 +32043,20 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
                 key: 'dnd_selector',
                 onRender: function (elem) {
                     var primaryColor = _this._themePrimary;
-                    // Inject CSS override — use primary color instead of blue for choice group buttons
+                    // Inject CSS override — primary color for choice group, label font size
                     var doc = elem.ownerDocument;
                     if (!doc.getElementById('spdir-chocegroup-override')) {
                         var style = doc.createElement('style');
                         style.id = 'spdir-chocegroup-override';
-                        style.textContent = "\n            .ms-ChoiceField--image.is-checked::before { border-color: ".concat(primaryColor, " !important; }\n            .ms-ChoiceField--image.is-checked .ms-ChoiceField-icon { color: ").concat(primaryColor, " !important; }\n            .ms-ChoiceField--image:hover::before { border-color: ").concat(primaryColor, " !important; }\n            .ms-ChoiceField-field.is-checked::before { border-color: ").concat(primaryColor, " !important; }\n            .ms-ChoiceField-field.is-checked .ms-ChoiceField-icon { color: ").concat(primaryColor, " !important; }\n          ");
+                        style.textContent = "\n            .ms-ChoiceField--image.is-checked::before { border-color: ".concat(primaryColor, " !important; }\n            .ms-ChoiceField--image.is-checked .ms-ChoiceField-icon { color: ").concat(primaryColor, " !important; }\n            .ms-ChoiceField--image:hover::before { border-color: ").concat(primaryColor, " !important; }\n            .ms-ChoiceField-field.is-checked::before { border-color: ").concat(primaryColor, " !important; }\n            .ms-ChoiceField-field.is-checked .ms-ChoiceField-icon { color: ").concat(primaryColor, " !important; }\n            [class*=\"PropertyPane\"] label { color: #323130 !important; }\n          ");
                         doc.head.appendChild(style);
+                    }
+                    // Reduce ChoiceGroup tab label font size from 14px to 12px
+                    if (!doc.getElementById('spdir-chocegroup-font')) {
+                        var fontStyle = doc.createElement('style');
+                        fontStyle.id = 'spdir-chocegroup-font';
+                        fontStyle.textContent = "[class*=\"ChoiceGroup\"] label, [role=\"radiogroup\"] label { font-size: 12px !important; }";
+                        doc.head.appendChild(fontStyle);
                     }
                     var tab = (_this.properties.activeViewTab || 'card');
                     var selectedKeys = _this.getEffectiveFieldOrder(tab);

@@ -22,6 +22,7 @@ const CsvExport: React.FC<CsvExportProps> = ({ members }) => {
       onClick={handleExport}
       disabled={disabled}
       title={strings.ExportCsv}
+      aria-label={strings.ExportCsv}
       onMouseEnter={() => !disabled && setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -34,7 +35,7 @@ const CsvExport: React.FC<CsvExportProps> = ({ members }) => {
         borderRadius: 20,
         border: '1px solid #c7c9cc',
         backgroundColor: hovered ? '#f3f2f1' : '#ffffff',
-        color: disabled ? '#a19f9d' : '#6B7280',
+        color: disabled ? '#605e5c' : '#605e5c',
         fontSize: 13,
         cursor: disabled ? 'not-allowed' : 'pointer',
         whiteSpace: 'nowrap',

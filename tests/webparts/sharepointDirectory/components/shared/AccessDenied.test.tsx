@@ -5,6 +5,6 @@ import AccessDenied from '../../../../src/webparts/sharepointDirectory/component
 describe('AccessDenied', () => {
   it('renders access denied message', () => {
     const { getByText } = render(React.createElement(AccessDenied));
-    expect(getByText(/Vous n'avez pas les droits nécessaires/)).toBeTruthy();
+    expect(getByText(/Vous n'avez pas les droits nécessaires pour accéder à cet annuaire/)).toBeTruthy();
   });
 });

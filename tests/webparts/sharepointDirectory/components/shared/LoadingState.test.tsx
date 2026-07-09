@@ -5,6 +5,6 @@ import LoadingState from '../../../../src/webparts/sharepointDirectory/component
 describe('LoadingState', () => {
   it('renders loading spinner with label', () => {
     const { getByText } = render(React.createElement(LoadingState));
-    expect(getByText("Chargement de l'annuaire...")).toBeTruthy();
+    expect(getByText('Chargement...')).toBeTruthy();
   });
 });

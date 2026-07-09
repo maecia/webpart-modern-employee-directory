@@ -68,7 +68,7 @@ const Banner: React.FC<BannerProps> = ({
       {/* Count */}
       <Text
         variant="small"
-        styles={{ root: { whiteSpace: 'nowrap', color: '#6B7280' } }}
+        styles={{ root: { whiteSpace: 'nowrap', color: '#605e5c' } }}
       >
         {strings.ResultsLabel} {resultCount}{' '}
         {resultCount <= 1
@@ -103,10 +103,9 @@ const Banner: React.FC<BannerProps> = ({
             borderRadius: '50%',
             backgroundColor:
               activeView === 'card' ? primaryColor : 'transparent',
-            color: activeView === 'card' ? '#ffffff' : '#a8a8a8',
+            color: activeView === 'card' ? '#ffffff' : '#605e5c',
             cursor: 'pointer',
             border: 'none',
-            outline: 'none',
             padding: 0,
             flexShrink: 0,
             transition: 'background-color 0.2s ease, color 0.2s ease',
@@ -139,10 +138,9 @@ const Banner: React.FC<BannerProps> = ({
             borderRadius: '50%',
             backgroundColor:
               activeView === 'list' ? primaryColor : 'transparent',
-            color: activeView === 'list' ? '#ffffff' : '#a8a8a8',
+            color: activeView === 'list' ? '#ffffff' : '#605e5c',
             cursor: 'pointer',
             border: 'none',
-            outline: 'none',
             padding: 0,
             flexShrink: 0,
             transition: 'background-color 0.2s ease, color 0.2s ease',

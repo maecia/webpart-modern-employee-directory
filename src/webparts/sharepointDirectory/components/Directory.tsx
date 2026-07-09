@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useTheme } from '@fluentui/react/lib/Theme'
 import { Member } from '../../../models/Member'
 import { DirectoryProps } from './Directory.types'
 import { SortOrder } from '../../../models/DirectoryConfig'
@@ -9,6 +10,8 @@ import Banner from './Banner'
 import LoadingState from './shared/LoadingState'
 import ErrorState from './shared/ErrorState'
 import EmptyState from './shared/EmptyState'
+import ErrorBoundary from './shared/ErrorBoundary'
+import { strings } from '../loc/mystrings'
 
 function applySortOrder(members: Member[], sortOrder: SortOrder): Member[] {
   const copy = [...members]
@@ -112,6 +115,8 @@ const Directory: React.FC<DirectoryProps> = ({
   const [selectedMember, setSelectedMember] = React.useState<Member | null>(
     null,
   )
+  const theme = useTheme()
+  const primaryColor = theme?.palette?.themePrimary || '#1B7A6E'
 
   React.useEffect(() => {
     setView(config.defaultView)
@@ -184,9 +189,10 @@ const Directory: React.FC<DirectoryProps> = ({
   }
 
   return (
+    <ErrorBoundary>
     <div
       role="region"
-      aria-label="Annuaire SharePoint"
+      aria-label={strings.DirectoryRegionLabel}
       aria-live="polite"
       style={{ backgroundColor: '#faf9f8', minHeight: '100%' }}
     >
@@ -213,6 +219,17 @@ const Directory: React.FC<DirectoryProps> = ({
           @keyframes spdir-fadein {
             from { opacity: 0; transform: translateY(6px); }
             to   { opacity: 1; transform: translateY(0); }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+              animation-duration: 0.01ms !important;
+              animation-iteration-count: 1 !important;
+              transition-duration: 0.01ms !important;
+            }
+          }
+          *:focus-visible {
+            outline: 2px solid ${primaryColor} !important;
+            outline-offset: 2px;
           }
         `}</style>
         {filteredMembers.length === 0 ? (
@@ -242,6 +259,7 @@ const Directory: React.FC<DirectoryProps> = ({
         onMemberClick={setSelectedMember}
       />
     </div>
+    </ErrorBoundary>
   )
 }
 

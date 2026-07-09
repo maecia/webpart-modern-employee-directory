@@ -42,7 +42,7 @@ const FieldRow = ({
   link?: string
 }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-    <span style={{ fontSize: 12, color: '#605e5c' }}>{label}</span>
+    <span style={{ fontSize: 12, color: '#a19f9d' }}>{label}</span>
     {link ? (
       <a
         href={link}
@@ -130,7 +130,6 @@ const MemberModal: React.FC<MemberModalProps> = ({
       isOpen={!!member}
       onDismiss={onDismiss}
       isBlocking={false}
-      titleAriaId="spdir-modal-title"
       styles={{
         main: {
           maxWidth: 480,
@@ -221,7 +220,6 @@ const MemberModal: React.FC<MemberModalProps> = ({
 
         {showName && (
           <h2
-            id="spdir-modal-title"
             style={{
               margin: '16px 0 4px',
               fontSize: 20,
@@ -313,7 +311,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                         <span
                           style={{
                             fontSize: 12,
-                            color: '#605e5c',
+                            color: '#a19f9d',
                             marginBottom: 4,
                           }}
                         >
@@ -322,8 +320,6 @@ const MemberModal: React.FC<MemberModalProps> = ({
                         {managerMember ? (
                           <span
                             className="spdir-mgr-link"
-                            role="button"
-                            tabIndex={0}
                             style={{
                               fontSize: 14,
                               color: primaryColor,
@@ -336,17 +332,6 @@ const MemberModal: React.FC<MemberModalProps> = ({
                                 () => onMemberClick(managerMember),
                                 100,
                               )
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault()
-                                e.stopPropagation()
-                                onDismiss()
-                                setTimeout(
-                                  () => onMemberClick(managerMember),
-                                  100,
-                                )
-                              }
                             }}
                           >
                             {member.managerDisplayName}

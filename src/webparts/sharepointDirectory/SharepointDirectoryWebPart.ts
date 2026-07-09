@@ -106,38 +106,9 @@ const DirectoryContainer: React.FC<{
 export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<ISharepointDirectoryWebPartProps> {
   private _themePrimary: string = '#1B7A6E'
 
-  // ── LCID → language code mapping ──────────────────────────────────────────
-  private static LCID_TO_LANG: Record<number, string> = {
-    1033: 'en', 1036: 'fr', 1031: 'de', 3082: 'es',
-    1040: 'it', 1043: 'nl', 1046: 'pt', 1049: 'ru',
-    1055: 'tr', 1025: 'ar', 1028: 'zh', 1041: 'ja',
-    1042: 'ko', 1053: 'sv', 1044: 'nb', 1030: 'da',
-    1035: 'fi', 1029: 'cs', 1038: 'hu', 1045: 'pl',
-    2070: 'pt', 1069: 'eu', 1081: 'hi', 1110: 'gl',
-  }
-
-  private _supportedLanguages: string[] = []
-
-  private getSupportedLanguages(): string[] {
-    if (this._supportedLanguages.length > 0) return this._supportedLanguages
-    const ids: number[] | undefined =
-      (this.context.pageContext.legacyPageContext as any)?.web?.supportedUILanguageIds
-    if (ids && ids.length > 0) {
-      this._supportedLanguages = ids
-        .map((id) => SharepointDirectoryWebPart.LCID_TO_LANG[id])
-        .filter(Boolean)
-    }
-    if (this._supportedLanguages.length === 0) {
-      const lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase()
-      this._supportedLanguages = [lang || 'en']
-    }
-    return this._supportedLanguages
-  }
-
   protected onInit(): Promise<void> {
     setLanguage(this.context.pageContext.cultureInfo.currentCultureName)
     if (!this.properties.activeViewTab) this.properties.activeViewTab = 'card'
-    this.getSupportedLanguages()
     return super.onInit()
   }
 
@@ -299,7 +270,7 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
   /** Parse labels JSON — migrate from old LabelFr/LabelEn flat props if absent */
   private parseFieldLabelsRecord(
     view: 'list' | 'modal',
-  ): Record<string, Record<string, string>> {
+  ): Record<string, { fr: string; en: string }> {
     const prop =
       view === 'list' ? 'listFieldLabelsJson' : 'modalFieldLabelsJson'
     const json = (this.properties as any)[prop]
@@ -313,16 +284,14 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
     // Migrate from old flat properties
     const prefix = view === 'list' ? 'customListField' : 'customModalField'
     const count: number = (this.properties as any)[`${prefix}Count`] || 0
-    const result: Record<string, Record<string, string>> = {}
+    const result: Record<string, { fr: string; en: string }> = {}
     for (let i = 1; i <= count; i++) {
       const key = (this.properties as any)[`${prefix}${i}`]
       if (key) {
-        const fr = (this.properties as any)[`${prefix}LabelFr${i}`] || ''
-        const en = (this.properties as any)[`${prefix}LabelEn${i}`] || ''
-        const entry: Record<string, string> = {}
-        if (fr) entry['fr'] = fr
-        if (en) entry['en'] = en
-        if (Object.keys(entry).length > 0) result[key] = entry
+        result[key] = {
+          fr: (this.properties as any)[`${prefix}LabelFr${i}`] || '',
+          en: (this.properties as any)[`${prefix}LabelEn${i}`] || '',
+        }
       }
     }
     return result
@@ -331,14 +300,12 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
   /** Return localized (single string) labels per field key for the given view */
   private getLocalizedLabels(
     view: 'list' | 'modal',
-    _isFr: boolean,
+    isFr: boolean,
   ): Record<string, string> {
     const record = this.parseFieldLabelsRecord(view)
-    const lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase()
     const result: Record<string, string> = {}
     for (const [key, labels] of Object.entries(record)) {
-      const labelMap = labels as Record<string, string>
-      result[key] = labelMap[lang] || ''
+      result[key] = isFr ? labels.fr : labels.en
     }
     return result
   }
@@ -438,7 +405,7 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
         onRender: (elem: HTMLElement) => {
           const primaryColor = this._themePrimary
 
-          // Inject CSS override — primary color for choice group, label font size
+          // Inject CSS override — use primary color instead of blue for choice group buttons
           const doc = elem.ownerDocument!
           if (!doc.getElementById('spdir-chocegroup-override')) {
             const style = doc.createElement('style')
@@ -449,17 +416,8 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
             .ms-ChoiceField--image:hover::before { border-color: ${primaryColor} !important; }
             .ms-ChoiceField-field.is-checked::before { border-color: ${primaryColor} !important; }
             .ms-ChoiceField-field.is-checked .ms-ChoiceField-icon { color: ${primaryColor} !important; }
-            [class*="PropertyPane"] label { color: #323130 !important; }
           `
             doc.head.appendChild(style)
-          }
-
-          // Reduce ChoiceGroup tab label font size from 14px to 12px
-          if (!doc.getElementById('spdir-chocegroup-font')) {
-            const fontStyle = doc.createElement('style')
-            fontStyle.id = 'spdir-chocegroup-font'
-            fontStyle.textContent = `[class*="ChoiceGroup"] label, [role="radiogroup"] label { font-size: 12px !important; }`
-            doc.head.appendChild(fontStyle)
           }
 
           const tab = (this.properties.activeViewTab || 'card') as
@@ -500,7 +458,6 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
               labelsJson,
               detectedExtAttrs: this.detectedExtAttrs,
               primaryColor,
-              supportedLanguages: this._supportedLanguages,
               onUpdateKeys,
               onUpdateLabels,
             }),

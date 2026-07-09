@@ -60,12 +60,8 @@ const fr = {
   CloseModal: 'Fermer',
   ErrorLoading:
     "Impossible de charger les données de l'annuaire. Veuillez réessayer.",
-  ErrorBoundaryMessage:
-    "Une erreur inattendue s'est produite. Veuillez réessayer.",
   Retry: 'Réessayer',
   NoResults: 'Aucun collaborateur trouvé',
-  EmptyStateHint: 'Essayez de modifier vos critères de recherche ou vos filtres.',
-  AccessDeniedMessage: "Vous n'avez pas les droits nécessaires pour accéder à cet annuaire.",
   LoadingText: 'Chargement...',
   ResultsLabel: 'Résultats :',
   CollaboratorSingular: 'collaborateur',
@@ -131,7 +127,7 @@ const fr = {
   EntraField_extensionAttribute14: 'Extension Attribute 14',
   EntraField_extensionAttribute15: 'Extension Attribute 15',
   // Property pane tabs
-  TabCard: 'Trombinoscope',
+  TabCard: 'Carte',
   TabList: 'Liste',
   TabModal: 'Modale',
   ViewTabLabel: 'Vue à configurer',
@@ -153,14 +149,6 @@ const fr = {
   DnD_Group_OnPrem: 'On-premises',
   DnD_Group_Other: 'Divers',
   DnD_NoSelection: 'Aucun champ sélectionné.',
-  Lang_fr: 'Label français',
-  Lang_en: 'Label anglais',
-  Lang_de: 'Label allemand',
-  Lang_es: 'Label espagnol',
-  Lang_it: 'Label italien',
-  Lang_nl: 'Label néerlandais',
-  Lang_pt: 'Label portugais',
-  DirectoryRegionLabel: 'Annuaire SharePoint',
 }
 
 const en: typeof fr = {
@@ -224,11 +212,8 @@ const en: typeof fr = {
   LabelManager: 'Manager',
   CloseModal: 'Close',
   ErrorLoading: 'Unable to load directory data. Please try again.',
-  ErrorBoundaryMessage: 'An unexpected error occurred. Please try again.',
   Retry: 'Retry',
   NoResults: 'No collaborators found',
-  EmptyStateHint: 'Try modifying your search criteria or filters.',
-  AccessDeniedMessage: 'You do not have the necessary permissions to access this directory.',
   LoadingText: 'Loading...',
   ResultsLabel: 'Results:',
   CollaboratorSingular: 'collaborator',
@@ -294,7 +279,7 @@ const en: typeof fr = {
   EntraField_extensionAttribute14: 'Extension Attribute 14',
   EntraField_extensionAttribute15: 'Extension Attribute 15',
   // Property pane tabs
-  TabCard: 'Trombinoscope',
+  TabCard: 'Card',
   TabList: 'List',
   TabModal: 'Modal',
   ViewTabLabel: 'View to configure',
@@ -316,14 +301,6 @@ const en: typeof fr = {
   DnD_Group_OnPrem: 'On-premises',
   DnD_Group_Other: 'Other',
   DnD_NoSelection: 'No fields selected.',
-  Lang_fr: 'French label',
-  Lang_en: 'English label',
-  Lang_de: 'German label',
-  Lang_es: 'Spanish label',
-  Lang_it: 'Italian label',
-  Lang_nl: 'Dutch label',
-  Lang_pt: 'Portuguese label',
-  DirectoryRegionLabel: 'SharePoint Directory',
 }
 
 export type Strings = typeof fr

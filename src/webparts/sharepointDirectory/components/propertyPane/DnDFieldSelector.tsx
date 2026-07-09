@@ -14,8 +14,15 @@ export interface DnDFieldSelectorProps {
   labelsJson: string
   detectedExtAttrs: string[]
   primaryColor: string
+  supportedLanguages: string[]
   onUpdateKeys: (keys: string[]) => void
   onUpdateLabels: (labelsJson: string) => void
+}
+
+/** Return the human-readable name for a language code, e.g. "fr" → "Français" */
+function getLangName(code: string): string {
+  const key = `Lang_${code}`
+  return (strings as any)[key] || code.toUpperCase()
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -286,6 +293,7 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
   labelsJson: initialLabelsJson,
   detectedExtAttrs,
   primaryColor,
+  supportedLanguages,
   onUpdateKeys,
   onUpdateLabels,
 }) => {
@@ -361,7 +369,7 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
     reorderWithLockedPrefix(initialKeys),
   )
   const [labels, setLabels] = React.useState<
-    Record<string, { fr: string; en: string }>
+    Record<string, Record<string, string>>
   >(() => parseLabels(initialLabelsJson))
   const [dropdownOpen, setDropdownOpen] = React.useState(false)
   const dropdownRef = React.useRef<HTMLDivElement>(null)
@@ -442,12 +450,9 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
   }
 
   // ── Labels ────────────────────────────────────────────────────────────────
-  const updateLabelLocal = (k: string, lang: 'fr' | 'en', val: string) => {
+  const updateLabelLocal = (k: string, lang: string, val: string) => {
     setLabels((prev) => {
-      const next = {
-        ...prev,
-        [k]: { ...(prev[k] || { fr: '', en: '' }), [lang]: val },
-      }
+      const next = { ...prev, [k]: { ...(prev[k] || {}), [lang]: val } }
       onUpdateLabels(JSON.stringify(next))
       return next
     })
@@ -628,30 +633,18 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
 
                   {showLabels && !isLocked && (
                     <div style={S.labelRow}>
-                      <div>
-                        <div style={S.labelCaption}>{strings.DnD_LabelFr}</div>
-                        <input
-                          type="text"
-                          style={S.labelInput}
-                          defaultValue={labels[key]?.fr || ''}
-                          placeholder={defaultLabel(key)}
-                          onChange={(e) =>
-                            updateLabelLocal(key, 'fr', e.target.value)
-                          }
-                        />
-                      </div>
-                      <div>
-                        <div style={S.labelCaption}>{strings.DnD_LabelEn}</div>
-                        <input
-                          type="text"
-                          style={S.labelInput}
-                          defaultValue={labels[key]?.en || ''}
-                          placeholder={defaultLabel(key)}
-                          onChange={(e) =>
-                            updateLabelLocal(key, 'en', e.target.value)
-                          }
-                        />
-                      </div>
+                      {supportedLanguages.map((lang) => (
+                        <div key={lang}>
+                          <div style={S.labelCaption}>{getLangName(lang)}</div>
+                          <input
+                            type="text"
+                            style={S.labelInput}
+                            defaultValue={labels[key]?.[lang] || ''}
+                            placeholder={defaultLabel(key)}
+                            onChange={(e) => updateLabelLocal(key, lang, e.target.value)}
+                          />
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>

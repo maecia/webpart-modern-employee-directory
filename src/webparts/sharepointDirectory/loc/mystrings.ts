@@ -153,6 +153,13 @@ const fr = {
   DnD_Group_OnPrem: 'On-premises',
   DnD_Group_Other: 'Divers',
   DnD_NoSelection: 'Aucun champ sélectionné.',
+  Lang_fr: 'Label français',
+  Lang_en: 'Label anglais',
+  Lang_de: 'Label allemand',
+  Lang_es: 'Label espagnol',
+  Lang_it: 'Label italien',
+  Lang_nl: 'Label néerlandais',
+  Lang_pt: 'Label portugais',
   DirectoryRegionLabel: 'Annuaire SharePoint',
 }
 
@@ -309,6 +316,13 @@ const en: typeof fr = {
   DnD_Group_OnPrem: 'On-premises',
   DnD_Group_Other: 'Other',
   DnD_NoSelection: 'No fields selected.',
+  Lang_fr: 'French label',
+  Lang_en: 'English label',
+  Lang_de: 'German label',
+  Lang_es: 'Spanish label',
+  Lang_it: 'Italian label',
+  Lang_nl: 'Dutch label',
+  Lang_pt: 'Portuguese label',
   DirectoryRegionLabel: 'SharePoint Directory',
 }
 

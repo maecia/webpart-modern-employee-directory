@@ -2092,6 +2092,11 @@ var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from
 
 
 
+/** Return the human-readable name for a language code, e.g. "fr" → "Français" */
+function getLangName(code) {
+    var key = "Lang_".concat(code);
+    return _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings[key] || code.toUpperCase();
+}
 // ─── Constants ────────────────────────────────────────────────────────────────
 var LOCKED_ORDER = ['photo', 'firstName', 'name'];
 /** Fields that cannot be reordered and whose labels cannot be customized — applies to all views */
@@ -2324,7 +2329,7 @@ function createStyles(primary) {
 }
 // ─── Main component ──────────────────────────────────────────────────────────
 var DnDFieldSelector = function (_a) {
-    var view = _a.view, initialKeys = _a.selectedKeys, initialLabelsJson = _a.labelsJson, detectedExtAttrs = _a.detectedExtAttrs, primaryColor = _a.primaryColor, onUpdateKeys = _a.onUpdateKeys, onUpdateLabels = _a.onUpdateLabels;
+    var view = _a.view, initialKeys = _a.selectedKeys, initialLabelsJson = _a.labelsJson, detectedExtAttrs = _a.detectedExtAttrs, primaryColor = _a.primaryColor, supportedLanguages = _a.supportedLanguages, onUpdateKeys = _a.onUpdateKeys, onUpdateLabels = _a.onUpdateLabels;
     var S = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(function () { return createStyles(primaryColor); }, [primaryColor]);
     // ── Inner sub‑components (closed over S) ────────────────────────────────
     var DragHandle = function () { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "10", height: "16", viewBox: "0 0 10 16", fill: "#8a8886", style: S.handle, "aria-hidden": true },
@@ -2421,7 +2426,7 @@ var DnDFieldSelector = function (_a) {
     var updateLabelLocal = function (k, lang, val) {
         setLabels(function (prev) {
             var _a, _b;
-            var next = __assign(__assign({}, prev), (_a = {}, _a[k] = __assign(__assign({}, (prev[k] || { fr: '', en: '' })), (_b = {}, _b[lang] = val, _b)), _a));
+            var next = __assign(__assign({}, prev), (_a = {}, _a[k] = __assign(__assign({}, (prev[k] || {})), (_b = {}, _b[lang] = val, _b)), _a));
             onUpdateLabels(JSON.stringify(next));
             return next;
         });
@@ -2480,7 +2485,6 @@ var DnDFieldSelector = function (_a) {
         keys.length === 0 ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.hint }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_NoSelection)) : (react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null,
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.hint }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_DragHint),
             draggableKeys.map(function (key, idx) {
-                var _a, _b;
                 var isLocked = LOCKED_KEYS.has(key);
                 var isDraggingThis = dragging === idx;
                 var isDragOverThis = dragOver === idx && dragging !== idx;
@@ -2507,17 +2511,12 @@ var DnDFieldSelector = function (_a) {
                         react__WEBPACK_IMPORTED_MODULE_0__.createElement("circle", { cx: "7", cy: "13", r: "1.5" }))) : (react__WEBPACK_IMPORTED_MODULE_0__.createElement(DragHandle, null)),
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { flex: 1, minWidth: 0 } },
                         react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", { style: S.fieldLabel }, defaultLabel(key)),
-                        showLabels && !isLocked && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.labelRow },
-                            react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null,
-                                react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.labelCaption }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_LabelFr),
-                                react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", { type: "text", style: S.labelInput, defaultValue: ((_a = labels[key]) === null || _a === void 0 ? void 0 : _a.fr) || '', placeholder: defaultLabel(key), onChange: function (e) {
-                                        return updateLabelLocal(key, 'fr', e.target.value);
-                                    } })),
-                            react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", null,
-                                react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.labelCaption }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_LabelEn),
-                                react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", { type: "text", style: S.labelInput, defaultValue: ((_b = labels[key]) === null || _b === void 0 ? void 0 : _b.en) || '', placeholder: defaultLabel(key), onChange: function (e) {
-                                        return updateLabelLocal(key, 'en', e.target.value);
-                                    } }))))),
+                        showLabels && !isLocked && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.labelRow }, supportedLanguages.map(function (lang) {
+                            var _a;
+                            return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { key: lang },
+                                react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: S.labelCaption }, getLangName(lang)),
+                                react__WEBPACK_IMPORTED_MODULE_0__.createElement("input", { type: "text", style: S.labelInput, defaultValue: ((_a = labels[key]) === null || _a === void 0 ? void 0 : _a[lang]) || '', placeholder: defaultLabel(key), onChange: function (e) { return updateLabelLocal(key, lang, e.target.value); } })));
+                        })))),
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { style: S.removeBtn, onClick: function () { return toggle(key); }, title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_RemoveField, "aria-label": "".concat(_loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.DnD_RemoveField, ": ").concat(defaultLabel(key)) }, "\u00D7")));
             })))));
 };
@@ -3065,6 +3064,13 @@ var fr = {
     DnD_Group_OnPrem: 'On-premises',
     DnD_Group_Other: 'Divers',
     DnD_NoSelection: 'Aucun champ sélectionné.',
+    Lang_fr: 'Label français',
+    Lang_en: 'Label anglais',
+    Lang_de: 'Label allemand',
+    Lang_es: 'Label espagnol',
+    Lang_it: 'Label italien',
+    Lang_nl: 'Label néerlandais',
+    Lang_pt: 'Label portugais',
     DirectoryRegionLabel: 'Annuaire SharePoint',
 };
 var en = {
@@ -3220,6 +3226,13 @@ var en = {
     DnD_Group_OnPrem: 'On-premises',
     DnD_Group_Other: 'Other',
     DnD_NoSelection: 'No fields selected.',
+    Lang_fr: 'French label',
+    Lang_en: 'English label',
+    Lang_de: 'German label',
+    Lang_es: 'Spanish label',
+    Lang_it: 'Italian label',
+    Lang_nl: 'Dutch label',
+    Lang_pt: 'Portuguese label',
     DirectoryRegionLabel: 'SharePoint Directory',
 };
 // ── Locale registry — add new languages here ────────────────────────────────
@@ -31796,13 +31809,31 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     function SharepointDirectoryWebPart() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this._themePrimary = '#1B7A6E';
+        _this._supportedLanguages = [];
         _this.detectedExtAttrs = [];
         return _this;
     }
+    SharepointDirectoryWebPart.prototype.getSupportedLanguages = function () {
+        var _a, _b;
+        if (this._supportedLanguages.length > 0)
+            return this._supportedLanguages;
+        var ids = (_b = (_a = this.context.pageContext.legacyPageContext) === null || _a === void 0 ? void 0 : _a.web) === null || _b === void 0 ? void 0 : _b.supportedUILanguageIds;
+        if (ids && ids.length > 0) {
+            this._supportedLanguages = ids
+                .map(function (id) { return SharepointDirectoryWebPart.LCID_TO_LANG[id]; })
+                .filter(Boolean);
+        }
+        if (this._supportedLanguages.length === 0) {
+            var lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase();
+            this._supportedLanguages = [lang || 'en'];
+        }
+        return this._supportedLanguages;
+    };
     SharepointDirectoryWebPart.prototype.onInit = function () {
         (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.setLanguage)(this.context.pageContext.cultureInfo.currentCultureName);
         if (!this.properties.activeViewTab)
             this.properties.activeViewTab = 'card';
+        this.getSupportedLanguages();
         return _super.prototype.onInit.call(this);
     };
     SharepointDirectoryWebPart.prototype.render = function () {
@@ -31948,21 +31979,28 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
         for (var i = 1; i <= count; i++) {
             var key = this.properties["".concat(prefix).concat(i)];
             if (key) {
-                result[key] = {
-                    fr: this.properties["".concat(prefix, "LabelFr").concat(i)] || '',
-                    en: this.properties["".concat(prefix, "LabelEn").concat(i)] || '',
-                };
+                var fr = this.properties["".concat(prefix, "LabelFr").concat(i)] || '';
+                var en = this.properties["".concat(prefix, "LabelEn").concat(i)] || '';
+                var entry = {};
+                if (fr)
+                    entry['fr'] = fr;
+                if (en)
+                    entry['en'] = en;
+                if (Object.keys(entry).length > 0)
+                    result[key] = entry;
             }
         }
         return result;
     };
     /** Return localized (single string) labels per field key for the given view */
-    SharepointDirectoryWebPart.prototype.getLocalizedLabels = function (view, isFr) {
+    SharepointDirectoryWebPart.prototype.getLocalizedLabels = function (view, _isFr) {
         var record = this.parseFieldLabelsRecord(view);
+        var lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase();
         var result = {};
         for (var _i = 0, _a = Object.entries(record); _i < _a.length; _i++) {
             var _b = _a[_i], key = _b[0], labels = _b[1];
-            result[key] = isFr ? labels.fr : labels.en;
+            var labelMap = labels;
+            result[key] = labelMap[lang] || '';
         }
         return result;
     };
@@ -32086,6 +32124,7 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
                         labelsJson: labelsJson,
                         detectedExtAttrs: _this.detectedExtAttrs,
                         primaryColor: primaryColor,
+                        supportedLanguages: _this._supportedLanguages,
                         onUpdateKeys: onUpdateKeys,
                         onUpdateLabels: onUpdateLabels,
                     }), elem);
@@ -32161,6 +32200,15 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
                 },
             ],
         };
+    };
+    // ── LCID → language code mapping ──────────────────────────────────────────
+    SharepointDirectoryWebPart.LCID_TO_LANG = {
+        1033: 'en', 1036: 'fr', 1031: 'de', 3082: 'es',
+        1040: 'it', 1043: 'nl', 1046: 'pt', 1049: 'ru',
+        1055: 'tr', 1025: 'ar', 1028: 'zh', 1041: 'ja',
+        1042: 'ko', 1053: 'sv', 1044: 'nb', 1030: 'da',
+        1035: 'fi', 1029: 'cs', 1038: 'hu', 1045: 'pl',
+        2070: 'pt', 1069: 'eu', 1081: 'hi', 1110: 'gl',
     };
     return SharepointDirectoryWebPart;
 }(_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.BaseClientSideWebPart));

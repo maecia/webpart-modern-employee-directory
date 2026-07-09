@@ -35,7 +35,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         width="14"
         height="14"
         viewBox="0 0 16 16"
-        fill="#6B7280"
+        fill="#605e5c"
         aria-hidden="true"
         style={{ flexShrink: 0 }}
       >
@@ -44,6 +44,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       <input
         type="text"
         placeholder={resolvedPlaceholder}
+        aria-label={resolvedPlaceholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         style={{
@@ -67,7 +68,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             padding: 0,
             display: 'flex',
             alignItems: 'center',
-            color: '#6B7280',
+            color: '#605e5c',
             flexShrink: 0,
           }}
         >

@@ -388,7 +388,7 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
         onRender: (elem: HTMLElement) => {
           const primaryColor = this._themePrimary
 
-          // Inject CSS override — use primary color instead of blue for choice group buttons
+          // Inject CSS override — primary color for choice group, label font size
           const doc = elem.ownerDocument!
           if (!doc.getElementById('spdir-chocegroup-override')) {
             const style = doc.createElement('style')
@@ -399,8 +399,17 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
             .ms-ChoiceField--image:hover::before { border-color: ${primaryColor} !important; }
             .ms-ChoiceField-field.is-checked::before { border-color: ${primaryColor} !important; }
             .ms-ChoiceField-field.is-checked .ms-ChoiceField-icon { color: ${primaryColor} !important; }
+            [class*="PropertyPane"] label { color: #323130 !important; }
           `
             doc.head.appendChild(style)
+          }
+
+          // Reduce ChoiceGroup tab label font size from 14px to 12px
+          if (!doc.getElementById('spdir-chocegroup-font')) {
+            const fontStyle = doc.createElement('style')
+            fontStyle.id = 'spdir-chocegroup-font'
+            fontStyle.textContent = `[class*="ChoiceGroup"] label, [role="radiogroup"] label { font-size: 12px !important; }`
+            doc.head.appendChild(fontStyle)
           }
 
           const tab = (this.properties.activeViewTab || 'card') as

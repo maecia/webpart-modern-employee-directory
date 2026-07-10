@@ -1,0 +1,1 @@
+{"version":3,"file":"formatUtils.js","sourceRoot":"","sources":["../../src/utils/formatUtils.ts"],"names":[],"mappings":";;;AAAA,SAAgB,aAAa,CAAC,KAAa;IACzC,OAAO,iBAAU,KAAK,CAAE,CAAC;AAC3B,CAAC;AAFD,sCAEC","sourcesContent":["export function getMailtoLink(email: string): string {\n  return `mailto:${email}`;\n}\n"]}

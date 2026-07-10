@@ -306,12 +306,12 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
   private getLocalizedLabels(
     view: 'list' | 'modal',
   ): Record<string, string> {
-    const record = this.parseFieldLabelsRecord(view)
     const lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase()
+    const record = this.parseFieldLabelsRecord(view)
     const result: Record<string, string> = {}
     for (const [key, labels] of Object.entries(record)) {
       const labelMap = labels as Record<string, string>
-      result[key] = labelMap[lang] || ''
+      result[key] = labelMap[lang] || labels.en || ''
     }
     return result
   }

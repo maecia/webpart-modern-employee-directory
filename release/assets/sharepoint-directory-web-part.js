@@ -1,4 +1,4 @@
-(()=>{ var __RUSHSTACK_CURRENT_SCRIPT__ = document.currentScript; define("b3c4d5e6-f7a8-9012-cdef-123456789012_1.0.0", ["react","react-dom","@microsoft/sp-core-library","@microsoft/sp-webpart-base","@microsoft/sp-property-pane"], (__WEBPACK_EXTERNAL_MODULE__2650__, __WEBPACK_EXTERNAL_MODULE__2729__, __WEBPACK_EXTERNAL_MODULE__3878__, __WEBPACK_EXTERNAL_MODULE__3134__, __WEBPACK_EXTERNAL_MODULE__4723__) => { return /******/ (() => { // webpackBootstrap
+(()=>{ var __RUSHSTACK_CURRENT_SCRIPT__ = document.currentScript; define("b3c4d5e6-f7a8-9012-cdef-123456789012_1.3.0", ["react","react-dom","@microsoft/sp-core-library","@microsoft/sp-webpart-base","@microsoft/sp-property-pane"], (__WEBPACK_EXTERNAL_MODULE__2650__, __WEBPACK_EXTERNAL_MODULE__2729__, __WEBPACK_EXTERNAL_MODULE__3878__, __WEBPACK_EXTERNAL_MODULE__3134__, __WEBPACK_EXTERNAL_MODULE__4723__) => { return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
@@ -424,32 +424,20 @@ var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from
 var CsvService = /** @class */ (function () {
     function CsvService() {
     }
-    CsvService.prototype.exportToCsv = function (members, filename) {
-        var _this = this;
-        var headers = [
-            'Nom',
-            'Prénom',
-            'Email',
-            'Téléphone',
-            'Poste',
-            'Département',
-            'Localisation',
-            'Manager'
-        ];
-        var rows = members.map(function (m) { return [
-            _this.escapeCsvField(m.surname || ''),
-            _this.escapeCsvField(m.givenName || ''),
-            _this.escapeCsvField(m.email || ''),
-            _this.escapeCsvField(m.mobilePhone || ''),
-            _this.escapeCsvField(m.jobTitle || ''),
-            _this.escapeCsvField(m.department || ''),
-            _this.escapeCsvField(m.officeLocation || ''),
-            _this.escapeCsvField(m.managerDisplayName || '')
-        ]; });
+    CsvService.prototype.exportToCsv = function (headers, rows, filename) {
         var bom = '\uFEFF';
-        var csvContent = bom + __spreadArray([
-            headers.join(';')
-        ], rows.map(function (r) { return r.join(';'); }), true).join('\n');
+        var escape = function (field) {
+            if (field.indexOf(';') !== -1 ||
+                field.indexOf('"') !== -1 ||
+                field.indexOf('\n') !== -1) {
+                return '"' + field.replace(/"/g, '""') + '"';
+            }
+            return field;
+        };
+        var csvContent = bom +
+            __spreadArray([
+                headers.map(escape).join(';')
+            ], rows.map(function (r) { return r.map(escape).join(';'); }), true).join('\n');
         var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         var url = URL.createObjectURL(blob);
         var link = document.createElement('a');
@@ -459,12 +447,6 @@ var CsvService = /** @class */ (function () {
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-    };
-    CsvService.prototype.escapeCsvField = function (field) {
-        if (field.includes(';') || field.includes('"') || field.includes('\n')) {
-            return "\"".concat(field.replace(/"/g, '""'), "\"");
-        }
-        return field;
     };
     return CsvService;
 }());
@@ -843,7 +825,7 @@ function getTeamsDeepLink(userPrincipalName) {
 
 var Banner = function (_a) {
     var _b;
-    var searchQuery = _a.searchQuery, onSearchChange = _a.onSearchChange, filters = _a.filters, members = _a.members, filterValues = _a.filterValues, onFilterChange = _a.onFilterChange, resultCount = _a.resultCount, activeView = _a.activeView, onViewChange = _a.onViewChange, filteredMembers = _a.filteredMembers;
+    var searchQuery = _a.searchQuery, onSearchChange = _a.onSearchChange, filters = _a.filters, members = _a.members, filterValues = _a.filterValues, onFilterChange = _a.onFilterChange, resultCount = _a.resultCount, activeView = _a.activeView, onViewChange = _a.onViewChange, filteredMembers = _a.filteredMembers, listFieldOrder = _a.listFieldOrder, listFieldLabels = _a.listFieldLabels;
     var theme = (0,_fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_5__.useTheme)();
     var primaryColor = ((_b = theme === null || theme === void 0 ? void 0 : theme.palette) === null || _b === void 0 ? void 0 : _b.themePrimary) || '#1B7A6E';
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: {
@@ -917,7 +899,7 @@ var Banner = function (_a) {
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("rect", { x: "1", y: "2", width: "14", height: "2", rx: "1" }),
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("rect", { x: "1", y: "7", width: "14", height: "2", rx: "1" }),
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("rect", { x: "1", y: "12", width: "14", height: "2", rx: "1" })))),
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_export_CsvExport__WEBPACK_IMPORTED_MODULE_4__["default"], { members: filteredMembers })));
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_export_CsvExport__WEBPACK_IMPORTED_MODULE_4__["default"], { members: filteredMembers, listFieldOrder: listFieldOrder, listFieldLabels: listFieldLabels })));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Banner);
 
@@ -1056,6 +1038,29 @@ var Directory = function (_a) {
     var theme = (0,_fluentui_react_lib_Theme__WEBPACK_IMPORTED_MODULE_10__.useTheme)();
     var primaryColor = ((_b = theme === null || theme === void 0 ? void 0 : theme.palette) === null || _b === void 0 ? void 0 : _b.themePrimary) || '#1B7A6E';
     react__WEBPACK_IMPORTED_MODULE_0__.useEffect(function () {
+        var id = 'spdir-no-outline';
+        if (document.getElementById(id))
+            return;
+        var style = document.createElement('style');
+        style.id = id;
+        // Scope to .spdir-root so we don't affect the rest of SharePoint.
+        // Cover :focus, :focus-visible and :focus-within (wrapper divs).
+        // Use ID selector (specificity 1,0,0) to override SharePoint's !important rules.
+        style.textContent = [
+            '#spdir-root *:focus,',
+            '#spdir-root *:focus-visible,',
+            '#spdir-root *:focus-within,',
+            '#spdir-root:focus-within',
+            '{outline:none!important;box-shadow:none!important;}',
+        ].join('');
+        document.head.appendChild(style);
+        return function () {
+            var el = document.getElementById(id);
+            if (el && el.parentNode)
+                el.parentNode.removeChild(el);
+        };
+    }, []);
+    react__WEBPACK_IMPORTED_MODULE_0__.useEffect(function () {
         setView(config.defaultView);
     }, [config.defaultView]);
     var filteredMembers = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(function () {
@@ -1111,12 +1116,12 @@ var Directory = function (_a) {
         return react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_ErrorState__WEBPACK_IMPORTED_MODULE_6__["default"], { message: error, onRetry: onRetry });
     }
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_ErrorBoundary__WEBPACK_IMPORTED_MODULE_8__["default"], null,
-        react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { role: "region", "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_9__.strings.DirectoryRegionLabel, "aria-live": "polite", style: { backgroundColor: '#faf9f8', minHeight: '100%' } },
-            react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Banner__WEBPACK_IMPORTED_MODULE_4__["default"], { searchQuery: searchQuery, onSearchChange: setSearchQuery, filters: config.filters, members: members, filterValues: filterValues, onFilterChange: handleFilterChange, resultCount: resultCount, activeView: view, onViewChange: setView, filteredMembers: filteredMembers }),
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { id: "spdir-root", role: "region", "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_9__.strings.DirectoryRegionLabel, "aria-live": "polite", style: { backgroundColor: '#faf9f8', minHeight: '100%' } },
+            react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Banner__WEBPACK_IMPORTED_MODULE_4__["default"], { searchQuery: searchQuery, onSearchChange: setSearchQuery, filters: config.filters, members: members, filterValues: filterValues, onFilterChange: handleFilterChange, resultCount: resultCount, activeView: view, onViewChange: setView, filteredMembers: filteredMembers, listFieldOrder: config.listFieldOrder, listFieldLabels: config.listFieldLabels }),
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { key: view, style: {
                     animation: 'spdir-fadein 0.18s ease',
                 } },
-                react__WEBPACK_IMPORTED_MODULE_0__.createElement("style", null, "\n          @keyframes spdir-fadein {\n            from { opacity: 0; transform: translateY(6px); }\n            to   { opacity: 1; transform: translateY(0); }\n          }\n          @media (prefers-reduced-motion: reduce) {\n            *, *::before, *::after {\n              animation-duration: 0.01ms !important;\n              animation-iteration-count: 1 !important;\n              transition-duration: 0.01ms !important;\n            }\n          }\n          *:focus-visible {\n            outline: 2px solid ".concat(primaryColor, " !important;\n            outline-offset: 2px;\n          }\n        ")),
+                react__WEBPACK_IMPORTED_MODULE_0__.createElement("style", null, "\n          @keyframes spdir-fadein {\n            from { opacity: 0; transform: translateY(6px); }\n            to   { opacity: 1; transform: translateY(0); }\n          }\n          @media (prefers-reduced-motion: reduce) {\n            *, *::before, *::after {\n              animation-duration: 0.01ms !important;\n              animation-iteration-count: 1 !important;\n              transition-duration: 0.01ms !important;\n            }\n          }\n        "),
                 filteredMembers.length === 0 ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_EmptyState__WEBPACK_IMPORTED_MODULE_7__["default"], null)) : view === 'card' ? (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_cardView_CardView__WEBPACK_IMPORTED_MODULE_1__["default"], { members: filteredMembers, cardFieldOrder: config.cardFieldOrder, onMemberClick: setSelectedMember })) : (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_listView_ListView__WEBPACK_IMPORTED_MODULE_2__["default"], { members: filteredMembers, listFieldOrder: config.listFieldOrder, listFieldLabels: config.listFieldLabels, onMemberClick: setSelectedMember }))),
             react__WEBPACK_IMPORTED_MODULE_0__.createElement(_modal_MemberModal__WEBPACK_IMPORTED_MODULE_3__["default"], { member: selectedMember, members: members, modalFieldOrder: config.modalFieldOrder, modalFieldLabels: config.modalFieldLabels, onDismiss: function () { return setSelectedMember(null); }, onMemberClick: setSelectedMember }))));
 };
@@ -1398,17 +1403,68 @@ var MemberCard = function (_a) {
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _services_CsvService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../services/CsvService */ 5717);
 /* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../loc/mystrings */ 5126);
+/* harmony import */ var _models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../models/DirectoryConfig */ 5930);
 
 
 
+
+// Keys that have no exportable text value — skip in CSV
+var SKIP_KEYS = new Set(['photo', 'outlook', 'teams']);
+/** Read the value of a field from a Member object */
+function getMemberFieldValue(m, key) {
+    switch (key) {
+        case 'firstName':
+            return m.givenName || '';
+        case 'name':
+            return m.surname || '';
+        case 'email':
+            return m.email || '';
+        case 'phone':
+            return m.mobilePhone || '';
+        case 'jobTitle':
+            return m.jobTitle || '';
+        case 'department':
+            return m.department || '';
+        case 'officeLocation':
+            return m.officeLocation || '';
+        case 'manager':
+            return m.managerDisplayName || '';
+        default:
+            return (m.customProperties && m.customProperties[key]) || '';
+    }
+}
+/** Column header: admin label → standard i18n label → EntraID label → key */
+function getColumnHeader(key, listFieldLabels) {
+    if (listFieldLabels[key])
+        return listFieldLabels[key];
+    var standardMap = {
+        firstName: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.FieldFirstName,
+        name: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.FieldName,
+        email: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.FieldEmail,
+        phone: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.FieldPhone,
+        jobTitle: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.FieldJobTitle,
+        department: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.FieldDepartment,
+        officeLocation: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.FieldOfficeLocation,
+        manager: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.FieldManager,
+    };
+    if (standardMap[key])
+        return standardMap[key];
+    if (!_models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_3__.STANDARD_FIELD_KEYS.has(key))
+        return (0,_models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_3__.getEntraFieldLabel)(key);
+    return key;
+}
 var CsvExport = function (_a) {
-    var members = _a.members;
+    var members = _a.members, listFieldOrder = _a.listFieldOrder, listFieldLabels = _a.listFieldLabels;
     var csvService = new _services_CsvService__WEBPACK_IMPORTED_MODULE_1__.CsvService();
     var disabled = members.length === 0;
     var _b = react__WEBPACK_IMPORTED_MODULE_0__.useState(false), hovered = _b[0], setHovered = _b[1];
     var handleExport = function () {
+        // Use exactly the configured list field order, skip non-exportable keys
+        var keys = listFieldOrder.filter(function (k) { return !SKIP_KEYS.has(k); });
+        var headers = keys.map(function (k) { return getColumnHeader(k, listFieldLabels); });
+        var rows = members.map(function (m) { return keys.map(function (k) { return getMemberFieldValue(m, k); }); });
         var date = new Date().toISOString().split('T')[0];
-        csvService.exportToCsv(members, "annuaire-sharepoint-".concat(date, ".csv"));
+        csvService.exportToCsv(headers, rows, "annuaire-sharepoint-".concat(date, ".csv"));
     };
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: handleExport, disabled: disabled, title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.ExportCsv, "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.ExportCsv, onMouseEnter: function () { return !disabled && setHovered(true); }, onMouseLeave: function () { return setHovered(false); }, style: {
             display: 'inline-flex',
@@ -2651,6 +2707,7 @@ var SearchBar = function (_a) {
             boxSizing: 'border-box',
             flexShrink: 0,
             minWidth: 240,
+            outline: 'none',
         } },
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "14", height: "14", viewBox: "0 0 16 16", fill: "#605e5c", "aria-hidden": "true", style: { flexShrink: 0 } },
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z" })),
@@ -2901,178 +2958,15 @@ var TeamsIcon = function (_a) {
 
 /***/ }),
 
-/***/ 5126:
-/*!***********************************************************!*\
-  !*** ./lib/webparts/sharepointDirectory/loc/mystrings.js ***!
-  \***********************************************************/
+/***/ 5058:
+/*!****************************************************!*\
+  !*** ./lib/webparts/sharepointDirectory/loc/en.js ***!
+  \****************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   setLanguage: () => (/* binding */ setLanguage),
-/* harmony export */   strings: () => (/* binding */ strings)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-var fr = {
-    PropertyPaneDescription: "Configuration de l'annuaire",
-    ViewGroupName: 'Affichage',
-    DefaultViewLabel: 'Vue par défaut',
-    ViewTrombinoscope: 'Vue Trombinoscope',
-    ViewList: 'Vue Liste',
-    SortOrderLabel: 'Tri des utilisateurs',
-    SortLastNameAsc: 'Alphabétique Nom',
-    SortLastNameDesc: 'Anti-alphabétique Nom',
-    SortFirstNameAsc: 'Alphabétique Prénom',
-    SortFirstNameDesc: 'Anti-alphabétique Prénom',
-    SortRandom: 'Aléatoire',
-    FilterGroupName: 'Filtres',
-    NoFilter: 'Aucun filtre configuré',
-    FilterLabel: 'Filtre',
-    FilterFieldLabel: 'Champ',
-    FilterTextFieldLabel: 'Libellé',
-    AddFilter: 'Ajouter un filtre',
-    RemoveFilter: 'Supprimer',
-    FieldPhoto: 'Photo',
-    FieldName: 'Nom',
-    FieldFirstName: 'Prénom',
-    FieldEmail: 'E-mail',
-    FieldPhone: 'Téléphone',
-    FieldJobTitle: 'Poste',
-    FieldDepartment: 'Département',
-    FieldOfficeLocation: 'Localisation',
-    FieldManager: 'Manager',
-    FieldOutlook: 'Outlook',
-    FieldTeams: 'Teams',
-    CustomFieldsCardGroup: 'Vue Trombinoscope',
-    CustomFieldsListGroup: 'Vue Liste',
-    CustomFieldsModalGroup: 'Vue Modale',
-    CustomFieldsEntraID: 'Champs EntraID',
-    CustomFieldDropdown: 'Champ EntraID',
-    CustomFieldLabelInput: 'Libellé personnalisé (optionnel)',
-    CustomFieldLabelFr: 'Libellé (FR)',
-    CustomFieldLabelEn: 'Libellé (EN)',
-    AddCustomField: 'Ajouter un champ EntraID',
-    RemoveCustomField: 'Supprimer ce champ',
-    SelectPlaceholder: 'Sélectionner...',
-    CustomFieldsPrefix: '— Champs EntraID',
-    SearchPlaceholder: 'Rechercher un collaborateur...',
-    ResultCount: '{0} résultat(s)',
-    LoadMore: 'Voir plus de collaborateurs',
-    ViewProfile: 'Voir la fiche',
-    ClickForDetails: 'Cliquez pour les détails',
-    HeaderCollaborator: 'Collaborateur',
-    HeaderJobTitle: 'Poste',
-    HeaderEmail: 'E-mail',
-    HeaderPhone: 'Téléphone',
-    HeaderDepartment: 'Département',
-    HeaderLocation: 'Localisation',
-    HeaderManager: 'Manager',
-    SendEmail: 'Envoyer un email',
-    ContactViaTeams: 'Contacter via Teams',
-    LabelDepartment: 'Département',
-    LabelLocation: 'Localisation',
-    LabelManager: 'Manager',
-    CloseModal: 'Fermer',
-    ErrorLoading: "Impossible de charger les données de l'annuaire. Veuillez réessayer.",
-    ErrorBoundaryMessage: "Une erreur inattendue s'est produite. Veuillez réessayer.",
-    Retry: 'Réessayer',
-    NoResults: 'Aucun collaborateur trouvé',
-    EmptyStateHint: 'Essayez de modifier vos critères de recherche ou vos filtres.',
-    AccessDeniedMessage: "Vous n'avez pas les droits nécessaires pour accéder à cet annuaire.",
-    LoadingText: 'Chargement...',
-    ResultsLabel: 'Résultats :',
-    CollaboratorSingular: 'collaborateur',
-    CollaboratorPlural: 'collaborateurs',
-    ExportCsv: 'Exporter en CSV',
-    ClearSearch: 'Effacer la recherche',
-    PropertyPaneHeader: 'Paramètres',
-    FilterLabelInput: 'Libellé affiché',
-    None: 'Aucun',
-    RemoveFilterLabel: 'Supprimer ce filtre',
-    // EntraID field labels
-    EntraField_aboutMe: 'À propos',
-    EntraField_birthday: 'Date de naissance',
-    EntraField_interests: "Centres d'intérêt",
-    EntraField_pastProjects: 'Projets passés',
-    EntraField_responsibilities: 'Responsabilités',
-    EntraField_schools: 'Écoles',
-    EntraField_skills: 'Compétences',
-    EntraField_streetAddress: 'Adresse',
-    EntraField_city: 'Ville',
-    EntraField_state: 'Région',
-    EntraField_postalCode: 'Code postal',
-    EntraField_country: 'Pays',
-    EntraField_businessPhones: 'Téléphone pro',
-    EntraField_faxNumber: 'Fax',
-    EntraField_otherMails: 'Autres emails',
-    EntraField_imAddresses: 'Adresses IM',
-    EntraField_mySite: 'Site personnel',
-    EntraField_companyName: 'Société',
-    EntraField_employeeId: 'ID Employé',
-    EntraField_employeeType: "Type d'employé",
-    EntraField_employeeHireDate: "Date d'embauche (MS)",
-    EntraField_hireDate: "Date d'embauche (SP)",
-    EntraField_employeeLeaveDateTime: 'Date de départ',
-    EntraField_division: 'Division',
-    EntraField_costCenter: 'Centre de coût',
-    EntraField_preferredLanguage: 'Langue',
-    EntraField_usageLocation: "Localisation d'usage",
-    EntraField_createdDateTime: 'Date de création',
-    EntraField_ageGroup: "Groupe d'âge",
-    EntraField_consentProvidedForMinor: 'Consentement mineur',
-    EntraField_legalAgeGroupClassification: 'Classification âge légal',
-    EntraField_externalUserState: 'État utilisateur externe',
-    EntraField_mailNickname: 'Alias mail',
-    EntraField_lastPasswordChangeDateTime: 'Dernier changement MDP',
-    EntraField_onPremisesDistinguishedName: 'DN On-Prem',
-    EntraField_onPremisesDomainName: 'Domaine On-Prem',
-    EntraField_onPremisesSamAccountName: 'SAM Account',
-    EntraField_onPremisesUserPrincipalName: 'UPN On-Prem',
-    EntraField_extensionAttribute1: 'Extension Attribute 1',
-    EntraField_extensionAttribute2: 'Extension Attribute 2',
-    EntraField_extensionAttribute3: 'Extension Attribute 3',
-    EntraField_extensionAttribute4: 'Extension Attribute 4',
-    EntraField_extensionAttribute5: 'Extension Attribute 5',
-    EntraField_extensionAttribute6: 'Extension Attribute 6',
-    EntraField_extensionAttribute7: 'Extension Attribute 7',
-    EntraField_extensionAttribute8: 'Extension Attribute 8',
-    EntraField_extensionAttribute9: 'Extension Attribute 9',
-    EntraField_extensionAttribute10: 'Extension Attribute 10',
-    EntraField_extensionAttribute11: 'Extension Attribute 11',
-    EntraField_extensionAttribute12: 'Extension Attribute 12',
-    EntraField_extensionAttribute13: 'Extension Attribute 13',
-    EntraField_extensionAttribute14: 'Extension Attribute 14',
-    EntraField_extensionAttribute15: 'Extension Attribute 15',
-    // Property pane tabs
-    TabCard: 'Trombinoscope',
-    TabList: 'Liste',
-    TabModal: 'Modale',
-    ViewTabLabel: 'Vue à configurer',
-    // DnD field selector
-    DnD_AvailableFields: 'Champs disponibles',
-    DnD_DisplayOrder: "Ordre d'affichage",
-    DnD_DragHint: 'Glisser-déposer pour réordonner',
-    DnD_StandardGroup: 'Standards',
-    DnD_ExtAttrGroup: "Attributs d'extension",
-    DnD_AddExtAttr: 'Ajouter un attribut…',
-    DnD_AddField: 'Ajouter',
-    DnD_RemoveField: 'Retirer',
-    DnD_LabelFr: 'Libellé FR',
-    DnD_LabelEn: 'Libellé EN',
-    DnD_Group_Profile: 'Profil',
-    DnD_Group_Contact: 'Coordonnées',
-    DnD_Group_Company: 'Entreprise',
-    DnD_Group_Region: 'Langue & Région',
-    DnD_Group_OnPrem: 'On-premises',
-    DnD_Group_Other: 'Divers',
-    DnD_NoSelection: 'Aucun champ sélectionné.',
-    Lang_fr: 'Label français',
-    Lang_en: 'Label anglais',
-    Lang_de: 'Label allemand',
-    Lang_es: 'Label espagnol',
-    Lang_it: 'Label italien',
-    Lang_nl: 'Label néerlandais',
-    Lang_pt: 'Label portugais',
-    DirectoryRegionLabel: 'Annuaire SharePoint',
-};
 var en = {
     PropertyPaneDescription: 'Directory Settings',
     ViewGroupName: 'Display',
@@ -3109,8 +3003,6 @@ var en = {
     CustomFieldsEntraID: 'Entra ID Fields',
     CustomFieldDropdown: 'Entra ID Field',
     CustomFieldLabelInput: 'Custom label (optional)',
-    CustomFieldLabelFr: 'Label (FR)',
-    CustomFieldLabelEn: 'Label (EN)',
     AddCustomField: 'Add Entra ID field',
     RemoveCustomField: 'Remove this field',
     SelectPlaceholder: 'Select...',
@@ -3217,8 +3109,6 @@ var en = {
     DnD_AddExtAttr: 'Add an attribute…',
     DnD_AddField: 'Add',
     DnD_RemoveField: 'Remove',
-    DnD_LabelFr: 'Label FR',
-    DnD_LabelEn: 'Label EN',
     DnD_Group_Profile: 'Profile',
     DnD_Group_Contact: 'Contact',
     DnD_Group_Company: 'Company',
@@ -3228,16 +3118,211 @@ var en = {
     DnD_NoSelection: 'No fields selected.',
     Lang_fr: 'French label',
     Lang_en: 'English label',
-    Lang_de: 'German label',
-    Lang_es: 'Spanish label',
-    Lang_it: 'Italian label',
-    Lang_nl: 'Dutch label',
-    Lang_pt: 'Portuguese label',
     DirectoryRegionLabel: 'SharePoint Directory',
 };
-// ── Locale registry — add new languages here ────────────────────────────────
-var locales = { fr: fr, en: en };
-var current = fr;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (en);
+
+
+/***/ }),
+
+/***/ 3240:
+/*!****************************************************!*\
+  !*** ./lib/webparts/sharepointDirectory/loc/fr.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var fr = {
+    PropertyPaneDescription: "Configuration de l'annuaire",
+    ViewGroupName: 'Affichage',
+    DefaultViewLabel: 'Vue par défaut',
+    ViewTrombinoscope: 'Vue Trombinoscope',
+    ViewList: 'Vue Liste',
+    SortOrderLabel: 'Tri des utilisateurs',
+    SortLastNameAsc: 'Alphabétique Nom',
+    SortLastNameDesc: 'Anti-alphabétique Nom',
+    SortFirstNameAsc: 'Alphabétique Prénom',
+    SortFirstNameDesc: 'Anti-alphabétique Prénom',
+    SortRandom: 'Aléatoire',
+    FilterGroupName: 'Filtres',
+    NoFilter: 'Aucun filtre configuré',
+    FilterLabel: 'Filtre',
+    FilterFieldLabel: 'Champ',
+    FilterTextFieldLabel: 'Libellé',
+    AddFilter: 'Ajouter un filtre',
+    RemoveFilter: 'Supprimer',
+    FieldPhoto: 'Photo',
+    FieldName: 'Nom',
+    FieldFirstName: 'Prénom',
+    FieldEmail: 'E-mail',
+    FieldPhone: 'Téléphone',
+    FieldJobTitle: 'Poste',
+    FieldDepartment: 'Département',
+    FieldOfficeLocation: 'Localisation',
+    FieldManager: 'Manager',
+    FieldOutlook: 'Outlook',
+    FieldTeams: 'Teams',
+    CustomFieldsCardGroup: 'Vue Trombinoscope',
+    CustomFieldsListGroup: 'Vue Liste',
+    CustomFieldsModalGroup: 'Vue Modale',
+    CustomFieldsEntraID: 'Champs EntraID',
+    CustomFieldDropdown: 'Champ EntraID',
+    CustomFieldLabelInput: 'Libellé personnalisé (optionnel)',
+    AddCustomField: 'Ajouter un champ EntraID',
+    RemoveCustomField: 'Supprimer ce champ',
+    SelectPlaceholder: 'Sélectionner...',
+    CustomFieldsPrefix: '— Champs EntraID',
+    SearchPlaceholder: 'Rechercher un collaborateur...',
+    ResultCount: '{0} résultat(s)',
+    LoadMore: 'Voir plus de collaborateurs',
+    ViewProfile: 'Voir la fiche',
+    ClickForDetails: 'Cliquez pour les détails',
+    HeaderCollaborator: 'Collaborateur',
+    HeaderJobTitle: 'Poste',
+    HeaderEmail: 'E-mail',
+    HeaderPhone: 'Téléphone',
+    HeaderDepartment: 'Département',
+    HeaderLocation: 'Localisation',
+    HeaderManager: 'Manager',
+    SendEmail: 'Envoyer un email',
+    ContactViaTeams: 'Contacter via Teams',
+    LabelDepartment: 'Département',
+    LabelLocation: 'Localisation',
+    LabelManager: 'Manager',
+    CloseModal: 'Fermer',
+    ErrorLoading: "Impossible de charger les données de l'annuaire. Veuillez réessayer.",
+    ErrorBoundaryMessage: "Une erreur inattendue s'est produite. Veuillez réessayer.",
+    Retry: 'Réessayer',
+    NoResults: 'Aucun collaborateur trouvé',
+    EmptyStateHint: 'Essayez de modifier vos critères de recherche ou vos filtres.',
+    AccessDeniedMessage: "Vous n'avez pas les droits nécessaires pour accéder à cet annuaire.",
+    LoadingText: 'Chargement...',
+    ResultsLabel: 'Résultats :',
+    CollaboratorSingular: 'collaborateur',
+    CollaboratorPlural: 'collaborateurs',
+    ExportCsv: 'Exporter en CSV',
+    ClearSearch: 'Effacer la recherche',
+    PropertyPaneHeader: 'Paramètres',
+    FilterLabelInput: 'Libellé affiché',
+    None: 'Aucun',
+    RemoveFilterLabel: 'Supprimer ce filtre',
+    // EntraID field labels
+    EntraField_aboutMe: 'À propos',
+    EntraField_birthday: 'Date de naissance',
+    EntraField_interests: "Centres d'intérêt",
+    EntraField_pastProjects: 'Projets passés',
+    EntraField_responsibilities: 'Responsabilités',
+    EntraField_schools: 'Écoles',
+    EntraField_skills: 'Compétences',
+    EntraField_streetAddress: 'Adresse',
+    EntraField_city: 'Ville',
+    EntraField_state: 'Région',
+    EntraField_postalCode: 'Code postal',
+    EntraField_country: 'Pays',
+    EntraField_businessPhones: 'Téléphone pro',
+    EntraField_faxNumber: 'Fax',
+    EntraField_otherMails: 'Autres emails',
+    EntraField_imAddresses: 'Adresses IM',
+    EntraField_mySite: 'Site personnel',
+    EntraField_companyName: 'Société',
+    EntraField_employeeId: 'ID Employé',
+    EntraField_employeeType: "Type d'employé",
+    EntraField_employeeHireDate: "Date d'embauche (MS)",
+    EntraField_hireDate: "Date d'embauche (SP)",
+    EntraField_employeeLeaveDateTime: 'Date de départ',
+    EntraField_division: 'Division',
+    EntraField_costCenter: 'Centre de coût',
+    EntraField_preferredLanguage: 'Langue',
+    EntraField_usageLocation: "Localisation d'usage",
+    EntraField_createdDateTime: 'Date de création',
+    EntraField_ageGroup: "Groupe d'âge",
+    EntraField_consentProvidedForMinor: 'Consentement mineur',
+    EntraField_legalAgeGroupClassification: 'Classification âge légal',
+    EntraField_externalUserState: 'État utilisateur externe',
+    EntraField_mailNickname: 'Alias mail',
+    EntraField_lastPasswordChangeDateTime: 'Dernier changement MDP',
+    EntraField_onPremisesDistinguishedName: 'DN On-Prem',
+    EntraField_onPremisesDomainName: 'Domaine On-Prem',
+    EntraField_onPremisesSamAccountName: 'SAM Account',
+    EntraField_onPremisesUserPrincipalName: 'UPN On-Prem',
+    EntraField_extensionAttribute1: 'Extension Attribute 1',
+    EntraField_extensionAttribute2: 'Extension Attribute 2',
+    EntraField_extensionAttribute3: 'Extension Attribute 3',
+    EntraField_extensionAttribute4: 'Extension Attribute 4',
+    EntraField_extensionAttribute5: 'Extension Attribute 5',
+    EntraField_extensionAttribute6: 'Extension Attribute 6',
+    EntraField_extensionAttribute7: 'Extension Attribute 7',
+    EntraField_extensionAttribute8: 'Extension Attribute 8',
+    EntraField_extensionAttribute9: 'Extension Attribute 9',
+    EntraField_extensionAttribute10: 'Extension Attribute 10',
+    EntraField_extensionAttribute11: 'Extension Attribute 11',
+    EntraField_extensionAttribute12: 'Extension Attribute 12',
+    EntraField_extensionAttribute13: 'Extension Attribute 13',
+    EntraField_extensionAttribute14: 'Extension Attribute 14',
+    EntraField_extensionAttribute15: 'Extension Attribute 15',
+    // Property pane tabs
+    TabCard: 'Trombinoscope',
+    TabList: 'Liste',
+    TabModal: 'Modale',
+    ViewTabLabel: 'Vue à configurer',
+    // DnD field selector
+    DnD_AvailableFields: 'Champs disponibles',
+    DnD_DisplayOrder: "Ordre d'affichage",
+    DnD_DragHint: 'Glisser-déposer pour réordonner',
+    DnD_StandardGroup: 'Standards',
+    DnD_ExtAttrGroup: "Attributs d'extension",
+    DnD_AddExtAttr: 'Ajouter un attribut…',
+    DnD_AddField: 'Ajouter',
+    DnD_RemoveField: 'Retirer',
+    DnD_Group_Profile: 'Profil',
+    DnD_Group_Contact: 'Coordonnées',
+    DnD_Group_Company: 'Entreprise',
+    DnD_Group_Region: 'Langue & Région',
+    DnD_Group_OnPrem: 'On-premises',
+    DnD_Group_Other: 'Divers',
+    DnD_NoSelection: 'Aucun champ sélectionné.',
+    Lang_fr: 'Label français',
+    Lang_en: 'Label anglais',
+    DirectoryRegionLabel: 'Annuaire SharePoint',
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (fr);
+
+
+/***/ }),
+
+/***/ 5126:
+/*!***********************************************************!*\
+  !*** ./lib/webparts/sharepointDirectory/loc/mystrings.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setLanguage: () => (/* binding */ setLanguage),
+/* harmony export */   strings: () => (/* binding */ strings)
+/* harmony export */ });
+/* harmony import */ var _fr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./fr */ 3240);
+/* harmony import */ var _en__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./en */ 5058);
+// ─── Locale registry ──────────────────────────────────────────────────────────
+//
+// To add a new language (e.g. German):
+//   1. Create src/webparts/sharepointDirectory/loc/de.ts  (copy en.ts, translate)
+//   2. Add two lines below:
+//        import de from './de'
+//        locales.de = de
+//
+// That's it — no other file needs to change.
+// ─────────────────────────────────────────────────────────────────────────────
+
+
+// Map ISO-639-1 language code → translation object.
+// "en" is used as the fallback when a language is not registered.
+var locales = {
+    fr: _fr__WEBPACK_IMPORTED_MODULE_0__["default"],
+    en: _en__WEBPACK_IMPORTED_MODULE_1__["default"],
+};
+var current = _fr__WEBPACK_IMPORTED_MODULE_0__["default"];
 var strings = new Proxy({}, {
     get: function (_target, prop) {
         return current[prop];
@@ -3245,8 +3330,9 @@ var strings = new Proxy({}, {
 });
 /** Call once at startup with the SharePoint currentCultureName (e.g. "fr-fr", "en-us"). */
 function setLanguage(locale) {
+    var _a;
     var lang = (locale || '').split('-')[0].toLowerCase();
-    current = locales[lang] || en;
+    current = (_a = locales[lang]) !== null && _a !== void 0 ? _a : _en__WEBPACK_IMPORTED_MODULE_1__["default"];
 }
 
 
@@ -30179,7 +30265,7 @@ const DEFAULT_GRAPH_URL = "https://graph.microsoft.com/v1.0";
 /***/ ((__unused_webpack___webpack_module__, __unused_webpack___webpack_exports__, __webpack_require__) => {
 
 /* harmony import */ var _pnp_queryable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pnp/queryable */ 6844);
-/* harmony import */ var _teams_types_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../teams/types.js */ 5058);
+/* harmony import */ var _teams_types_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../teams/types.js */ 160);
 /* harmony import */ var _types_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./types.js */ 3810);
 
 
@@ -30270,7 +30356,7 @@ const Photos = (0,_graphqueryable_js__WEBPACK_IMPORTED_MODULE_0__.graphInvokable
 
 /***/ }),
 
-/***/ 5058:
+/***/ 160:
 /*!************************************************!*\
   !*** ./node_modules/@pnp/graph/teams/types.js ***!
   \************************************************/
@@ -31838,7 +31924,6 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     };
     SharepointDirectoryWebPart.prototype.render = function () {
         var _this = this;
-        var isFr = this.isCurrentLocaleFr();
         // Extract the Fluent UI theme primary — stored on the class so the
         // property pane (which lives in a separate iframe) can read it.
         var ThemeExtractor = function () {
@@ -31857,8 +31942,8 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
             cardFieldOrder: this.getEffectiveFieldOrder('card'),
             listFieldOrder: this.getEffectiveFieldOrder('list'),
             modalFieldOrder: this.getEffectiveFieldOrder('modal'),
-            listFieldLabels: this.getLocalizedLabels('list', isFr),
-            modalFieldLabels: this.getLocalizedLabels('modal', isFr),
+            listFieldLabels: this.getLocalizedLabels('list'),
+            modalFieldLabels: this.getLocalizedLabels('modal'),
             filters: this.getFiltersFromProperties(),
         };
         var config = (0,_hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_10__.useDirectoryConfig)(rawConfig);
@@ -31886,34 +31971,32 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     SharepointDirectoryWebPart.prototype.getFiltersFromProperties = function () {
         var filters = [];
         var count = this.properties.filterCount || 0;
-        var isFr = this.isCurrentLocaleFr();
-        var pickLabel = function (fr, en) {
-            return isFr ? fr : en;
-        };
-        if (count >= 1 && this.properties.filterField1) {
-            filters.push({
-                fieldName: this.properties.filterField1,
-                label: pickLabel(this.properties.filterLabelFr1, this.properties.filterLabelEn1),
-            });
-        }
-        if (count >= 2 && this.properties.filterField2) {
-            filters.push({
-                fieldName: this.properties.filterField2,
-                label: pickLabel(this.properties.filterLabelFr2, this.properties.filterLabelEn2),
-            });
-        }
-        if (count >= 3 && this.properties.filterField3) {
-            filters.push({
-                fieldName: this.properties.filterField3,
-                label: pickLabel(this.properties.filterLabelFr3, this.properties.filterLabelEn3),
-            });
+        var lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase();
+        for (var i = 1; i <= count; i++) {
+            var fieldName = this.properties["filterField".concat(i)];
+            if (!fieldName)
+                continue;
+            var props = this.properties;
+            // Try new JSON format first, then fall back to old flat properties
+            var json = props["filterLabels".concat(i, "Json")];
+            var label = void 0;
+            if (json) {
+                try {
+                    var labels = JSON.parse(json);
+                    label = labels[lang] || '';
+                }
+                catch (_a) {
+                    label = props["filterLabel_".concat(i, "_").concat(lang)] || '';
+                }
+            }
+            else {
+                label = props["filterLabel_".concat(i, "_").concat(lang)] || props["filterLabelFr".concat(i)] || '';
+            }
+            filters.push({ fieldName: fieldName, label: label });
         }
         return filters;
     };
     // ─── New helper methods ──────────────────────────────────────────────────
-    SharepointDirectoryWebPart.prototype.isCurrentLocaleFr = function () {
-        return (this.context.pageContext.cultureInfo.currentCultureName || '').startsWith('fr');
-    };
     /** Parse the JSON stored in *FieldsJson — migrate from old flat props if absent */
     SharepointDirectoryWebPart.prototype.getEffectiveFieldOrder = function (view) {
         var prop = view === 'card'
@@ -31993,7 +32076,7 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
         return result;
     };
     /** Return localized (single string) labels per field key for the given view */
-    SharepointDirectoryWebPart.prototype.getLocalizedLabels = function (view, _isFr) {
+    SharepointDirectoryWebPart.prototype.getLocalizedLabels = function (view) {
         var record = this.parseFieldLabelsRecord(view);
         var lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase();
         var result = {};
@@ -32045,13 +32128,18 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
                 label: "".concat(_loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.FilterLabel, " ").concat(i, " \u2014 ").concat(_loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.FilterFieldLabel),
                 options: FILTER_OPTIONS,
                 selectedKey: this.properties["filterField".concat(i)] || '',
-            }), (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneTextField)("filterLabelFr".concat(i), {
-                label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.CustomFieldLabelFr,
-                value: this.properties["filterLabelFr".concat(i)] || '',
-            }), (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneTextField)("filterLabelEn".concat(i), {
-                label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.CustomFieldLabelEn,
-                value: this.properties["filterLabelEn".concat(i)] || '',
-            }), (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneButton)("removeFilter".concat(i), {
+            }));
+            // Dynamic label fields — one per supported language
+            for (var _i = 0, _a = this._supportedLanguages; _i < _a.length; _i++) {
+                var lang = _a[_i];
+                var propName = "filterLabel_".concat(i, "_").concat(lang);
+                var langLabel = _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings["Lang_".concat(lang)] || lang;
+                filterGroupFields.push((0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneTextField)(propName, {
+                    label: langLabel,
+                    value: this.properties[propName] || '',
+                }));
+            }
+            filterGroupFields.push((0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneButton)("removeFilter".concat(i), {
                 text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.strings.RemoveFilterLabel,
                 buttonType: _microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_3__.PropertyPaneButtonType.Command,
                 icon: 'Delete',

@@ -2,19 +2,81 @@ import * as React from 'react'
 import { CsvService } from '../../../../services/CsvService'
 import { Member } from '../../../../models/Member'
 import { strings } from '../../loc/mystrings'
+import {
+  getEntraFieldLabel,
+  STANDARD_FIELD_KEYS,
+} from '../../../../models/DirectoryConfig'
+
+// Keys that have no exportable text value — skip in CSV
+const SKIP_KEYS = new Set(['photo', 'outlook', 'teams'])
+
+/** Read the value of a field from a Member object */
+function getMemberFieldValue(m: Member, key: string): string {
+  switch (key) {
+    case 'firstName':
+      return m.givenName || ''
+    case 'name':
+      return m.surname || ''
+    case 'email':
+      return m.email || ''
+    case 'phone':
+      return m.mobilePhone || ''
+    case 'jobTitle':
+      return m.jobTitle || ''
+    case 'department':
+      return m.department || ''
+    case 'officeLocation':
+      return m.officeLocation || ''
+    case 'manager':
+      return m.managerDisplayName || ''
+    default:
+      return (m.customProperties && m.customProperties[key]) || ''
+  }
+}
+
+/** Column header: admin label → standard i18n label → EntraID label → key */
+function getColumnHeader(
+  key: string,
+  listFieldLabels: Record<string, string>,
+): string {
+  if (listFieldLabels[key]) return listFieldLabels[key]
+  const standardMap: Record<string, string> = {
+    firstName: strings.FieldFirstName,
+    name: strings.FieldName,
+    email: strings.FieldEmail,
+    phone: strings.FieldPhone,
+    jobTitle: strings.FieldJobTitle,
+    department: strings.FieldDepartment,
+    officeLocation: strings.FieldOfficeLocation,
+    manager: strings.FieldManager,
+  }
+  if (standardMap[key]) return standardMap[key]
+  if (!STANDARD_FIELD_KEYS.has(key)) return getEntraFieldLabel(key)
+  return key
+}
 
 interface CsvExportProps {
   members: Member[]
+  listFieldOrder: string[]
+  listFieldLabels: Record<string, string>
 }
 
-const CsvExport: React.FC<CsvExportProps> = ({ members }) => {
+const CsvExport: React.FC<CsvExportProps> = ({
+  members,
+  listFieldOrder,
+  listFieldLabels,
+}) => {
   const csvService = new CsvService()
   const disabled = members.length === 0
   const [hovered, setHovered] = React.useState(false)
 
   const handleExport = () => {
+    // Use exactly the configured list field order, skip non-exportable keys
+    const keys = listFieldOrder.filter((k) => !SKIP_KEYS.has(k))
+    const headers = keys.map((k) => getColumnHeader(k, listFieldLabels))
+    const rows = members.map((m) => keys.map((k) => getMemberFieldValue(m, k)))
     const date = new Date().toISOString().split('T')[0]
-    csvService.exportToCsv(members, `annuaire-sharepoint-${date}.csv`)
+    csvService.exportToCsv(headers, rows, `annuaire-sharepoint-${date}.csv`)
   }
 
   return (

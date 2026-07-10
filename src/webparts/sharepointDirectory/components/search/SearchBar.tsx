@@ -28,6 +28,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         boxSizing: 'border-box',
         flexShrink: 0,
         minWidth: 240,
+        outline: 'none',
       }}
     >
       <svg

@@ -12,20 +12,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 18
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Bundle (production)
-        run: npx gulp bundle --ship
-
-      - name: Package solution (.sppkg)
-        run: npx gulp package-solution --ship
+      - name: Bundle & package solution
+        run: npm run build
 
       - name: Upload .sppkg artifact
         uses: actions/upload-artifact@v4

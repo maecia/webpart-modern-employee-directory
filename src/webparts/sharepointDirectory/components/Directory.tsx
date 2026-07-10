@@ -119,6 +119,28 @@ const Directory: React.FC<DirectoryProps> = ({
   const primaryColor = theme?.palette?.themePrimary || '#1B7A6E'
 
   React.useEffect(() => {
+    const id = 'spdir-no-outline'
+    if (document.getElementById(id)) return
+    const style = document.createElement('style')
+    style.id = id
+    // Scope to .spdir-root so we don't affect the rest of SharePoint.
+    // Cover :focus, :focus-visible and :focus-within (wrapper divs).
+    // Use ID selector (specificity 1,0,0) to override SharePoint's !important rules.
+    style.textContent = [
+      '#spdir-root *:focus,',
+      '#spdir-root *:focus-visible,',
+      '#spdir-root *:focus-within,',
+      '#spdir-root:focus-within',
+      '{outline:none!important;box-shadow:none!important;}',
+    ].join('')
+    document.head.appendChild(style)
+    return () => {
+      const el = document.getElementById(id)
+      if (el && el.parentNode) el.parentNode.removeChild(el)
+    }
+  }, [])
+
+  React.useEffect(() => {
     setView(config.defaultView)
   }, [config.defaultView])
 
@@ -190,32 +212,35 @@ const Directory: React.FC<DirectoryProps> = ({
 
   return (
     <ErrorBoundary>
-    <div
-      role="region"
-      aria-label={strings.DirectoryRegionLabel}
-      aria-live="polite"
-      style={{ backgroundColor: '#faf9f8', minHeight: '100%' }}
-    >
-      <Banner
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        filters={config.filters}
-        members={members}
-        filterValues={filterValues}
-        onFilterChange={handleFilterChange}
-        resultCount={resultCount}
-        activeView={view}
-        onViewChange={setView}
-        filteredMembers={filteredMembers}
-      />
-
       <div
-        key={view}
-        style={{
-          animation: 'spdir-fadein 0.18s ease',
-        }}
+        id="spdir-root"
+        role="region"
+        aria-label={strings.DirectoryRegionLabel}
+        aria-live="polite"
+        style={{ backgroundColor: '#faf9f8', minHeight: '100%' }}
       >
-        <style>{`
+        <Banner
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          filters={config.filters}
+          members={members}
+          filterValues={filterValues}
+          onFilterChange={handleFilterChange}
+          resultCount={resultCount}
+          activeView={view}
+          onViewChange={setView}
+          filteredMembers={filteredMembers}
+          listFieldOrder={config.listFieldOrder}
+          listFieldLabels={config.listFieldLabels}
+        />
+
+        <div
+          key={view}
+          style={{
+            animation: 'spdir-fadein 0.18s ease',
+          }}
+        >
+          <style>{`
           @keyframes spdir-fadein {
             from { opacity: 0; transform: translateY(6px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -227,38 +252,34 @@ const Directory: React.FC<DirectoryProps> = ({
               transition-duration: 0.01ms !important;
             }
           }
-          *:focus-visible {
-            outline: 2px solid ${primaryColor} !important;
-            outline-offset: 2px;
-          }
         `}</style>
-        {filteredMembers.length === 0 ? (
-          <EmptyState />
-        ) : view === 'card' ? (
-          <CardView
-            members={filteredMembers}
-            cardFieldOrder={config.cardFieldOrder}
-            onMemberClick={setSelectedMember}
-          />
-        ) : (
-          <ListView
-            members={filteredMembers}
-            listFieldOrder={config.listFieldOrder}
-            listFieldLabels={config.listFieldLabels}
-            onMemberClick={setSelectedMember}
-          />
-        )}
-      </div>
+          {filteredMembers.length === 0 ? (
+            <EmptyState />
+          ) : view === 'card' ? (
+            <CardView
+              members={filteredMembers}
+              cardFieldOrder={config.cardFieldOrder}
+              onMemberClick={setSelectedMember}
+            />
+          ) : (
+            <ListView
+              members={filteredMembers}
+              listFieldOrder={config.listFieldOrder}
+              listFieldLabels={config.listFieldLabels}
+              onMemberClick={setSelectedMember}
+            />
+          )}
+        </div>
 
-      <MemberModal
-        member={selectedMember}
-        members={members}
-        modalFieldOrder={config.modalFieldOrder}
-        modalFieldLabels={config.modalFieldLabels}
-        onDismiss={() => setSelectedMember(null)}
-        onMemberClick={setSelectedMember}
-      />
-    </div>
+        <MemberModal
+          member={selectedMember}
+          members={members}
+          modalFieldOrder={config.modalFieldOrder}
+          modalFieldLabels={config.modalFieldLabels}
+          onDismiss={() => setSelectedMember(null)}
+          onMemberClick={setSelectedMember}
+        />
+      </div>
     </ErrorBoundary>
   )
 }

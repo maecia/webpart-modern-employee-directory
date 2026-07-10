@@ -37,6 +37,7 @@ import { setLanguage, strings } from './loc/mystrings'
 import DnDFieldSelector from './components/propertyPane/DnDFieldSelector'
 
 export interface ISharepointDirectoryWebPartProps {
+  [key: string]: any
   defaultView: 'card' | 'list'
   sortOrder: string
   /** Active tab in the property pane — drives which view is being configured */
@@ -45,20 +46,14 @@ export interface ISharepointDirectoryWebPartProps {
   cardFieldsJson: string
   listFieldsJson: string
   modalFieldsJson: string
-  /** JSON-serialised Record<string, { fr: string; en: string }> for labels */
+  /** JSON-serialised Record<string, Record<string, string>> for labels */
   listFieldLabelsJson: string
   modalFieldLabelsJson: string
   /** Filters */
   filterCount: number
   filterField1: string
-  filterLabelFr1: string
-  filterLabelEn1: string
   filterField2: string
-  filterLabelFr2: string
-  filterLabelEn2: string
   filterField3: string
-  filterLabelFr3: string
-  filterLabelEn3: string
 }
 
 const ALL_FIELD_KEYS_SET = STANDARD_FIELD_KEYS
@@ -144,8 +139,6 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
   private detectedExtAttrs: string[] = []
 
   public render(): void {
-    const isFr = this.isCurrentLocaleFr()
-
     // Extract the Fluent UI theme primary — stored on the class so the
     // property pane (which lives in a separate iframe) can read it.
     const ThemeExtractor: React.FC = () => {
@@ -163,8 +156,8 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
       cardFieldOrder: this.getEffectiveFieldOrder('card'),
       listFieldOrder: this.getEffectiveFieldOrder('list'),
       modalFieldOrder: this.getEffectiveFieldOrder('modal'),
-      listFieldLabels: this.getLocalizedLabels('list', isFr),
-      modalFieldLabels: this.getLocalizedLabels('modal', isFr),
+      listFieldLabels: this.getLocalizedLabels('list'),
+      modalFieldLabels: this.getLocalizedLabels('modal'),
       filters: this.getFiltersFromProperties(),
     }
 
@@ -201,50 +194,31 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
   private getFiltersFromProperties(): FilterField[] {
     const filters: FilterField[] = []
     const count = this.properties.filterCount || 0
-    const isFr = this.isCurrentLocaleFr()
+    const lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase()
 
-    const pickLabel = (fr: string, en: string) => {
-      return isFr ? fr : en
+    for (let i = 1; i <= count; i++) {
+      const fieldName = this.properties[`filterField${i}`]
+      if (!fieldName) continue
+      const props = this.properties as any
+      // Try new JSON format first, then fall back to old flat properties
+      const json = props[`filterLabels${i}Json`]
+      let label: string
+      if (json) {
+        try {
+          const labels = JSON.parse(json)
+          label = labels[lang] || ''
+        } catch {
+          label = props[`filterLabel_${i}_${lang}`] || ''
+        }
+      } else {
+        label = props[`filterLabel_${i}_${lang}`] || props[`filterLabelFr${i}`] || ''
+      }
+      filters.push({ fieldName, label })
     }
-
-    if (count >= 1 && this.properties.filterField1) {
-      filters.push({
-        fieldName: this.properties.filterField1,
-        label: pickLabel(
-          (this.properties as any).filterLabelFr1,
-          (this.properties as any).filterLabelEn1,
-        ),
-      })
-    }
-    if (count >= 2 && this.properties.filterField2) {
-      filters.push({
-        fieldName: this.properties.filterField2,
-        label: pickLabel(
-          (this.properties as any).filterLabelFr2,
-          (this.properties as any).filterLabelEn2,
-        ),
-      })
-    }
-    if (count >= 3 && this.properties.filterField3) {
-      filters.push({
-        fieldName: this.properties.filterField3,
-        label: pickLabel(
-          (this.properties as any).filterLabelFr3,
-          (this.properties as any).filterLabelEn3,
-        ),
-      })
-    }
-
     return filters
   }
 
   // ─── New helper methods ──────────────────────────────────────────────────
-
-  private isCurrentLocaleFr(): boolean {
-    return (
-      this.context.pageContext.cultureInfo.currentCultureName || ''
-    ).startsWith('fr')
-  }
 
   /** Parse the JSON stored in *FieldsJson — migrate from old flat props if absent */
   private getEffectiveFieldOrder(view: 'card' | 'list' | 'modal'): string[] {
@@ -331,7 +305,6 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
   /** Return localized (single string) labels per field key for the given view */
   private getLocalizedLabels(
     view: 'list' | 'modal',
-    _isFr: boolean,
   ): Record<string, string> {
     const record = this.parseFieldLabelsRecord(view)
     const lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase()
@@ -394,14 +367,19 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
           options: FILTER_OPTIONS,
           selectedKey: (this.properties as any)[`filterField${i}`] || '',
         }),
-        PropertyPaneTextField(`filterLabelFr${i}`, {
-          label: strings.CustomFieldLabelFr,
-          value: (this.properties as any)[`filterLabelFr${i}`] || '',
-        }),
-        PropertyPaneTextField(`filterLabelEn${i}`, {
-          label: strings.CustomFieldLabelEn,
-          value: (this.properties as any)[`filterLabelEn${i}`] || '',
-        }),
+      )
+      // Dynamic label fields — one per supported language
+      for (const lang of this._supportedLanguages) {
+        const propName = `filterLabel_${i}_${lang}`
+        const langLabel = (strings as any)[`Lang_${lang}`] || lang
+        filterGroupFields.push(
+          PropertyPaneTextField(propName, {
+            label: langLabel,
+            value: (this.properties as any)[propName] || '',
+          }),
+        )
+      }
+      filterGroupFields.push(
         PropertyPaneButton(`removeFilter${i}`, {
           text: strings.RemoveFilterLabel,
           buttonType: PropertyPaneButtonType.Command,

@@ -19,6 +19,8 @@ interface BannerProps {
   activeView: 'card' | 'list'
   onViewChange: (view: 'card' | 'list') => void
   filteredMembers: Member[]
+  listFieldOrder: string[]
+  listFieldLabels: Record<string, string>
 }
 
 const Banner: React.FC<BannerProps> = ({
@@ -32,6 +34,8 @@ const Banner: React.FC<BannerProps> = ({
   activeView,
   onViewChange,
   filteredMembers,
+  listFieldOrder,
+  listFieldLabels,
 }) => {
   const theme = useTheme()
   const primaryColor = theme?.palette?.themePrimary || '#1B7A6E'
@@ -161,7 +165,11 @@ const Banner: React.FC<BannerProps> = ({
       </div>
 
       {/* Export */}
-      <CsvExport members={filteredMembers} />
+      <CsvExport
+        members={filteredMembers}
+        listFieldOrder={listFieldOrder}
+        listFieldLabels={listFieldLabels}
+      />
     </div>
   )
 }

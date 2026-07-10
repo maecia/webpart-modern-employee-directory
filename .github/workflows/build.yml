@@ -16,13 +16,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Bundle & package solution
-        run: npm run build
+        run: npx heft package-solution --clean
+
+      - name: Verify .sppkg
+        run: find . -name "*.sppkg" -type f 2>/dev/null || echo "Aucun .sppkg trouvé"
 
       - name: Upload .sppkg artifact
         uses: actions/upload-artifact@v4

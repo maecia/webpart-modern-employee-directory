@@ -26,7 +26,7 @@ exports.strings = new Proxy({}, {
         return current[prop];
     },
 });
-/** Call once at startup with the SharePoint currentCultureName (e.g. "fr-fr", "en-us"). */
+/** Call once at startup with the SharePoint currentUICultureName (e.g. "fr-fr", "en-us"). */
 function setLanguage(locale) {
     var _a;
     var lang = (locale || '').split('-')[0].toLowerCase();

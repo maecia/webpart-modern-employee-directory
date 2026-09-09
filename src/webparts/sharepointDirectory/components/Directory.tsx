@@ -110,7 +110,7 @@ const Directory: React.FC<DirectoryProps> = ({
   const [view, setView] = React.useState<'card' | 'list'>(config.defaultView)
   const [searchQuery, setSearchQuery] = React.useState('')
   const [filterValues, setFilterValues] = React.useState<
-    Record<string, string | null>
+    Record<string, string[] | null>
   >({})
   const [selectedMember, setSelectedMember] = React.useState<Member | null>(
     null,
@@ -174,13 +174,13 @@ const Directory: React.FC<DirectoryProps> = ({
 
     if (config.filters.length > 0) {
       config.filters.forEach((filter) => {
-        const value = filterValues[filter.fieldName]
-        if (value) {
+        const values = filterValues[filter.fieldName]
+        if (values && values.length > 0) {
           result = result.filter((m) => {
             const fieldValue =
               (m as any)[filter.fieldName] ??
               (m.customProperties && m.customProperties[filter.fieldName])
-            return fieldValue === value
+            return values.includes(fieldValue)
           })
         }
       })
@@ -195,7 +195,7 @@ const Directory: React.FC<DirectoryProps> = ({
 
   const resultCount = filteredMembers.length
 
-  const handleFilterChange = (fieldName: string, value: string | null) => {
+  const handleFilterChange = (fieldName: string, value: string[] | null) => {
     setFilterValues((prev) => ({
       ...prev,
       [fieldName]: value,

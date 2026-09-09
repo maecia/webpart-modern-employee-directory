@@ -7,9 +7,13 @@ var sp_core_library_1 = require("@microsoft/sp-core-library");
 var Theme_1 = require("@fluentui/react/lib/Theme");
 var sp_webpart_base_1 = require("@microsoft/sp-webpart-base");
 var sp_property_pane_1 = require("@microsoft/sp-property-pane");
+var sp_1 = require("@pnp/sp");
+require("@pnp/sp/webs");
 var Directory_1 = tslib_1.__importDefault(require("./components/Directory"));
 var DirectoryConfig_1 = require("../../models/DirectoryConfig");
 var useMembers_1 = require("../../hooks/useMembers");
+var usePhotoCache_1 = require("../../hooks/usePhotoCache");
+var PhotoContext_1 = require("./components/PhotoContext");
 var useDirectoryConfig_1 = require("../../hooks/useDirectoryConfig");
 var mystrings_1 = require("./loc/mystrings");
 var DnDFieldSelector_1 = tslib_1.__importDefault(require("./components/propertyPane/DnDFieldSelector"));
@@ -32,13 +36,14 @@ var DirectoryContainer = function (_a) {
         });
     }, [config.cardFieldOrder, config.listFieldOrder, config.modalFieldOrder]);
     var _b = (0, useMembers_1.useMembers)(context, customFieldKeys, onDetectedExtAttrs), members = _b.members, isLoading = _b.isLoading, error = _b.error, retry = _b.retry;
-    return React.createElement(Directory_1.default, {
+    var getPhoto = (0, usePhotoCache_1.usePhotoCache)(context);
+    return React.createElement(PhotoContext_1.PhotoContext.Provider, { value: getPhoto }, React.createElement(Directory_1.default, {
         config: config,
         members: members,
         isLoading: isLoading,
         error: error,
         onRetry: retry,
-    });
+    }));
 };
 var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     tslib_1.__extends(SharepointDirectoryWebPart, _super);
@@ -50,27 +55,57 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
         return _this;
     }
     SharepointDirectoryWebPart.prototype.getSupportedLanguages = function () {
-        var _a, _b;
         if (this._supportedLanguages.length > 0)
             return this._supportedLanguages;
-        var ids = (_b = (_a = this.context.pageContext.legacyPageContext) === null || _a === void 0 ? void 0 : _a.web) === null || _b === void 0 ? void 0 : _b.supportedUILanguageIds;
-        if (ids && ids.length > 0) {
-            this._supportedLanguages = ids
-                .map(function (id) { return SharepointDirectoryWebPart.LCID_TO_LANG[id]; })
-                .filter(Boolean);
-        }
-        if (this._supportedLanguages.length === 0) {
-            var lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase();
-            this._supportedLanguages = [lang || 'en'];
-        }
-        return this._supportedLanguages;
+        var lang = (this.context.pageContext.cultureInfo.currentUICultureName || '')
+            .split('-')[0]
+            .toLowerCase();
+        return [lang || 'en'];
+    };
+    SharepointDirectoryWebPart.prototype.loadSupportedLanguages = function () {
+        var _a, _b;
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var ids, sp, web, webIds, langs, _c;
+            return tslib_1.__generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        this._supportedLanguages = this.getSupportedLanguages();
+                        ids = (_b = (_a = this.context.pageContext.legacyPageContext) === null || _a === void 0 ? void 0 : _a.web) === null || _b === void 0 ? void 0 : _b.supportedUILanguageIds;
+                        if (ids && ids.length > 0) {
+                            this._supportedLanguages = ids
+                                .map(function (id) { return SharepointDirectoryWebPart.LCID_TO_LANG[id]; })
+                                .filter(Boolean);
+                            return [2 /*return*/];
+                        }
+                        _d.label = 1;
+                    case 1:
+                        _d.trys.push([1, 3, , 4]);
+                        sp = (0, sp_1.spfi)().using((0, sp_1.SPFx)(this.context));
+                        return [4 /*yield*/, sp.web.select('SupportedUILanguageIds')()];
+                    case 2:
+                        web = _d.sent();
+                        webIds = (web === null || web === void 0 ? void 0 : web.SupportedUILanguageIds) || [];
+                        langs = webIds
+                            .map(function (id) { return SharepointDirectoryWebPart.LCID_TO_LANG[id]; })
+                            .filter(Boolean);
+                        if (langs.length > 0) {
+                            this._supportedLanguages = langs;
+                        }
+                        return [3 /*break*/, 4];
+                    case 3:
+                        _c = _d.sent();
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
     };
     SharepointDirectoryWebPart.prototype.onInit = function () {
-        (0, mystrings_1.setLanguage)(this.context.pageContext.cultureInfo.currentCultureName);
+        var _this = this;
+        (0, mystrings_1.setLanguage)(this.context.pageContext.cultureInfo.currentUICultureName);
         if (!this.properties.activeViewTab)
             this.properties.activeViewTab = 'card';
-        this.getSupportedLanguages();
-        return _super.prototype.onInit.call(this);
+        return this.loadSupportedLanguages().then(function () { return _super.prototype.onInit.call(_this); });
     };
     SharepointDirectoryWebPart.prototype.render = function () {
         var _this = this;
@@ -121,7 +156,9 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     SharepointDirectoryWebPart.prototype.getFiltersFromProperties = function () {
         var filters = [];
         var count = this.properties.filterCount || 0;
-        var lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase();
+        var lang = (this.context.pageContext.cultureInfo.currentUICultureName || '')
+            .split('-')[0]
+            .toLowerCase();
         for (var i = 1; i <= count; i++) {
             var fieldName = this.properties["filterField".concat(i)];
             if (!fieldName)
@@ -140,7 +177,8 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
                 }
             }
             else {
-                label = props["filterLabel_".concat(i, "_").concat(lang)] || props["filterLabelFr".concat(i)] || '';
+                label =
+                    props["filterLabel_".concat(i, "_").concat(lang)] || props["filterLabelFr".concat(i)] || '';
             }
             filters.push({ fieldName: fieldName, label: label });
         }
@@ -227,13 +265,15 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     };
     /** Return localized (single string) labels per field key for the given view */
     SharepointDirectoryWebPart.prototype.getLocalizedLabels = function (view) {
+        var lang = (this.context.pageContext.cultureInfo.currentUICultureName || '')
+            .split('-')[0]
+            .toLowerCase();
         var record = this.parseFieldLabelsRecord(view);
-        var lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase();
         var result = {};
         for (var _i = 0, _a = Object.entries(record); _i < _a.length; _i++) {
             var _b = _a[_i], key = _b[0], labels = _b[1];
             var labelMap = labels;
-            result[key] = labelMap[lang] || '';
+            result[key] = labelMap[lang] || labels.en || '';
         }
         return result;
     };
@@ -441,12 +481,30 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     };
     // ── LCID → language code mapping ──────────────────────────────────────────
     SharepointDirectoryWebPart.LCID_TO_LANG = {
-        1033: 'en', 1036: 'fr', 1031: 'de', 3082: 'es',
-        1040: 'it', 1043: 'nl', 1046: 'pt', 1049: 'ru',
-        1055: 'tr', 1025: 'ar', 1028: 'zh', 1041: 'ja',
-        1042: 'ko', 1053: 'sv', 1044: 'nb', 1030: 'da',
-        1035: 'fi', 1029: 'cs', 1038: 'hu', 1045: 'pl',
-        2070: 'pt', 1069: 'eu', 1081: 'hi', 1110: 'gl',
+        1033: 'en',
+        1036: 'fr',
+        1031: 'de',
+        3082: 'es',
+        1040: 'it',
+        1043: 'nl',
+        1046: 'pt',
+        1049: 'ru',
+        1055: 'tr',
+        1025: 'ar',
+        1028: 'zh',
+        1041: 'ja',
+        1042: 'ko',
+        1053: 'sv',
+        1044: 'nb',
+        1030: 'da',
+        1035: 'fi',
+        1029: 'cs',
+        1038: 'hu',
+        1045: 'pl',
+        2070: 'pt',
+        1069: 'eu',
+        1081: 'hi',
+        1110: 'gl',
     };
     return SharepointDirectoryWebPart;
 }(sp_webpart_base_1.BaseClientSideWebPart));

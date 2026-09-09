@@ -29,7 +29,7 @@ export const strings: Strings = new Proxy({} as Strings, {
   },
 })
 
-/** Call once at startup with the SharePoint currentCultureName (e.g. "fr-fr", "en-us"). */
+/** Call once at startup with the SharePoint currentUICultureName (e.g. "fr-fr", "en-us"). */
 export function setLanguage(locale: string): void {
   const lang = (locale || '').split('-')[0].toLowerCase()
   current = locales[lang] ?? en

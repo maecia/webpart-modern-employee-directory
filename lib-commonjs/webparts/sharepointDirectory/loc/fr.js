@@ -70,6 +70,7 @@ var fr = {
     CollaboratorPlural: 'collaborateurs',
     ExportCsv: 'Exporter en CSV',
     ClearSearch: 'Effacer la recherche',
+    FilterSearch: 'Rechercher…',
     PropertyPaneHeader: 'Paramètres',
     FilterLabelInput: 'Libellé affiché',
     None: 'Aucun',

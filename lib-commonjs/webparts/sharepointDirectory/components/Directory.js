@@ -141,12 +141,12 @@ var Directory = function (_a) {
         }
         if (config.filters.length > 0) {
             config.filters.forEach(function (filter) {
-                var value = filterValues[filter.fieldName];
-                if (value) {
+                var values = filterValues[filter.fieldName];
+                if (values && values.length > 0) {
                     result = result.filter(function (m) {
                         var _a;
                         var fieldValue = (_a = m[filter.fieldName]) !== null && _a !== void 0 ? _a : (m.customProperties && m.customProperties[filter.fieldName]);
-                        return fieldValue === value;
+                        return values.includes(fieldValue);
                     });
                 }
             });

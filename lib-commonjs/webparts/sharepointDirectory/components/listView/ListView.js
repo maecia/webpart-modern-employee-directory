@@ -9,7 +9,7 @@ var usePagination_1 = require("../../../../hooks/usePagination");
 var teamsDeepLink_1 = require("../../../../utils/teamsDeepLink");
 var formatUtils_1 = require("../../../../utils/formatUtils");
 var mystrings_1 = require("../../loc/mystrings");
-var PersonaAvatar_1 = tslib_1.__importDefault(require("../shared/PersonaAvatar"));
+var LazyPersonaAvatar_1 = tslib_1.__importDefault(require("../shared/LazyPersonaAvatar"));
 var TeamsIcon_1 = tslib_1.__importDefault(require("../shared/TeamsIcon"));
 var OutlookIcon_1 = tslib_1.__importDefault(require("../shared/OutlookIcon"));
 var headerCellStyle = {
@@ -55,7 +55,7 @@ var ListView = function (_a) {
                     cols.push({
                         key: 'photo',
                         renderHeader: function () { return null; },
-                        renderCell: function (m) { return (React.createElement(PersonaAvatar_1.default, { photoUrl: m.photoUrl, displayName: m.displayName, givenName: m.givenName, size: Persona_1.PersonaSize.size32 })); },
+                        renderCell: function (m) { return (React.createElement(LazyPersonaAvatar_1.default, { userId: m.id, displayName: m.displayName, givenName: m.givenName, size: Persona_1.PersonaSize.size32 })); },
                         headerStyle: tslib_1.__assign(tslib_1.__assign({}, headerCellStyle), { cursor: 'default', width: 44, padding: '10px 0 10px 16px' }),
                         cellStyle: tslib_1.__assign(tslib_1.__assign({}, cellStyle), { width: 44, padding: '10px 0 10px 16px' }),
                     });
@@ -276,7 +276,8 @@ var ListView = function (_a) {
                             header,
                             sortIndicator(sk)));
                     }))),
-                React.createElement("tbody", null, sorted.map(function (member) { return (React.createElement("tr", { key: member.id, tabIndex: 0, role: "button", "aria-label": "".concat((member.givenName || ''), " ").concat((member.surname || '')).trim() || member.displayName, onClick: function () { return onMemberClick(member); }, onKeyDown: function (e) {
+                React.createElement("tbody", null, sorted.map(function (member) { return (React.createElement("tr", { key: member.id, tabIndex: 0, role: "button", "aria-label": "".concat(member.givenName || '', " ").concat(member.surname || '').trim() ||
+                        member.displayName, onClick: function () { return onMemberClick(member); }, onKeyDown: function (e) {
                         if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
                             onMemberClick(member);

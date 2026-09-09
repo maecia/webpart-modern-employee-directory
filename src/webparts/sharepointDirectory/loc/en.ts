@@ -73,6 +73,7 @@ const en: Strings = {
   CollaboratorPlural: 'collaborators',
   ExportCsv: 'Export to CSV',
   ClearSearch: 'Clear search',
+  FilterSearch: 'Search…',
   PropertyPaneHeader: 'Settings',
   FilterLabelInput: 'Display label',
   None: 'None',

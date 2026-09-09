@@ -3,7 +3,7 @@
   "solution": {
     "name": "sharepoint-directory-client-side-solution",
     "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "version": "1.4.0.0",
+    "version": "1.6.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,

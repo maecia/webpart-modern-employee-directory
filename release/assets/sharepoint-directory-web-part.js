@@ -1,4 +1,4 @@
-(()=>{ var __RUSHSTACK_CURRENT_SCRIPT__ = document.currentScript; define("b3c4d5e6-f7a8-9012-cdef-123456789012_1.3.0", ["react","react-dom","@microsoft/sp-core-library","@microsoft/sp-webpart-base","@microsoft/sp-property-pane"], (__WEBPACK_EXTERNAL_MODULE__5959__, __WEBPACK_EXTERNAL_MODULE__8398__, __WEBPACK_EXTERNAL_MODULE__9676__, __WEBPACK_EXTERNAL_MODULE__6642__, __WEBPACK_EXTERNAL_MODULE__9877__) => { return /******/ (() => { // webpackBootstrap
+(()=>{ var __RUSHSTACK_CURRENT_SCRIPT__ = document.currentScript; define("b3c4d5e6-f7a8-9012-cdef-123456789012_1.6.0", ["react","react-dom","@microsoft/sp-core-library","@microsoft/sp-webpart-base","@microsoft/sp-property-pane"], (__WEBPACK_EXTERNAL_MODULE__5959__, __WEBPACK_EXTERNAL_MODULE__8398__, __WEBPACK_EXTERNAL_MODULE__9676__, __WEBPACK_EXTERNAL_MODULE__6642__, __WEBPACK_EXTERNAL_MODULE__9877__) => { return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 6179
@@ -468,6 +468,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pnp_graph__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @pnp/graph */ 9080);
 /* harmony import */ var _pnp_graph_users__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @pnp/graph/users */ 3071);
 /* harmony import */ var _pnp_graph_photos__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @pnp/graph/photos */ 872);
+/* harmony import */ var _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../webparts/sharepointDirectory/loc/mystrings */ 1461);
+
 
 
 
@@ -505,7 +507,7 @@ function formatValue(key, v) {
     if (DATE_FIELDS.has(key) && s) {
         var d = new Date(s);
         if (!isNaN(d.getTime()) && d.getFullYear() > 1900) {
-            return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            return d.toLocaleDateString((0,_webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_4__.getLocale)(), { day: '2-digit', month: '2-digit', year: 'numeric' });
         }
         return '';
     }
@@ -853,6 +855,25 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
         _this.detectedExtAttrs = [];
         return _this;
     }
+    /** Map an LCID to a language code — unknown LCIDs get a synthetic key instead of being dropped */
+    SharepointDirectoryWebPart.langKeyFromLcid = function (id) {
+        return SharepointDirectoryWebPart.LCID_TO_LANG[id] || "l-".concat(id);
+    };
+    /** Human-readable name for a language code in the current UI language (e.g. "de" → "Allemand") */
+    SharepointDirectoryWebPart.prototype.getLangDisplayName = function (code) {
+        var direct = _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings["Lang_".concat(code)];
+        if (direct)
+            return direct;
+        try {
+            var name_1 = new Intl.DisplayNames([this.context.pageContext.cultureInfo.currentUICultureName], { type: 'language' }).of(code);
+            if (name_1 && name_1.toLowerCase() !== code.toLowerCase())
+                return name_1;
+        }
+        catch (_a) {
+            // fall through to the raw code
+        }
+        return code.toUpperCase();
+    };
     SharepointDirectoryWebPart.prototype.getSupportedLanguages = function () {
         if (this._supportedLanguages.length > 0)
             return this._supportedLanguages;
@@ -871,9 +892,9 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
                         this._supportedLanguages = this.getSupportedLanguages();
                         ids = (_b = (_a = this.context.pageContext.legacyPageContext) === null || _a === void 0 ? void 0 : _a.web) === null || _b === void 0 ? void 0 : _b.supportedUILanguageIds;
                         if (ids && ids.length > 0) {
-                            this._supportedLanguages = ids
-                                .map(function (id) { return SharepointDirectoryWebPart.LCID_TO_LANG[id]; })
-                                .filter(Boolean);
+                            this._supportedLanguages = ids.map(function (id) {
+                                return SharepointDirectoryWebPart.langKeyFromLcid(id);
+                            });
                             return [2 /*return*/];
                         }
                         _d.label = 1;
@@ -884,9 +905,9 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
                     case 2:
                         web = _d.sent();
                         webIds = (web === null || web === void 0 ? void 0 : web.SupportedUILanguageIds) || [];
-                        langs = webIds
-                            .map(function (id) { return SharepointDirectoryWebPart.LCID_TO_LANG[id]; })
-                            .filter(Boolean);
+                        langs = webIds.map(function (id) {
+                            return SharepointDirectoryWebPart.langKeyFromLcid(id);
+                        });
                         if (langs.length > 0) {
                             this._supportedLanguages = langs;
                         }
@@ -955,9 +976,8 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     SharepointDirectoryWebPart.prototype.getFiltersFromProperties = function () {
         var filters = [];
         var count = this.properties.filterCount || 0;
-        var lang = (this.context.pageContext.cultureInfo.currentUICultureName || '')
-            .split('-')[0]
-            .toLowerCase();
+        var culture = (this.context.pageContext.cultureInfo.currentUICultureName || '').toLowerCase();
+        var lang = culture.split('-')[0];
         for (var i = 1; i <= count; i++) {
             var fieldName = this.properties["filterField".concat(i)];
             if (!fieldName)
@@ -969,15 +989,21 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
             if (json) {
                 try {
                     var labels = JSON.parse(json);
-                    label = labels[lang] || '';
+                    label = labels[culture] || labels[lang] || '';
                 }
                 catch (_a) {
-                    label = props["filterLabel_".concat(i, "_").concat(lang)] || '';
+                    label =
+                        props["filterLabel_".concat(i, "_").concat(culture)] ||
+                            props["filterLabel_".concat(i, "_").concat(lang)] ||
+                            '';
                 }
             }
             else {
                 label =
-                    props["filterLabel_".concat(i, "_").concat(lang)] || props["filterLabelFr".concat(i)] || '';
+                    props["filterLabel_".concat(i, "_").concat(culture)] ||
+                        props["filterLabel_".concat(i, "_").concat(lang)] ||
+                        props["filterLabelFr".concat(i)] ||
+                        '';
             }
             filters.push({ fieldName: fieldName, label: label });
         }
@@ -1064,15 +1090,14 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     };
     /** Return localized (single string) labels per field key for the given view */
     SharepointDirectoryWebPart.prototype.getLocalizedLabels = function (view) {
-        var lang = (this.context.pageContext.cultureInfo.currentUICultureName || '')
-            .split('-')[0]
-            .toLowerCase();
+        var culture = (this.context.pageContext.cultureInfo.currentUICultureName || '').toLowerCase();
+        var lang = culture.split('-')[0];
         var record = this.parseFieldLabelsRecord(view);
         var result = {};
         for (var _i = 0, _a = Object.entries(record); _i < _a.length; _i++) {
             var _b = _a[_i], key = _b[0], labels = _b[1];
             var labelMap = labels;
-            result[key] = labelMap[lang] || labels.en || '';
+            result[key] = labelMap[culture] || labelMap[lang] || labelMap['en'] || '';
         }
         return result;
     };
@@ -1122,7 +1147,7 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
             for (var _i = 0, _a = this._supportedLanguages; _i < _a.length; _i++) {
                 var lang = _a[_i];
                 var propName = "filterLabel_".concat(i, "_").concat(lang);
-                var langLabel = _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings["Lang_".concat(lang)] || lang;
+                var langLabel = this.getLangDisplayName(lang);
                 filterGroupFields.push((0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.PropertyPaneTextField)(propName, {
                     label: langLabel,
                     value: this.properties[propName] || '',
@@ -1278,32 +1303,56 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
             ],
         };
     };
-    // ── LCID → language code mapping ──────────────────────────────────────────
+    // ── LCID → language code mapping (all SharePoint Online display languages) ──
     SharepointDirectoryWebPart.LCID_TO_LANG = {
-        1033: 'en',
-        1036: 'fr',
-        1031: 'de',
-        3082: 'es',
-        1040: 'it',
-        1043: 'nl',
-        1046: 'pt',
-        1049: 'ru',
-        1055: 'tr',
         1025: 'ar',
-        1028: 'zh',
+        1026: 'bg',
+        1027: 'ca',
+        1028: 'zh-tw',
+        1029: 'cs',
+        1030: 'da',
+        1031: 'de',
+        1032: 'el',
+        1033: 'en',
+        1035: 'fi',
+        1036: 'fr',
+        1037: 'he',
+        1038: 'hu',
+        1040: 'it',
         1041: 'ja',
         1042: 'ko',
-        1053: 'sv',
+        1043: 'nl',
         1044: 'nb',
-        1030: 'da',
-        1035: 'fi',
-        1029: 'cs',
-        1038: 'hu',
         1045: 'pl',
-        2070: 'pt',
+        1046: 'pt-br',
+        1048: 'ro',
+        1049: 'ru',
+        1050: 'hr',
+        1051: 'sk',
+        1053: 'sv',
+        1054: 'th',
+        1055: 'tr',
+        1057: 'id',
+        1058: 'uk',
+        1060: 'sl',
+        1061: 'et',
+        1062: 'lv',
+        1063: 'lt',
+        1066: 'vi',
         1069: 'eu',
         1081: 'hi',
+        1086: 'ms',
+        1087: 'kk',
+        1106: 'cy',
         1110: 'gl',
+        1164: 'prs',
+        2052: 'zh-cn',
+        2070: 'pt-pt',
+        2074: 'sr-latn',
+        3082: 'es',
+        3098: 'sr-cyrl',
+        5146: 'bs-latn',
+        8218: 'bs-cyrl',
     };
     return SharepointDirectoryWebPart;
 }(_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.BaseClientSideWebPart));
@@ -1463,22 +1512,22 @@ function applySortOrder(members, sortOrder) {
     switch (sortOrder) {
         case 'firstNameAsc':
             copy.sort(function (a, b) {
-                return (a.givenName || a.displayName || '').localeCompare(b.givenName || b.displayName || '', 'fr', { sensitivity: 'base' });
+                return (a.givenName || a.displayName || '').localeCompare(b.givenName || b.displayName || '', (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'firstNameDesc':
             copy.sort(function (a, b) {
-                return (b.givenName || b.displayName || '').localeCompare(a.givenName || a.displayName || '', 'fr', { sensitivity: 'base' });
+                return (b.givenName || b.displayName || '').localeCompare(a.givenName || a.displayName || '', (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'lastNameAsc':
             copy.sort(function (a, b) {
-                return (a.surname || a.displayName || '').localeCompare(b.surname || b.displayName || '', 'fr', { sensitivity: 'base' });
+                return (a.surname || a.displayName || '').localeCompare(b.surname || b.displayName || '', (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'lastNameDesc':
             copy.sort(function (a, b) {
-                return (b.surname || b.displayName || '').localeCompare(a.surname || a.displayName || '', 'fr', { sensitivity: 'base' });
+                return (b.surname || b.displayName || '').localeCompare(a.surname || a.displayName || '', (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'random':
@@ -2265,7 +2314,7 @@ var ListView = function (_a) {
                 aVal = ((_a = a.customProperties) === null || _a === void 0 ? void 0 : _a[k]) || '';
                 bVal = ((_b = b.customProperties) === null || _b === void 0 ? void 0 : _b[k]) || '';
             }
-            var cmp = aVal.localeCompare(bVal, 'fr', { sensitivity: 'base' });
+            var cmp = aVal.localeCompare(bVal, (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.getLocale)(), { sensitivity: 'base' });
             return sortState.descending ? -cmp : cmp;
         });
         return result;
@@ -2646,7 +2695,20 @@ __webpack_require__.r(__webpack_exports__);
 /** Return the human-readable name for a language code, e.g. "fr" → "Français" */
 function getLangName(code) {
     var key = "Lang_".concat(code);
-    return _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings[key] || code.toUpperCase();
+    var direct = _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings[key];
+    if (direct)
+        return direct;
+    try {
+        var name_1 = new Intl.DisplayNames([(0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.getLocale)()], {
+            type: 'language',
+        }).of(code);
+        if (name_1 && name_1.toLowerCase() !== code.toLowerCase())
+            return name_1;
+    }
+    catch (_a) {
+        // fall through to the raw code
+    }
+    return code.toUpperCase();
 }
 // ─── Constants ────────────────────────────────────────────────────────────────
 var LOCKED_ORDER = ['photo', 'firstName', 'name'];
@@ -3691,7 +3753,6 @@ var en = {
     Retry: 'Retry',
     NoResults: 'No collaborators found',
     EmptyStateHint: 'Try modifying your search criteria or filters.',
-    AccessDeniedMessage: 'You do not have the necessary permissions to access this directory.',
     LoadingText: 'Loading...',
     ResultsLabel: 'Results:',
     CollaboratorSingular: 'collaborator',
@@ -3861,7 +3922,6 @@ var fr = {
     Retry: 'Réessayer',
     NoResults: 'Aucun collaborateur trouvé',
     EmptyStateHint: 'Essayez de modifier vos critères de recherche ou vos filtres.',
-    AccessDeniedMessage: "Vous n'avez pas les droits nécessaires pour accéder à cet annuaire.",
     LoadingText: 'Chargement...',
     ResultsLabel: 'Résultats :',
     CollaboratorSingular: 'collaborateur',
@@ -3966,6 +4026,7 @@ var fr = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getLocale: () => (/* binding */ getLocale),
 /* harmony export */   setLanguage: () => (/* binding */ setLanguage),
 /* harmony export */   strings: () => (/* binding */ strings)
 /* harmony export */ });
@@ -3989,7 +4050,8 @@ var locales = {
     fr: _fr__WEBPACK_IMPORTED_MODULE_0__["default"],
     en: _en__WEBPACK_IMPORTED_MODULE_1__["default"],
 };
-var current = _fr__WEBPACK_IMPORTED_MODULE_0__["default"];
+var current = _en__WEBPACK_IMPORTED_MODULE_1__["default"];
+var currentLocale = 'en-US';
 var strings = new Proxy({}, {
     get: function (_target, prop) {
         return current[prop];
@@ -4000,6 +4062,11 @@ function setLanguage(locale) {
     var _a;
     var lang = (locale || '').split('-')[0].toLowerCase();
     current = (_a = locales[lang]) !== null && _a !== void 0 ? _a : _en__WEBPACK_IMPORTED_MODULE_1__["default"];
+    currentLocale = locale || 'en-US';
+}
+/** Full locale of the current UI language (e.g. "fr-FR", "en-US") — for date/name formatting. */
+function getLocale() {
+    return currentLocale;
 }
 
 
@@ -39875,7 +39942,7 @@ const Web = (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.spInvokableFactory)(
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("06d664b94114c4d3ed97")
+/******/ 		__webpack_require__.h = () => ("cb4ac5224d26ae2135d5")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
@@ -39898,7 +39965,7 @@ const Web = (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.spInvokableFactory)(
 /******/ 	/* webpack/runtime/load script */
 /******/ 	(() => {
 /******/ 		var inProgress = {};
-/******/ 		var dataWebpackPrefix = "b3c4d5e6-f7a8-9012-cdef-123456789012_1.3.0:";
+/******/ 		var dataWebpackPrefix = "b3c4d5e6-f7a8-9012-cdef-123456789012_1.6.0:";
 /******/ 		// loadScript function to load a script via script tag
 /******/ 		__webpack_require__.l = (url, done, key, chunkId) => {
 /******/ 			if(inProgress[url]) { inProgress[url].push(done); return; }
@@ -40407,7 +40474,7 @@ const Web = (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.spInvokableFactory)(
 /******/ 			});
 /******/ 		}
 /******/ 		
-/******/ 		self["webpackHotUpdateb3c4d5e6_f7a8_9012_cdef_123456789012_1_3_0"] = (chunkId, moreModules, runtime) => {
+/******/ 		self["webpackHotUpdateb3c4d5e6_f7a8_9012_cdef_123456789012_1_6_0"] = (chunkId, moreModules, runtime) => {
 /******/ 			for(var moduleId in moreModules) {
 /******/ 				if(__webpack_require__.o(moreModules, moduleId)) {
 /******/ 					currentUpdate[moduleId] = moreModules[moduleId];

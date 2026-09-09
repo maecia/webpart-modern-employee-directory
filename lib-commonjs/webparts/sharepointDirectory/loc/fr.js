@@ -63,7 +63,6 @@ var fr = {
     Retry: 'Réessayer',
     NoResults: 'Aucun collaborateur trouvé',
     EmptyStateHint: 'Essayez de modifier vos critères de recherche ou vos filtres.',
-    AccessDeniedMessage: "Vous n'avez pas les droits nécessaires pour accéder à cet annuaire.",
     LoadingText: 'Chargement...',
     ResultsLabel: 'Résultats :',
     CollaboratorSingular: 'collaborateur',

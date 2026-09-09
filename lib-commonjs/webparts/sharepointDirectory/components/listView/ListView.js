@@ -222,7 +222,7 @@ var ListView = function (_a) {
                 aVal = ((_a = a.customProperties) === null || _a === void 0 ? void 0 : _a[k]) || '';
                 bVal = ((_b = b.customProperties) === null || _b === void 0 ? void 0 : _b[k]) || '';
             }
-            var cmp = aVal.localeCompare(bVal, 'fr', { sensitivity: 'base' });
+            var cmp = aVal.localeCompare(bVal, (0, mystrings_1.getLocale)(), { sensitivity: 'base' });
             return sortState.descending ? -cmp : cmp;
         });
         return result;

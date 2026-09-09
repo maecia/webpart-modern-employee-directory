@@ -65,8 +65,6 @@ const en: Strings = {
   Retry: 'Retry',
   NoResults: 'No collaborators found',
   EmptyStateHint: 'Try modifying your search criteria or filters.',
-  AccessDeniedMessage:
-    'You do not have the necessary permissions to access this directory.',
   LoadingText: 'Loading...',
   ResultsLabel: 'Results:',
   CollaboratorSingular: 'collaborator',

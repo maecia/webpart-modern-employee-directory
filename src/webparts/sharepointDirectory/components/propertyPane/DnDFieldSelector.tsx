@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { strings } from '../../loc/mystrings'
+import { strings, getLocale } from '../../loc/mystrings'
 import {
   STANDARD_FIELD_KEYS,
   getAvailableEntraIdFieldGroups,
@@ -22,7 +22,17 @@ export interface DnDFieldSelectorProps {
 /** Return the human-readable name for a language code, e.g. "fr" → "Français" */
 function getLangName(code: string): string {
   const key = `Lang_${code}`
-  return (strings as any)[key] || code.toUpperCase()
+  const direct = (strings as any)[key]
+  if (direct) return direct
+  try {
+    const name = new (Intl as any).DisplayNames([getLocale()], {
+      type: 'language',
+    }).of(code)
+    if (name && name.toLowerCase() !== code.toLowerCase()) return name
+  } catch {
+    // fall through to the raw code
+  }
+  return code.toUpperCase()
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────

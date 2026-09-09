@@ -6,7 +6,7 @@ import { getEntraFieldLabel } from '../../../../models/DirectoryConfig'
 import { usePagination } from '../../../../hooks/usePagination'
 import { getTeamsDeepLink } from '../../../../utils/teamsDeepLink'
 import { getMailtoLink } from '../../../../utils/formatUtils'
-import { strings } from '../../loc/mystrings'
+import { strings, getLocale } from '../../loc/mystrings'
 import PersonaAvatar from '../shared/PersonaAvatar'
 import LazyPersonaAvatar from '../shared/LazyPersonaAvatar'
 import TeamsIcon from '../shared/TeamsIcon'
@@ -300,7 +300,7 @@ const ListView: React.FC<ListViewProps> = ({
         aVal = a.customProperties?.[k] || ''
         bVal = b.customProperties?.[k] || ''
       }
-      const cmp = aVal.localeCompare(bVal, 'fr', { sensitivity: 'base' })
+      const cmp = aVal.localeCompare(bVal, getLocale(), { sensitivity: 'base' })
       return sortState.descending ? -cmp : cmp
     })
     return result

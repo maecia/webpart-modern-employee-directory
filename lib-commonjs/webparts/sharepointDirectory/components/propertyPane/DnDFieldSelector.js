@@ -7,7 +7,20 @@ var DirectoryConfig_1 = require("../../../../models/DirectoryConfig");
 /** Return the human-readable name for a language code, e.g. "fr" → "Français" */
 function getLangName(code) {
     var key = "Lang_".concat(code);
-    return mystrings_1.strings[key] || code.toUpperCase();
+    var direct = mystrings_1.strings[key];
+    if (direct)
+        return direct;
+    try {
+        var name_1 = new Intl.DisplayNames([(0, mystrings_1.getLocale)()], {
+            type: 'language',
+        }).of(code);
+        if (name_1 && name_1.toLowerCase() !== code.toLowerCase())
+            return name_1;
+    }
+    catch (_a) {
+        // fall through to the raw code
+    }
+    return code.toUpperCase();
 }
 // ─── Constants ────────────────────────────────────────────────────────────────
 var LOCKED_ORDER = ['photo', 'firstName', 'name'];

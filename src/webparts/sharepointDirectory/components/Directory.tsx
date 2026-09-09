@@ -11,7 +11,7 @@ import LoadingState from './shared/LoadingState'
 import ErrorState from './shared/ErrorState'
 import EmptyState from './shared/EmptyState'
 import ErrorBoundary from './shared/ErrorBoundary'
-import { strings } from '../loc/mystrings'
+import { strings, getLocale } from '../loc/mystrings'
 
 function applySortOrder(members: Member[], sortOrder: SortOrder): Member[] {
   const copy = [...members]
@@ -20,7 +20,7 @@ function applySortOrder(members: Member[], sortOrder: SortOrder): Member[] {
       copy.sort((a, b) =>
         (a.givenName || a.displayName || '').localeCompare(
           b.givenName || b.displayName || '',
-          'fr',
+          getLocale(),
           { sensitivity: 'base' },
         ),
       )
@@ -29,7 +29,7 @@ function applySortOrder(members: Member[], sortOrder: SortOrder): Member[] {
       copy.sort((a, b) =>
         (b.givenName || b.displayName || '').localeCompare(
           a.givenName || a.displayName || '',
-          'fr',
+          getLocale(),
           { sensitivity: 'base' },
         ),
       )
@@ -38,7 +38,7 @@ function applySortOrder(members: Member[], sortOrder: SortOrder): Member[] {
       copy.sort((a, b) =>
         (a.surname || a.displayName || '').localeCompare(
           b.surname || b.displayName || '',
-          'fr',
+          getLocale(),
           { sensitivity: 'base' },
         ),
       )
@@ -47,7 +47,7 @@ function applySortOrder(members: Member[], sortOrder: SortOrder): Member[] {
       copy.sort((a, b) =>
         (b.surname || b.displayName || '').localeCompare(
           a.surname || a.displayName || '',
-          'fr',
+          getLocale(),
           { sensitivity: 'base' },
         ),
       )

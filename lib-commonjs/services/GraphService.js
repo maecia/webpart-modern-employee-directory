@@ -5,6 +5,7 @@ var tslib_1 = require("tslib");
 var graph_1 = require("@pnp/graph");
 require("@pnp/graph/users");
 require("@pnp/graph/photos");
+var mystrings_1 = require("../webparts/sharepointDirectory/loc/mystrings");
 var SELECT_FIELDS = [
     'id',
     'displayName',
@@ -38,7 +39,7 @@ function formatValue(key, v) {
     if (DATE_FIELDS.has(key) && s) {
         var d = new Date(s);
         if (!isNaN(d.getTime()) && d.getFullYear() > 1900) {
-            return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            return d.toLocaleDateString((0, mystrings_1.getLocale)(), { day: '2-digit', month: '2-digit', year: 'numeric' });
         }
         return '';
     }

@@ -21,7 +21,8 @@ const locales: Record<string, Strings> = {
   en,
 }
 
-let current: Strings = fr
+let current: Strings = en
+let currentLocale: string = 'en-US'
 
 export const strings: Strings = new Proxy({} as Strings, {
   get(_target, prop: keyof Strings) {
@@ -33,4 +34,10 @@ export const strings: Strings = new Proxy({} as Strings, {
 export function setLanguage(locale: string): void {
   const lang = (locale || '').split('-')[0].toLowerCase()
   current = locales[lang] ?? en
+  currentLocale = locale || 'en-US'
+}
+
+/** Full locale of the current UI language (e.g. "fr-FR", "en-US") — for date/name formatting. */
+export function getLocale(): string {
+  return currentLocale
 }

@@ -18,22 +18,22 @@ function applySortOrder(members, sortOrder) {
     switch (sortOrder) {
         case 'firstNameAsc':
             copy.sort(function (a, b) {
-                return (a.givenName || a.displayName || '').localeCompare(b.givenName || b.displayName || '', 'fr', { sensitivity: 'base' });
+                return (a.givenName || a.displayName || '').localeCompare(b.givenName || b.displayName || '', (0, mystrings_1.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'firstNameDesc':
             copy.sort(function (a, b) {
-                return (b.givenName || b.displayName || '').localeCompare(a.givenName || a.displayName || '', 'fr', { sensitivity: 'base' });
+                return (b.givenName || b.displayName || '').localeCompare(a.givenName || a.displayName || '', (0, mystrings_1.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'lastNameAsc':
             copy.sort(function (a, b) {
-                return (a.surname || a.displayName || '').localeCompare(b.surname || b.displayName || '', 'fr', { sensitivity: 'base' });
+                return (a.surname || a.displayName || '').localeCompare(b.surname || b.displayName || '', (0, mystrings_1.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'lastNameDesc':
             copy.sort(function (a, b) {
-                return (b.surname || b.displayName || '').localeCompare(a.surname || a.displayName || '', 'fr', { sensitivity: 'base' });
+                return (b.surname || b.displayName || '').localeCompare(a.surname || a.displayName || '', (0, mystrings_1.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'random':

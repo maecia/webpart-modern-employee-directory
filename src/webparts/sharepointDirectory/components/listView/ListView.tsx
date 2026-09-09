@@ -6,8 +6,9 @@ import { getEntraFieldLabel } from '../../../../models/DirectoryConfig'
 import { usePagination } from '../../../../hooks/usePagination'
 import { getTeamsDeepLink } from '../../../../utils/teamsDeepLink'
 import { getMailtoLink } from '../../../../utils/formatUtils'
-import { strings } from '../../loc/mystrings'
+import { strings, getLocale } from '../../loc/mystrings'
 import PersonaAvatar from '../shared/PersonaAvatar'
+import LazyPersonaAvatar from '../shared/LazyPersonaAvatar'
 import TeamsIcon from '../shared/TeamsIcon'
 import OutlookIcon from '../shared/OutlookIcon'
 
@@ -88,8 +89,8 @@ const ListView: React.FC<ListViewProps> = ({
             key: 'photo',
             renderHeader: () => null,
             renderCell: (m) => (
-              <PersonaAvatar
-                photoUrl={m.photoUrl}
+              <LazyPersonaAvatar
+                userId={m.id}
                 displayName={m.displayName}
                 givenName={m.givenName}
                 size={PersonaSize.size32}
@@ -299,7 +300,7 @@ const ListView: React.FC<ListViewProps> = ({
         aVal = a.customProperties?.[k] || ''
         bVal = b.customProperties?.[k] || ''
       }
-      const cmp = aVal.localeCompare(bVal, 'fr', { sensitivity: 'base' })
+      const cmp = aVal.localeCompare(bVal, getLocale(), { sensitivity: 'base' })
       return sortState.descending ? -cmp : cmp
     })
     return result
@@ -420,7 +421,10 @@ const ListView: React.FC<ListViewProps> = ({
                 key={member.id}
                 tabIndex={0}
                 role="button"
-                aria-label={`${(member.givenName || '')} ${(member.surname || '')}`.trim() || member.displayName}
+                aria-label={
+                  `${member.givenName || ''} ${member.surname || ''}`.trim() ||
+                  member.displayName
+                }
                 onClick={() => onMemberClick(member)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {

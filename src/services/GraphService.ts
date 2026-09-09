@@ -3,6 +3,7 @@ import '@pnp/graph/users';
 import '@pnp/graph/photos';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { Member } from '../models/Member';
+import { getLocale } from '../webparts/sharepointDirectory/loc/mystrings';
 
 const SELECT_FIELDS = [
   'id',
@@ -38,7 +39,7 @@ function formatValue(key: string, v: any): string {
   if (DATE_FIELDS.has(key) && s) {
     const d = new Date(s);
     if (!isNaN(d.getTime()) && d.getFullYear() > 1900) {
-      return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      return d.toLocaleDateString(getLocale(), { day: '2-digit', month: '2-digit', year: 'numeric' });
     }
     return '';
   }

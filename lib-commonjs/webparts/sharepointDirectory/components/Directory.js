@@ -18,22 +18,22 @@ function applySortOrder(members, sortOrder) {
     switch (sortOrder) {
         case 'firstNameAsc':
             copy.sort(function (a, b) {
-                return (a.givenName || a.displayName || '').localeCompare(b.givenName || b.displayName || '', 'fr', { sensitivity: 'base' });
+                return (a.givenName || a.displayName || '').localeCompare(b.givenName || b.displayName || '', (0, mystrings_1.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'firstNameDesc':
             copy.sort(function (a, b) {
-                return (b.givenName || b.displayName || '').localeCompare(a.givenName || a.displayName || '', 'fr', { sensitivity: 'base' });
+                return (b.givenName || b.displayName || '').localeCompare(a.givenName || a.displayName || '', (0, mystrings_1.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'lastNameAsc':
             copy.sort(function (a, b) {
-                return (a.surname || a.displayName || '').localeCompare(b.surname || b.displayName || '', 'fr', { sensitivity: 'base' });
+                return (a.surname || a.displayName || '').localeCompare(b.surname || b.displayName || '', (0, mystrings_1.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'lastNameDesc':
             copy.sort(function (a, b) {
-                return (b.surname || b.displayName || '').localeCompare(a.surname || a.displayName || '', 'fr', { sensitivity: 'base' });
+                return (b.surname || b.displayName || '').localeCompare(a.surname || a.displayName || '', (0, mystrings_1.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'random':
@@ -141,12 +141,12 @@ var Directory = function (_a) {
         }
         if (config.filters.length > 0) {
             config.filters.forEach(function (filter) {
-                var value = filterValues[filter.fieldName];
-                if (value) {
+                var values = filterValues[filter.fieldName];
+                if (values && values.length > 0) {
                     result = result.filter(function (m) {
                         var _a;
                         var fieldValue = (_a = m[filter.fieldName]) !== null && _a !== void 0 ? _a : (m.customProperties && m.customProperties[filter.fieldName]);
-                        return fieldValue === value;
+                        return values.includes(fieldValue);
                     });
                 }
             });

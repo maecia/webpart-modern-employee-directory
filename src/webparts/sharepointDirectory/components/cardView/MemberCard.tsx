@@ -6,6 +6,7 @@ import { Member } from '../../../../models/Member'
 import { getTeamsDeepLink } from '../../../../utils/teamsDeepLink'
 import { getMailtoLink } from '../../../../utils/formatUtils'
 import PersonaAvatar from '../shared/PersonaAvatar'
+import LazyPersonaAvatar from '../shared/LazyPersonaAvatar'
 import TeamsIcon from '../shared/TeamsIcon'
 import OutlookIcon from '../shared/OutlookIcon'
 
@@ -191,8 +192,8 @@ const MemberCard: React.FC<MemberCardProps> = ({
       aria-label={`${fullName} - ${strings.ClickForDetails}`}
     >
       {showPhoto && (
-        <PersonaAvatar
-          photoUrl={member.photoUrl}
+        <LazyPersonaAvatar
+          userId={member.id}
           displayName={member.displayName}
           givenName={member.givenName}
           size={PersonaSize.size100}

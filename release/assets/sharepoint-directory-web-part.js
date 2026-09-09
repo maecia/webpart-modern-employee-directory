@@ -1,4 +1,4 @@
-(()=>{ var __RUSHSTACK_CURRENT_SCRIPT__ = document.currentScript; define("b3c4d5e6-f7a8-9012-cdef-123456789012_1.3.0", ["react","react-dom","@microsoft/sp-core-library","@microsoft/sp-webpart-base","@microsoft/sp-property-pane"], (__WEBPACK_EXTERNAL_MODULE__5959__, __WEBPACK_EXTERNAL_MODULE__8398__, __WEBPACK_EXTERNAL_MODULE__9676__, __WEBPACK_EXTERNAL_MODULE__6642__, __WEBPACK_EXTERNAL_MODULE__9877__) => { return /******/ (() => { // webpackBootstrap
+(()=>{ var __RUSHSTACK_CURRENT_SCRIPT__ = document.currentScript; define("b3c4d5e6-f7a8-9012-cdef-123456789012_1.6.0", ["react","react-dom","@microsoft/sp-core-library","@microsoft/sp-webpart-base","@microsoft/sp-property-pane"], (__WEBPACK_EXTERNAL_MODULE__5959__, __WEBPACK_EXTERNAL_MODULE__8398__, __WEBPACK_EXTERNAL_MODULE__9676__, __WEBPACK_EXTERNAL_MODULE__6642__, __WEBPACK_EXTERNAL_MODULE__9877__) => { return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 6179
@@ -90,8 +90,7 @@ function useMembers(context, customFieldKeys, onDetectedExtensionAttrs) {
     var _d = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(0), retryCount = _d[0], setRetryCount = _d[1];
     var serviceRef = (0,react__WEBPACK_IMPORTED_MODULE_1__.useRef)(null);
     var loadMembers = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function () { return (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__awaiter)(_this, void 0, void 0, function () {
-        var service_1, _a, data, detectedExtensionAttrs, membersWithPhotos, err_1;
-        var _this = this;
+        var service, _a, data, detectedExtensionAttrs, err_1;
         var _b;
         return (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__generator)(this, function (_c) {
             switch (_c.label) {
@@ -100,42 +99,26 @@ function useMembers(context, customFieldKeys, onDetectedExtensionAttrs) {
                     setError(null);
                     _c.label = 1;
                 case 1:
-                    _c.trys.push([1, 4, 5, 6]);
+                    _c.trys.push([1, 3, 4, 5]);
                     (_b = serviceRef.current) === null || _b === void 0 ? void 0 : _b.dispose();
-                    service_1 = new _services_GraphService__WEBPACK_IMPORTED_MODULE_2__.GraphService(context);
-                    serviceRef.current = service_1;
-                    return [4 /*yield*/, service_1.getMembers(customFieldKeys)];
+                    service = new _services_GraphService__WEBPACK_IMPORTED_MODULE_2__.GraphService(context);
+                    serviceRef.current = service;
+                    return [4 /*yield*/, service.getMembers(customFieldKeys)];
                 case 2:
                     _a = _c.sent(), data = _a.members, detectedExtensionAttrs = _a.detectedExtensionAttrs;
                     if (detectedExtensionAttrs.length > 0 && onDetectedExtensionAttrs) {
                         onDetectedExtensionAttrs(detectedExtensionAttrs);
                     }
-                    return [4 /*yield*/, Promise.all(data.map(function (member) { return (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__awaiter)(_this, void 0, void 0, function () {
-                            var photoUrl;
-                            return (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__generator)(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0:
-                                        if (!member.id) return [3 /*break*/, 2];
-                                        return [4 /*yield*/, service_1.getMemberPhoto(member.id)];
-                                    case 1:
-                                        photoUrl = _a.sent();
-                                        return [2 /*return*/, (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__assign)((0,tslib__WEBPACK_IMPORTED_MODULE_0__.__assign)({}, member), { photoUrl: photoUrl || undefined })];
-                                    case 2: return [2 /*return*/, member];
-                                }
-                            });
-                        }); }))];
+                    setMembers(data);
+                    return [3 /*break*/, 5];
                 case 3:
-                    membersWithPhotos = _c.sent();
-                    setMembers(membersWithPhotos);
-                    return [3 /*break*/, 6];
-                case 4:
                     err_1 = _c.sent();
                     setError(_webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.ErrorLoading);
-                    return [3 /*break*/, 6];
-                case 5:
+                    return [3 /*break*/, 5];
+                case 4:
                     setIsLoading(false);
                     return [7 /*endfinally*/];
-                case 6: return [2 /*return*/];
+                case 5: return [2 /*return*/];
             }
         });
     }); }, [context, retryCount, customFieldKeys.join(',')]);
@@ -187,6 +170,63 @@ function usePagination(items, view) {
         setPage(1);
     }, []);
     return { visibleItems: visibleItems, hasMore: hasMore, loadMore: loadMore, reset: reset };
+}
+
+
+/***/ },
+
+/***/ 6326
+/*!************************************!*\
+  !*** ./lib/hooks/usePhotoCache.js ***!
+  \************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   usePhotoCache: () => (/* binding */ usePhotoCache)
+/* harmony export */ });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ 196);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ 5959);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _services_GraphService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/GraphService */ 634);
+
+
+
+function usePhotoCache(context) {
+    var _this = this;
+    var serviceRef = (0,react__WEBPACK_IMPORTED_MODULE_1__.useRef)(null);
+    var cacheRef = (0,react__WEBPACK_IMPORTED_MODULE_1__.useRef)(new Map());
+    var pendingRef = (0,react__WEBPACK_IMPORTED_MODULE_1__.useRef)(new Map());
+    if (!serviceRef.current) {
+        serviceRef.current = new _services_GraphService__WEBPACK_IMPORTED_MODULE_2__.GraphService(context);
+    }
+    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(function () {
+        return function () {
+            var _a;
+            (_a = serviceRef.current) === null || _a === void 0 ? void 0 : _a.dispose();
+            serviceRef.current = null;
+        };
+    }, []);
+    var getPhoto = (0,react__WEBPACK_IMPORTED_MODULE_1__.useCallback)(function (userId) { return (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__awaiter)(_this, void 0, void 0, function () {
+        var promise;
+        return (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__generator)(this, function (_a) {
+            if (cacheRef.current.has(userId)) {
+                return [2 /*return*/, cacheRef.current.get(userId)];
+            }
+            if (pendingRef.current.has(userId)) {
+                return [2 /*return*/, pendingRef.current.get(userId)];
+            }
+            promise = serviceRef.current.getMemberPhoto(userId).then(function (url) {
+                cacheRef.current.set(userId, url);
+                pendingRef.current.delete(userId);
+                return url;
+            });
+            pendingRef.current.set(userId, promise);
+            return [2 /*return*/, promise];
+        });
+    }); }, []);
+    return getPhoto;
 }
 
 
@@ -428,6 +468,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pnp_graph__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @pnp/graph */ 9080);
 /* harmony import */ var _pnp_graph_users__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @pnp/graph/users */ 3071);
 /* harmony import */ var _pnp_graph_photos__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @pnp/graph/photos */ 872);
+/* harmony import */ var _webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../webparts/sharepointDirectory/loc/mystrings */ 1461);
+
 
 
 
@@ -465,7 +507,7 @@ function formatValue(key, v) {
     if (DATE_FIELDS.has(key) && s) {
         var d = new Date(s);
         if (!isNaN(d.getTime()) && d.getFullYear() > 1900) {
-            return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            return d.toLocaleDateString((0,_webparts_sharepointDirectory_loc_mystrings__WEBPACK_IMPORTED_MODULE_4__.getLocale)(), { day: '2-digit', month: '2-digit', year: 'numeric' });
         }
         return '';
     }
@@ -749,12 +791,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _microsoft_sp_property_pane__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @microsoft/sp-property-pane */ 9877);
 /* harmony import */ var _microsoft_sp_property_pane__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_microsoft_sp_property_pane__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _components_Directory__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/Directory */ 9726);
-/* harmony import */ var _models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../models/DirectoryConfig */ 7314);
-/* harmony import */ var _hooks_useMembers__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../hooks/useMembers */ 1441);
-/* harmony import */ var _hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../hooks/useDirectoryConfig */ 6179);
-/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./loc/mystrings */ 1461);
-/* harmony import */ var _components_propertyPane_DnDFieldSelector__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/propertyPane/DnDFieldSelector */ 9078);
+/* harmony import */ var _pnp_sp__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @pnp/sp */ 2011);
+/* harmony import */ var _pnp_sp_webs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @pnp/sp/webs */ 7339);
+/* harmony import */ var _components_Directory__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/Directory */ 9726);
+/* harmony import */ var _models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../../models/DirectoryConfig */ 7314);
+/* harmony import */ var _hooks_useMembers__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../hooks/useMembers */ 1441);
+/* harmony import */ var _hooks_usePhotoCache__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../hooks/usePhotoCache */ 6326);
+/* harmony import */ var _components_PhotoContext__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./components/PhotoContext */ 298);
+/* harmony import */ var _hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../hooks/useDirectoryConfig */ 6179);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./loc/mystrings */ 1461);
+/* harmony import */ var _components_propertyPane_DnDFieldSelector__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./components/propertyPane/DnDFieldSelector */ 9078);
 
 
 
@@ -768,11 +814,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var ALL_FIELD_KEYS_SET = _models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_8__.STANDARD_FIELD_KEYS;
+
+
+
+
+var ALL_FIELD_KEYS_SET = _models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_10__.STANDARD_FIELD_KEYS;
 // Backward-compat references used only by migrateOldFieldOrder
-var CARD_DEFAULTS = _hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_10__.DEFAULT_CARD_ORDER;
-var LIST_DEFAULTS = _hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_10__.DEFAULT_LIST_ORDER;
-var MODAL_DEFAULTS = _hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_10__.DEFAULT_MODAL_ORDER;
+var CARD_DEFAULTS = _hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_14__.DEFAULT_CARD_ORDER;
+var LIST_DEFAULTS = _hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_14__.DEFAULT_LIST_ORDER;
+var MODAL_DEFAULTS = _hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_14__.DEFAULT_MODAL_ORDER;
 var DirectoryContainer = function (_a) {
     var context = _a.context, config = _a.config, onDetectedExtAttrs = _a.onDetectedExtAttrs;
     var customFieldKeys = react__WEBPACK_IMPORTED_MODULE_1__.useMemo(function () {
@@ -786,14 +836,15 @@ var DirectoryContainer = function (_a) {
             return true;
         });
     }, [config.cardFieldOrder, config.listFieldOrder, config.modalFieldOrder]);
-    var _b = (0,_hooks_useMembers__WEBPACK_IMPORTED_MODULE_9__.useMembers)(context, customFieldKeys, onDetectedExtAttrs), members = _b.members, isLoading = _b.isLoading, error = _b.error, retry = _b.retry;
-    return react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_Directory__WEBPACK_IMPORTED_MODULE_7__["default"], {
+    var _b = (0,_hooks_useMembers__WEBPACK_IMPORTED_MODULE_11__.useMembers)(context, customFieldKeys, onDetectedExtAttrs), members = _b.members, isLoading = _b.isLoading, error = _b.error, retry = _b.retry;
+    var getPhoto = (0,_hooks_usePhotoCache__WEBPACK_IMPORTED_MODULE_12__.usePhotoCache)(context);
+    return react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_PhotoContext__WEBPACK_IMPORTED_MODULE_13__.PhotoContext.Provider, { value: getPhoto }, react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_Directory__WEBPACK_IMPORTED_MODULE_9__["default"], {
         config: config,
         members: members,
         isLoading: isLoading,
         error: error,
         onRetry: retry,
-    });
+    }));
 };
 var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__extends)(SharepointDirectoryWebPart, _super);
@@ -804,28 +855,77 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
         _this.detectedExtAttrs = [];
         return _this;
     }
+    /** Map an LCID to a language code — unknown LCIDs get a synthetic key instead of being dropped */
+    SharepointDirectoryWebPart.langKeyFromLcid = function (id) {
+        return SharepointDirectoryWebPart.LCID_TO_LANG[id] || "l-".concat(id);
+    };
+    /** Human-readable name for a language code in the current UI language (e.g. "de" → "Allemand") */
+    SharepointDirectoryWebPart.prototype.getLangDisplayName = function (code) {
+        var direct = _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings["Lang_".concat(code)];
+        if (direct)
+            return direct;
+        try {
+            var name_1 = new Intl.DisplayNames([this.context.pageContext.cultureInfo.currentUICultureName], { type: 'language' }).of(code);
+            if (name_1 && name_1.toLowerCase() !== code.toLowerCase())
+                return name_1;
+        }
+        catch (_a) {
+            // fall through to the raw code
+        }
+        return code.toUpperCase();
+    };
     SharepointDirectoryWebPart.prototype.getSupportedLanguages = function () {
-        var _a, _b;
         if (this._supportedLanguages.length > 0)
             return this._supportedLanguages;
-        var ids = (_b = (_a = this.context.pageContext.legacyPageContext) === null || _a === void 0 ? void 0 : _a.web) === null || _b === void 0 ? void 0 : _b.supportedUILanguageIds;
-        if (ids && ids.length > 0) {
-            this._supportedLanguages = ids
-                .map(function (id) { return SharepointDirectoryWebPart.LCID_TO_LANG[id]; })
-                .filter(Boolean);
-        }
-        if (this._supportedLanguages.length === 0) {
-            var lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase();
-            this._supportedLanguages = [lang || 'en'];
-        }
-        return this._supportedLanguages;
+        var lang = (this.context.pageContext.cultureInfo.currentUICultureName || '')
+            .split('-')[0]
+            .toLowerCase();
+        return [lang || 'en'];
+    };
+    SharepointDirectoryWebPart.prototype.loadSupportedLanguages = function () {
+        var _a, _b;
+        return (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__awaiter)(this, void 0, void 0, function () {
+            var ids, sp, web, webIds, langs, _c;
+            return (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__generator)(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        this._supportedLanguages = this.getSupportedLanguages();
+                        ids = (_b = (_a = this.context.pageContext.legacyPageContext) === null || _a === void 0 ? void 0 : _a.web) === null || _b === void 0 ? void 0 : _b.supportedUILanguageIds;
+                        if (ids && ids.length > 0) {
+                            this._supportedLanguages = ids.map(function (id) {
+                                return SharepointDirectoryWebPart.langKeyFromLcid(id);
+                            });
+                            return [2 /*return*/];
+                        }
+                        _d.label = 1;
+                    case 1:
+                        _d.trys.push([1, 3, , 4]);
+                        sp = (0,_pnp_sp__WEBPACK_IMPORTED_MODULE_7__.spfi)().using((0,_pnp_sp__WEBPACK_IMPORTED_MODULE_7__.SPFx)(this.context));
+                        return [4 /*yield*/, sp.web.select('SupportedUILanguageIds')()];
+                    case 2:
+                        web = _d.sent();
+                        webIds = (web === null || web === void 0 ? void 0 : web.SupportedUILanguageIds) || [];
+                        langs = webIds.map(function (id) {
+                            return SharepointDirectoryWebPart.langKeyFromLcid(id);
+                        });
+                        if (langs.length > 0) {
+                            this._supportedLanguages = langs;
+                        }
+                        return [3 /*break*/, 4];
+                    case 3:
+                        _c = _d.sent();
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
     };
     SharepointDirectoryWebPart.prototype.onInit = function () {
-        (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.setLanguage)(this.context.pageContext.cultureInfo.currentCultureName);
+        var _this = this;
+        (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.setLanguage)(this.context.pageContext.cultureInfo.currentUICultureName);
         if (!this.properties.activeViewTab)
             this.properties.activeViewTab = 'card';
-        this.getSupportedLanguages();
-        return _super.prototype.onInit.call(this);
+        return this.loadSupportedLanguages().then(function () { return _super.prototype.onInit.call(_this); });
     };
     SharepointDirectoryWebPart.prototype.render = function () {
         var _this = this;
@@ -851,7 +951,7 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
             modalFieldLabels: this.getLocalizedLabels('modal'),
             filters: this.getFiltersFromProperties(),
         };
-        var config = (0,_hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_10__.useDirectoryConfig)(rawConfig);
+        var config = (0,_hooks_useDirectoryConfig__WEBPACK_IMPORTED_MODULE_14__.useDirectoryConfig)(rawConfig);
         react_dom__WEBPACK_IMPORTED_MODULE_2__.render(react__WEBPACK_IMPORTED_MODULE_1__.createElement(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, react__WEBPACK_IMPORTED_MODULE_1__.createElement(ThemeExtractor), react__WEBPACK_IMPORTED_MODULE_1__.createElement(DirectoryContainer, {
             context: this.context,
             config: config,
@@ -876,7 +976,8 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     SharepointDirectoryWebPart.prototype.getFiltersFromProperties = function () {
         var filters = [];
         var count = this.properties.filterCount || 0;
-        var lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase();
+        var culture = (this.context.pageContext.cultureInfo.currentUICultureName || '').toLowerCase();
+        var lang = culture.split('-')[0];
         for (var i = 1; i <= count; i++) {
             var fieldName = this.properties["filterField".concat(i)];
             if (!fieldName)
@@ -888,14 +989,21 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
             if (json) {
                 try {
                     var labels = JSON.parse(json);
-                    label = labels[lang] || '';
+                    label = labels[culture] || labels[lang] || '';
                 }
                 catch (_a) {
-                    label = props["filterLabel_".concat(i, "_").concat(lang)] || '';
+                    label =
+                        props["filterLabel_".concat(i, "_").concat(culture)] ||
+                            props["filterLabel_".concat(i, "_").concat(lang)] ||
+                            '';
                 }
             }
             else {
-                label = props["filterLabel_".concat(i, "_").concat(lang)] || props["filterLabelFr".concat(i)] || '';
+                label =
+                    props["filterLabel_".concat(i, "_").concat(culture)] ||
+                        props["filterLabel_".concat(i, "_").concat(lang)] ||
+                        props["filterLabelFr".concat(i)] ||
+                        '';
             }
             filters.push({ fieldName: fieldName, label: label });
         }
@@ -982,13 +1090,14 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
     };
     /** Return localized (single string) labels per field key for the given view */
     SharepointDirectoryWebPart.prototype.getLocalizedLabels = function (view) {
+        var culture = (this.context.pageContext.cultureInfo.currentUICultureName || '').toLowerCase();
+        var lang = culture.split('-')[0];
         var record = this.parseFieldLabelsRecord(view);
-        var lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase();
         var result = {};
         for (var _i = 0, _a = Object.entries(record); _i < _a.length; _i++) {
             var _b = _a[_i], key = _b[0], labels = _b[1];
             var labelMap = labels;
-            result[key] = labelMap[lang] || '';
+            result[key] = labelMap[culture] || labelMap[lang] || labelMap['en'] || '';
         }
         return result;
     };
@@ -1003,17 +1112,17 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
         // ── Filter field options (base + EntraID + detected ext attrs) ──────────
         var buildFilterOptions = function () {
             var options = [
-                { key: '', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.None },
-                { key: 'givenName', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.FieldFirstName },
-                { key: 'surname', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.FieldName },
-                { key: 'mail', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.FieldEmail },
-                { key: 'mobilePhone', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.FieldPhone },
-                { key: 'jobTitle', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.FieldJobTitle },
-                { key: 'department', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.FieldDepartment },
-                { key: 'officeLocation', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.FieldOfficeLocation },
-                { key: 'managerDisplayName', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.FieldManager },
+                { key: '', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.None },
+                { key: 'givenName', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.FieldFirstName },
+                { key: 'surname', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.FieldName },
+                { key: 'mail', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.FieldEmail },
+                { key: 'mobilePhone', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.FieldPhone },
+                { key: 'jobTitle', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.FieldJobTitle },
+                { key: 'department', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.FieldDepartment },
+                { key: 'officeLocation', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.FieldOfficeLocation },
+                { key: 'managerDisplayName', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.FieldManager },
             ];
-            for (var _i = 0, _a = (0,_models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_8__.getAvailableEntraIdFieldGroups)(); _i < _a.length; _i++) {
+            for (var _i = 0, _a = (0,_models_DirectoryConfig__WEBPACK_IMPORTED_MODULE_10__.getAvailableEntraIdFieldGroups)(); _i < _a.length; _i++) {
                 var group = _a[_i];
                 for (var _b = 0, _c = group.fields; _b < _c.length; _b++) {
                     var f = _c[_b];
@@ -1022,7 +1131,7 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
             }
             for (var _d = 0, _e = _this.detectedExtAttrs; _d < _e.length; _d++) {
                 var k = _e[_d];
-                options.push({ key: k, text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings["EntraField_".concat(k)] || k });
+                options.push({ key: k, text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings["EntraField_".concat(k)] || k });
             }
             return options;
         };
@@ -1030,7 +1139,7 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
         var filterGroupFields = [];
         for (var i = 1; i <= filterCount; i++) {
             filterGroupFields.push((0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.PropertyPaneDropdown)("filterField".concat(i), {
-                label: "".concat(_loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.FilterLabel, " ").concat(i, " \u2014 ").concat(_loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.FilterFieldLabel),
+                label: "".concat(_loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.FilterLabel, " ").concat(i, " \u2014 ").concat(_loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.FilterFieldLabel),
                 options: FILTER_OPTIONS,
                 selectedKey: this.properties["filterField".concat(i)] || '',
             }));
@@ -1038,14 +1147,14 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
             for (var _i = 0, _a = this._supportedLanguages; _i < _a.length; _i++) {
                 var lang = _a[_i];
                 var propName = "filterLabel_".concat(i, "_").concat(lang);
-                var langLabel = _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings["Lang_".concat(lang)] || lang;
+                var langLabel = this.getLangDisplayName(lang);
                 filterGroupFields.push((0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.PropertyPaneTextField)(propName, {
                     label: langLabel,
                     value: this.properties[propName] || '',
                 }));
             }
             filterGroupFields.push((0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.PropertyPaneButton)("removeFilter".concat(i), {
-                text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.RemoveFilterLabel,
+                text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.RemoveFilterLabel,
                 buttonType: _microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.PropertyPaneButtonType.Command,
                 icon: 'Delete',
                 onClick: function () {
@@ -1056,7 +1165,7 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
         }
         if (filterCount < 3) {
             filterGroupFields.push((0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.PropertyPaneButton)('addFilter', {
-                text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.AddFilter,
+                text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.AddFilter,
                 buttonType: _microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.PropertyPaneButtonType.Command,
                 icon: 'Add',
                 onClick: function () {
@@ -1110,7 +1219,7 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
                         _this.properties[prop] = newLabelsJson;
                         _this.render();
                     };
-                    react_dom__WEBPACK_IMPORTED_MODULE_2__.render(react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_propertyPane_DnDFieldSelector__WEBPACK_IMPORTED_MODULE_12__["default"], {
+                    react_dom__WEBPACK_IMPORTED_MODULE_2__.render(react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_propertyPane_DnDFieldSelector__WEBPACK_IMPORTED_MODULE_16__["default"], {
                         key: tab, // force remount when tab changes
                         view: tab,
                         selectedKeys: selectedKeys,
@@ -1130,58 +1239,58 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
         return {
             pages: [
                 {
-                    header: { description: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.PropertyPaneHeader },
+                    header: { description: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.PropertyPaneHeader },
                     groups: [
                         {
-                            groupName: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.ViewGroupName,
+                            groupName: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.ViewGroupName,
                             groupFields: [
                                 (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.PropertyPaneDropdown)('defaultView', {
-                                    label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.DefaultViewLabel,
+                                    label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.DefaultViewLabel,
                                     options: [
-                                        { key: 'card', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.ViewTrombinoscope },
-                                        { key: 'list', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.ViewList },
+                                        { key: 'card', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.ViewTrombinoscope },
+                                        { key: 'list', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.ViewList },
                                     ],
                                     selectedKey: this.properties.defaultView || 'card',
                                 }),
                                 (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.PropertyPaneDropdown)('sortOrder', {
-                                    label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.SortOrderLabel,
+                                    label: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.SortOrderLabel,
                                     options: [
-                                        { key: 'lastNameAsc', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.SortLastNameAsc },
-                                        { key: 'lastNameDesc', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.SortLastNameDesc },
-                                        { key: 'firstNameAsc', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.SortFirstNameAsc },
-                                        { key: 'firstNameDesc', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.SortFirstNameDesc },
-                                        { key: 'random', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.SortRandom },
+                                        { key: 'lastNameAsc', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.SortLastNameAsc },
+                                        { key: 'lastNameDesc', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.SortLastNameDesc },
+                                        { key: 'firstNameAsc', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.SortFirstNameAsc },
+                                        { key: 'firstNameDesc', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.SortFirstNameDesc },
+                                        { key: 'random', text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.SortRandom },
                                     ],
                                     selectedKey: this.properties.sortOrder || 'lastNameAsc',
                                 }),
                             ],
                         },
                         {
-                            groupName: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.FilterGroupName,
+                            groupName: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.FilterGroupName,
                             groupFields: filterGroupFields.length > 0
                                 ? filterGroupFields
-                                : [(0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.PropertyPaneLabel)('noFilter', { text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.NoFilter })],
+                                : [(0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.PropertyPaneLabel)('noFilter', { text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.NoFilter })],
                         },
                         {
                             // Tab selector — 3 icon buttons Card / List / Modal
-                            groupName: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.ViewTabLabel,
+                            groupName: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.ViewTabLabel,
                             groupFields: [
                                 (0,_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.PropertyPaneChoiceGroup)('activeViewTab', {
                                     label: '',
                                     options: [
                                         {
                                             key: 'card',
-                                            text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.TabCard,
+                                            text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.TabCard,
                                             iconProps: { officeFabricIconFontName: 'GridViewMedium' },
                                         },
                                         {
                                             key: 'list',
-                                            text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.TabList,
+                                            text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.TabList,
                                             iconProps: { officeFabricIconFontName: 'BulletedList2' },
                                         },
                                         {
                                             key: 'modal',
-                                            text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.strings.TabModal,
+                                            text: _loc_mystrings__WEBPACK_IMPORTED_MODULE_15__.strings.TabModal,
                                             iconProps: { officeFabricIconFontName: 'ContactInfo' },
                                         },
                                     ],
@@ -1194,14 +1303,56 @@ var SharepointDirectoryWebPart = /** @class */ (function (_super) {
             ],
         };
     };
-    // ── LCID → language code mapping ──────────────────────────────────────────
+    // ── LCID → language code mapping (all SharePoint Online display languages) ──
     SharepointDirectoryWebPart.LCID_TO_LANG = {
-        1033: 'en', 1036: 'fr', 1031: 'de', 3082: 'es',
-        1040: 'it', 1043: 'nl', 1046: 'pt', 1049: 'ru',
-        1055: 'tr', 1025: 'ar', 1028: 'zh', 1041: 'ja',
-        1042: 'ko', 1053: 'sv', 1044: 'nb', 1030: 'da',
-        1035: 'fi', 1029: 'cs', 1038: 'hu', 1045: 'pl',
-        2070: 'pt', 1069: 'eu', 1081: 'hi', 1110: 'gl',
+        1025: 'ar',
+        1026: 'bg',
+        1027: 'ca',
+        1028: 'zh-tw',
+        1029: 'cs',
+        1030: 'da',
+        1031: 'de',
+        1032: 'el',
+        1033: 'en',
+        1035: 'fi',
+        1036: 'fr',
+        1037: 'he',
+        1038: 'hu',
+        1040: 'it',
+        1041: 'ja',
+        1042: 'ko',
+        1043: 'nl',
+        1044: 'nb',
+        1045: 'pl',
+        1046: 'pt-br',
+        1048: 'ro',
+        1049: 'ru',
+        1050: 'hr',
+        1051: 'sk',
+        1053: 'sv',
+        1054: 'th',
+        1055: 'tr',
+        1057: 'id',
+        1058: 'uk',
+        1060: 'sl',
+        1061: 'et',
+        1062: 'lv',
+        1063: 'lt',
+        1066: 'vi',
+        1069: 'eu',
+        1081: 'hi',
+        1086: 'ms',
+        1087: 'kk',
+        1106: 'cy',
+        1110: 'gl',
+        1164: 'prs',
+        2052: 'zh-cn',
+        2070: 'pt-pt',
+        2074: 'sr-latn',
+        3082: 'es',
+        3098: 'sr-cyrl',
+        5146: 'bs-latn',
+        8218: 'bs-cyrl',
     };
     return SharepointDirectoryWebPart;
 }(_microsoft_sp_webpart_base__WEBPACK_IMPORTED_MODULE_5__.BaseClientSideWebPart));
@@ -1361,22 +1512,22 @@ function applySortOrder(members, sortOrder) {
     switch (sortOrder) {
         case 'firstNameAsc':
             copy.sort(function (a, b) {
-                return (a.givenName || a.displayName || '').localeCompare(b.givenName || b.displayName || '', 'fr', { sensitivity: 'base' });
+                return (a.givenName || a.displayName || '').localeCompare(b.givenName || b.displayName || '', (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'firstNameDesc':
             copy.sort(function (a, b) {
-                return (b.givenName || b.displayName || '').localeCompare(a.givenName || a.displayName || '', 'fr', { sensitivity: 'base' });
+                return (b.givenName || b.displayName || '').localeCompare(a.givenName || a.displayName || '', (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'lastNameAsc':
             copy.sort(function (a, b) {
-                return (a.surname || a.displayName || '').localeCompare(b.surname || b.displayName || '', 'fr', { sensitivity: 'base' });
+                return (a.surname || a.displayName || '').localeCompare(b.surname || b.displayName || '', (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'lastNameDesc':
             copy.sort(function (a, b) {
-                return (b.surname || b.displayName || '').localeCompare(a.surname || a.displayName || '', 'fr', { sensitivity: 'base' });
+                return (b.surname || b.displayName || '').localeCompare(a.surname || a.displayName || '', (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_11__.getLocale)(), { sensitivity: 'base' });
             });
             break;
         case 'random':
@@ -1484,12 +1635,12 @@ var Directory = function (_a) {
         }
         if (config.filters.length > 0) {
             config.filters.forEach(function (filter) {
-                var value = filterValues[filter.fieldName];
-                if (value) {
+                var values = filterValues[filter.fieldName];
+                if (values && values.length > 0) {
                     result = result.filter(function (m) {
                         var _a;
                         var fieldValue = (_a = m[filter.fieldName]) !== null && _a !== void 0 ? _a : (m.customProperties && m.customProperties[filter.fieldName]);
-                        return fieldValue === value;
+                        return values.includes(fieldValue);
                     });
                 }
             });
@@ -1523,6 +1674,25 @@ var Directory = function (_a) {
             react__WEBPACK_IMPORTED_MODULE_1__.createElement(_modal_MemberModal__WEBPACK_IMPORTED_MODULE_5__["default"], { member: selectedMember, members: members, modalFieldOrder: config.modalFieldOrder, modalFieldLabels: config.modalFieldLabels, onDismiss: function () { return setSelectedMember(null); }, onMemberClick: setSelectedMember }))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Directory);
+
+
+/***/ },
+
+/***/ 298
+/*!*********************************************************************!*\
+  !*** ./lib/webparts/sharepointDirectory/components/PhotoContext.js ***!
+  \*********************************************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PhotoContext: () => (/* binding */ PhotoContext)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 5959);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+var PhotoContext = react__WEBPACK_IMPORTED_MODULE_0__.createContext(null);
 
 
 /***/ },
@@ -1604,7 +1774,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../loc/mystrings */ 1461);
 /* harmony import */ var _utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../../utils/teamsDeepLink */ 3950);
 /* harmony import */ var _utils_formatUtils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../../utils/formatUtils */ 6606);
-/* harmony import */ var _shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../shared/PersonaAvatar */ 7282);
+/* harmony import */ var _shared_LazyPersonaAvatar__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../shared/LazyPersonaAvatar */ 7228);
 /* harmony import */ var _shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../shared/TeamsIcon */ 2028);
 /* harmony import */ var _shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../shared/OutlookIcon */ 245);
 
@@ -1739,7 +1909,7 @@ var MemberCard = function (_a) {
             e.currentTarget.style.boxShadow =
                 '0 2px 8px rgba(0,0,0,0.08)';
         }, "aria-label": "".concat(fullName, " - ").concat(_loc_mystrings__WEBPACK_IMPORTED_MODULE_3__.strings.ClickForDetails) },
-        showPhoto && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_6__["default"], { photoUrl: member.photoUrl, displayName: member.displayName, givenName: member.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_1__.PersonaSize.size100, coinSize: 80 })),
+        showPhoto && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_LazyPersonaAvatar__WEBPACK_IMPORTED_MODULE_6__["default"], { userId: member.id, displayName: member.displayName, givenName: member.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_1__.PersonaSize.size100, coinSize: 80 })),
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: {
                 display: 'flex',
                 flexDirection: 'column',
@@ -1919,7 +2089,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../../utils/teamsDeepLink */ 3950);
 /* harmony import */ var _utils_formatUtils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../../utils/formatUtils */ 6606);
 /* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../loc/mystrings */ 1461);
-/* harmony import */ var _shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../shared/PersonaAvatar */ 7282);
+/* harmony import */ var _shared_LazyPersonaAvatar__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../shared/LazyPersonaAvatar */ 7228);
 /* harmony import */ var _shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../shared/TeamsIcon */ 2028);
 /* harmony import */ var _shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../shared/OutlookIcon */ 245);
 
@@ -1977,7 +2147,7 @@ var ListView = function (_a) {
                     cols.push({
                         key: 'photo',
                         renderHeader: function () { return null; },
-                        renderCell: function (m) { return (react__WEBPACK_IMPORTED_MODULE_1__.createElement(_shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_9__["default"], { photoUrl: m.photoUrl, displayName: m.displayName, givenName: m.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_2__.PersonaSize.size32 })); },
+                        renderCell: function (m) { return (react__WEBPACK_IMPORTED_MODULE_1__.createElement(_shared_LazyPersonaAvatar__WEBPACK_IMPORTED_MODULE_9__["default"], { userId: m.id, displayName: m.displayName, givenName: m.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_2__.PersonaSize.size32 })); },
                         headerStyle: (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__assign)((0,tslib__WEBPACK_IMPORTED_MODULE_0__.__assign)({}, headerCellStyle), { cursor: 'default', width: 44, padding: '10px 0 10px 16px' }),
                         cellStyle: (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__assign)((0,tslib__WEBPACK_IMPORTED_MODULE_0__.__assign)({}, cellStyle), { width: 44, padding: '10px 0 10px 16px' }),
                     });
@@ -2144,7 +2314,7 @@ var ListView = function (_a) {
                 aVal = ((_a = a.customProperties) === null || _a === void 0 ? void 0 : _a[k]) || '';
                 bVal = ((_b = b.customProperties) === null || _b === void 0 ? void 0 : _b[k]) || '';
             }
-            var cmp = aVal.localeCompare(bVal, 'fr', { sensitivity: 'base' });
+            var cmp = aVal.localeCompare(bVal, (0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_8__.getLocale)(), { sensitivity: 'base' });
             return sortState.descending ? -cmp : cmp;
         });
         return result;
@@ -2198,7 +2368,8 @@ var ListView = function (_a) {
                             header,
                             sortIndicator(sk)));
                     }))),
-                react__WEBPACK_IMPORTED_MODULE_1__.createElement("tbody", null, sorted.map(function (member) { return (react__WEBPACK_IMPORTED_MODULE_1__.createElement("tr", { key: member.id, tabIndex: 0, role: "button", "aria-label": "".concat((member.givenName || ''), " ").concat((member.surname || '')).trim() || member.displayName, onClick: function () { return onMemberClick(member); }, onKeyDown: function (e) {
+                react__WEBPACK_IMPORTED_MODULE_1__.createElement("tbody", null, sorted.map(function (member) { return (react__WEBPACK_IMPORTED_MODULE_1__.createElement("tr", { key: member.id, tabIndex: 0, role: "button", "aria-label": "".concat(member.givenName || '', " ").concat(member.surname || '').trim() ||
+                        member.displayName, onClick: function () { return onMemberClick(member); }, onKeyDown: function (e) {
                         if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
                             onMemberClick(member);
@@ -2255,7 +2426,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_teamsDeepLink__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../../utils/teamsDeepLink */ 3950);
 /* harmony import */ var _utils_formatUtils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../../utils/formatUtils */ 6606);
 /* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../loc/mystrings */ 1461);
-/* harmony import */ var _shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../shared/PersonaAvatar */ 7282);
+/* harmony import */ var _shared_LazyPersonaAvatar__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../shared/LazyPersonaAvatar */ 7228);
 /* harmony import */ var _shared_TeamsIcon__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../shared/TeamsIcon */ 2028);
 /* harmony import */ var _shared_OutlookIcon__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../shared/OutlookIcon */ 245);
 
@@ -2368,7 +2539,7 @@ var MemberModal = function (_a) {
                 } },
                 react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "currentColor", "aria-hidden": "true" },
                     react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M.293.293a1 1 0 0 1 1.414 0L6 4.586 10.293.293a1 1 0 1 1 1.414 1.414L7.414 6l4.293 4.293a1 1 0 0 1-1.414 1.414L6 7.414l-4.293 4.293A1 1 0 0 1 .293 10.707L4.586 6 .293 1.707A1 1 0 0 1 .293.293Z" }))),
-            showPhoto && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_PersonaAvatar__WEBPACK_IMPORTED_MODULE_8__["default"], { photoUrl: member.photoUrl, displayName: member.displayName, givenName: member.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_2__.PersonaSize.size100, coinSize: 80, imageShouldFadeIn: false })),
+            showPhoto && (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_shared_LazyPersonaAvatar__WEBPACK_IMPORTED_MODULE_8__["default"], { userId: member.id, displayName: member.displayName, givenName: member.givenName, size: _fluentui_react_lib_Persona__WEBPACK_IMPORTED_MODULE_2__.PersonaSize.size100, coinSize: 80, imageShouldFadeIn: false })),
             showName && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("h2", { id: "spdir-modal-title", style: {
                     margin: '16px 0 4px',
                     fontSize: 20,
@@ -2524,7 +2695,20 @@ __webpack_require__.r(__webpack_exports__);
 /** Return the human-readable name for a language code, e.g. "fr" → "Français" */
 function getLangName(code) {
     var key = "Lang_".concat(code);
-    return _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings[key] || code.toUpperCase();
+    var direct = _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings[key];
+    if (direct)
+        return direct;
+    try {
+        var name_1 = new Intl.DisplayNames([(0,_loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.getLocale)()], {
+            type: 'language',
+        }).of(code);
+        if (name_1 && name_1.toLowerCase() !== code.toLowerCase())
+            return name_1;
+    }
+    catch (_a) {
+        // fall through to the raw code
+    }
+    return code.toUpperCase();
 }
 // ─── Constants ────────────────────────────────────────────────────────────────
 var LOCKED_ORDER = ['photo', 'firstName', 'name'];
@@ -2965,16 +3149,173 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 5959);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../loc/mystrings */ 1461);
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ 196);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ 5959);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../loc/mystrings */ 1461);
 
 
+
+var MultiSelect = function (_a) {
+    var label = _a.label, options = _a.options, selected = _a.selected, disabled = _a.disabled, onToggle = _a.onToggle, onClear = _a.onClear;
+    var _b = react__WEBPACK_IMPORTED_MODULE_1__.useState(false), open = _b[0], setOpen = _b[1];
+    var _c = react__WEBPACK_IMPORTED_MODULE_1__.useState(''), search = _c[0], setSearch = _c[1];
+    var containerRef = react__WEBPACK_IMPORTED_MODULE_1__.useRef(null);
+    var inputRef = react__WEBPACK_IMPORTED_MODULE_1__.useRef(null);
+    var filtered = react__WEBPACK_IMPORTED_MODULE_1__.useMemo(function () {
+        if (!search)
+            return options;
+        var q = search.toLowerCase();
+        return options.filter(function (o) { return o.toLowerCase().includes(q); });
+    }, [options, search]);
+    react__WEBPACK_IMPORTED_MODULE_1__.useEffect(function () {
+        if (open)
+            requestAnimationFrame(function () { var _a; return (_a = inputRef.current) === null || _a === void 0 ? void 0 : _a.focus(); });
+    }, [open]);
+    var handleBlur = function (e) {
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+            setOpen(false);
+            setSearch('');
+        }
+    };
+    var handleToggle = function () {
+        if (disabled)
+            return;
+        setOpen(function (o) { return !o; });
+        if (open)
+            setSearch('');
+    };
+    var handleKeyDown = function (e) {
+        if (e.key === 'Escape') {
+            setOpen(false);
+            setSearch('');
+        }
+    };
+    var hasSelection = selected.length > 0;
+    var buttonLabel = hasSelection
+        ? selected.length === 1
+            ? selected[0]
+            : "".concat(label, " (").concat(selected.length, ")")
+        : label;
+    return (react__WEBPACK_IMPORTED_MODULE_1__.createElement("div", { ref: containerRef, tabIndex: -1, style: { position: 'relative', display: 'inline-flex', alignItems: 'center', flexShrink: 0 }, onKeyDown: handleKeyDown, onBlur: handleBlur },
+        react__WEBPACK_IMPORTED_MODULE_1__.createElement("button", { type: "button", "aria-haspopup": "listbox", "aria-expanded": open, "aria-label": label, disabled: disabled, onClick: handleToggle, style: {
+                height: 38,
+                borderRadius: 20,
+                border: "1px solid ".concat(open ? '#1B7A6E' : hasSelection ? '#1B7A6E' : '#c7c9cc'),
+                backgroundColor: hasSelection ? '#f0faf8' : disabled ? '#f3f2f1' : '#ffffff',
+                color: hasSelection ? '#1B7A6E' : disabled ? '#a19f9d' : '#605e5c',
+                fontWeight: hasSelection ? 600 : 400,
+                fontSize: 13,
+                paddingLeft: 16,
+                paddingRight: hasSelection ? 52 : 36,
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                outline: 'none',
+                minWidth: 150,
+                maxWidth: 220,
+                boxSizing: 'border-box',
+                textAlign: 'left',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                transition: 'border-color 0.15s ease, background-color 0.15s ease',
+            } }, buttonLabel),
+        react__WEBPACK_IMPORTED_MODULE_1__.createElement("svg", { width: "10", height: "10", viewBox: "0 0 10 6", fill: "none", "aria-hidden": "true", style: {
+                position: 'absolute',
+                right: hasSelection ? 30 : 14,
+                pointerEvents: 'none',
+                color: hasSelection ? '#1B7A6E' : '#605e5c',
+                transform: open ? 'rotate(180deg)' : 'none',
+                transition: 'transform 0.15s ease',
+            } },
+            react__WEBPACK_IMPORTED_MODULE_1__.createElement("path", { d: "M1 1l4 4 4-4", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" })),
+        hasSelection && (react__WEBPACK_IMPORTED_MODULE_1__.createElement("button", { type: "button", onClick: function (e) { e.stopPropagation(); onClear(); }, "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.ClearSearch, title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.ClearSearch, style: {
+                position: 'absolute',
+                right: 10,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#1B7A6E',
+                borderRadius: '50%',
+                width: 16,
+                height: 16,
+            } },
+            react__WEBPACK_IMPORTED_MODULE_1__.createElement("svg", { width: "8", height: "8", viewBox: "0 0 12 12", fill: "currentColor", "aria-hidden": "true" },
+                react__WEBPACK_IMPORTED_MODULE_1__.createElement("path", { d: "M.293.293a1 1 0 0 1 1.414 0L6 4.586 10.293.293a1 1 0 1 1 1.414 1.414L7.414 6l4.293 4.293a1 1 0 0 1-1.414 1.414L6 7.414l-4.293 4.293A1 1 0 0 1 .293 10.707L4.586 6 .293 1.707A1 1 0 0 1 .293.293Z" })))),
+        open && (react__WEBPACK_IMPORTED_MODULE_1__.createElement("div", { role: "listbox", "aria-multiselectable": "true", "aria-label": label, style: {
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                marginTop: 4,
+                minWidth: '100%',
+                maxWidth: 320,
+                backgroundColor: '#ffffff',
+                border: '1px solid #edebe9',
+                borderRadius: 8,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                zIndex: 9999,
+                overflow: 'hidden',
+            } },
+            react__WEBPACK_IMPORTED_MODULE_1__.createElement("div", { style: { padding: '8px 8px 4px', borderBottom: '1px solid #f3f2f1' } },
+                react__WEBPACK_IMPORTED_MODULE_1__.createElement("div", { style: { position: 'relative', display: 'flex', alignItems: 'center' } },
+                    react__WEBPACK_IMPORTED_MODULE_1__.createElement("svg", { width: "14", height: "14", viewBox: "0 0 16 16", fill: "none", "aria-hidden": "true", style: { position: 'absolute', left: 8, color: '#605e5c', pointerEvents: 'none' } },
+                        react__WEBPACK_IMPORTED_MODULE_1__.createElement("path", { d: "M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z", fill: "currentColor" })),
+                    react__WEBPACK_IMPORTED_MODULE_1__.createElement("input", { ref: inputRef, type: "text", value: search, onChange: function (e) { return setSearch(e.target.value); }, placeholder: _loc_mystrings__WEBPACK_IMPORTED_MODULE_2__.strings.FilterSearch, style: {
+                            width: '100%',
+                            height: 32,
+                            paddingLeft: 30,
+                            paddingRight: 8,
+                            border: '1px solid #c7c9cc',
+                            borderRadius: 6,
+                            fontSize: 13,
+                            outline: 'none',
+                            boxSizing: 'border-box',
+                            color: '#323130',
+                        } }))),
+            react__WEBPACK_IMPORTED_MODULE_1__.createElement("ul", { style: { margin: 0, padding: '4px 0', listStyle: 'none', maxHeight: 220, overflowY: 'auto' } }, filtered.length === 0 ? (react__WEBPACK_IMPORTED_MODULE_1__.createElement("li", { style: { padding: '8px 16px', fontSize: 13, color: '#605e5c' } }, "\u2014")) : (filtered.map(function (opt) {
+                var isChecked = selected.includes(opt);
+                return (react__WEBPACK_IMPORTED_MODULE_1__.createElement("li", { key: opt, role: "option", "aria-selected": isChecked, onMouseDown: function (e) { return e.preventDefault(); }, onClick: function () { return onToggle(opt); }, style: {
+                        padding: '7px 12px',
+                        fontSize: 13,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        color: '#323130',
+                        backgroundColor: isChecked ? '#f0faf8' : 'transparent',
+                        userSelect: 'none',
+                    }, onMouseEnter: function (e) {
+                        if (!isChecked)
+                            e.currentTarget.style.backgroundColor = '#faf9f8';
+                    }, onMouseLeave: function (e) {
+                        ;
+                        e.currentTarget.style.backgroundColor = isChecked ? '#f0faf8' : 'transparent';
+                    } },
+                    react__WEBPACK_IMPORTED_MODULE_1__.createElement("span", { "aria-hidden": "true", style: {
+                            width: 16,
+                            height: 16,
+                            borderRadius: 3,
+                            border: "2px solid ".concat(isChecked ? '#1B7A6E' : '#c7c9cc'),
+                            backgroundColor: isChecked ? '#1B7A6E' : '#ffffff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                            transition: 'background-color 0.1s ease, border-color 0.1s ease',
+                        } }, isChecked && (react__WEBPACK_IMPORTED_MODULE_1__.createElement("svg", { width: "10", height: "8", viewBox: "0 0 10 8", fill: "none" },
+                        react__WEBPACK_IMPORTED_MODULE_1__.createElement("path", { d: "M1 4l3 3 5-6", stroke: "#ffffff", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" })))),
+                    opt));
+            })))))));
+};
 var FilterBar = function (_a) {
     var filters = _a.filters, members = _a.members, values = _a.values, onChange = _a.onChange;
-    if (!filters || filters.length === 0) {
+    if (!filters || filters.length === 0)
         return null;
-    }
     var getDistinctValues = function (fieldName) {
         var unique = new Set();
         members.forEach(function (member) {
@@ -2985,66 +3326,17 @@ var FilterBar = function (_a) {
         });
         return Array.from(unique).sort();
     };
-    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, filters.map(function (filter) {
+    return (react__WEBPACK_IMPORTED_MODULE_1__.createElement(react__WEBPACK_IMPORTED_MODULE_1__.Fragment, null, filters.map(function (filter) {
         var options = getDistinctValues(filter.fieldName);
         var disabled = options.length === 0;
-        var selected = values[filter.fieldName] || '';
-        return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { key: filter.fieldName, style: {
-                position: 'relative',
-                display: 'inline-flex',
-                alignItems: 'center',
-                flexShrink: 0,
-            } },
-            react__WEBPACK_IMPORTED_MODULE_0__.createElement("select", { "aria-label": filter.label, value: selected, disabled: disabled, onChange: function (e) {
-                    var val = e.target.value;
-                    onChange(filter.fieldName, val || null);
-                }, style: {
-                    height: 38,
-                    appearance: 'none',
-                    WebkitAppearance: 'none',
-                    borderRadius: 20,
-                    border: '1px solid #c7c9cc',
-                    backgroundColor: disabled ? '#f3f2f1' : '#ffffff',
-                    color: selected ? '#323130' : '#605e5c',
-                    fontSize: 13,
-                    paddingLeft: 16,
-                    paddingRight: selected ? 52 : 36,
-                    cursor: disabled ? 'not-allowed' : 'pointer',
-                    outline: 'none',
-                    minWidth: 150,
-                    boxSizing: 'border-box',
-                } },
-                react__WEBPACK_IMPORTED_MODULE_0__.createElement("option", { value: "" }, filter.label),
-                options.map(function (opt) { return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("option", { key: opt, value: opt }, opt)); })),
-            react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "10", height: "10", viewBox: "0 0 10 6", fill: "none", "aria-hidden": "true", style: {
-                    position: 'absolute',
-                    right: selected ? 30 : 14,
-                    pointerEvents: 'none',
-                    color: disabled ? '#605e5c' : '#605e5c',
-                } },
-                react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M1 1l4 4 4-4", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" })),
-            selected && (react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { onClick: function (e) {
-                    e.stopPropagation();
-                    onChange(filter.fieldName, null);
-                }, "aria-label": _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ClearSearch, title: _loc_mystrings__WEBPACK_IMPORTED_MODULE_1__.strings.ClearSearch, style: {
-                    position: 'absolute',
-                    right: 10,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#605e5c',
-                    borderRadius: '50%',
-                    width: 16,
-                    height: 16,
-                } },
-                react__WEBPACK_IMPORTED_MODULE_0__.createElement("svg", { width: "8", height: "8", viewBox: "0 0 12 12", fill: "currentColor", "aria-hidden": "true" },
-                    react__WEBPACK_IMPORTED_MODULE_0__.createElement("path", { d: "M.293.293a1 1 0 0 1 1.414 0L6 4.586 10.293.293a1 1 0 1 1 1.414 1.414L7.414 6l4.293 4.293a1 1 0 0 1-1.414 1.414L6 7.414l-4.293 4.293A1 1 0 0 1 .293 10.707L4.586 6 .293 1.707A1 1 0 0 1 .293.293Z" }))))));
+        var selected = values[filter.fieldName] || [];
+        return (react__WEBPACK_IMPORTED_MODULE_1__.createElement(MultiSelect, { key: filter.fieldName, label: filter.label, options: options, selected: selected, disabled: disabled, onToggle: function (val) {
+                var current = values[filter.fieldName] || [];
+                var next = current.includes(val)
+                    ? current.filter(function (v) { return v !== val; })
+                    : (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__spreadArray)((0,tslib__WEBPACK_IMPORTED_MODULE_0__.__spreadArray)([], current, true), [val], false);
+                onChange(filter.fieldName, next.length > 0 ? next : null);
+            }, onClear: function () { return onChange(filter.fieldName, null); } }));
     })));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FilterBar);
@@ -3223,6 +3515,57 @@ var ErrorState = function (_a) {
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_1__.MessageBar, { messageBarType: _fluentui_react_lib_MessageBar__WEBPACK_IMPORTED_MODULE_2__.MessageBarType.error, isMultiline: false, actions: react__WEBPACK_IMPORTED_MODULE_0__.createElement(_fluentui_react_lib_Button__WEBPACK_IMPORTED_MODULE_3__.DefaultButton, { onClick: onRetry }, _loc_mystrings__WEBPACK_IMPORTED_MODULE_4__.strings.Retry) }, message || _loc_mystrings__WEBPACK_IMPORTED_MODULE_4__.strings.ErrorLoading));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ErrorState);
+
+
+/***/ },
+
+/***/ 7228
+/*!*********************************************************************************!*\
+  !*** ./lib/webparts/sharepointDirectory/components/shared/LazyPersonaAvatar.js ***!
+  \*********************************************************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ 5959);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _PhotoContext__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../PhotoContext */ 298);
+/* harmony import */ var _PersonaAvatar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PersonaAvatar */ 7282);
+
+
+
+var LazyPersonaAvatar = function (_a) {
+    var userId = _a.userId, displayName = _a.displayName, givenName = _a.givenName, size = _a.size, coinSize = _a.coinSize, imageShouldFadeIn = _a.imageShouldFadeIn;
+    var _b = react__WEBPACK_IMPORTED_MODULE_0__.useState(undefined), photoUrl = _b[0], setPhotoUrl = _b[1];
+    var ref = react__WEBPACK_IMPORTED_MODULE_0__.useRef(null);
+    var getPhoto = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_PhotoContext__WEBPACK_IMPORTED_MODULE_1__.PhotoContext);
+    var loadedRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef(false);
+    react__WEBPACK_IMPORTED_MODULE_0__.useEffect(function () {
+        if (!userId || !getPhoto || loadedRef.current)
+            return;
+        var el = ref.current;
+        if (!el)
+            return;
+        var observer = new IntersectionObserver(function (entries) {
+            if (entries[0].isIntersecting) {
+                observer.disconnect();
+                loadedRef.current = true;
+                getPhoto(userId).then(function (url) {
+                    if (url)
+                        setPhotoUrl(url);
+                });
+            }
+        }, { rootMargin: '200px' });
+        observer.observe(el);
+        return function () { return observer.disconnect(); };
+    }, [userId, getPhoto]);
+    return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { ref: ref },
+        react__WEBPACK_IMPORTED_MODULE_0__.createElement(_PersonaAvatar__WEBPACK_IMPORTED_MODULE_2__["default"], { photoUrl: photoUrl, displayName: displayName, givenName: givenName, size: size, coinSize: coinSize, imageShouldFadeIn: imageShouldFadeIn })));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LazyPersonaAvatar);
 
 
 /***/ },
@@ -3410,13 +3753,13 @@ var en = {
     Retry: 'Retry',
     NoResults: 'No collaborators found',
     EmptyStateHint: 'Try modifying your search criteria or filters.',
-    AccessDeniedMessage: 'You do not have the necessary permissions to access this directory.',
     LoadingText: 'Loading...',
     ResultsLabel: 'Results:',
     CollaboratorSingular: 'collaborator',
     CollaboratorPlural: 'collaborators',
     ExportCsv: 'Export to CSV',
     ClearSearch: 'Clear search',
+    FilterSearch: 'Search…',
     PropertyPaneHeader: 'Settings',
     FilterLabelInput: 'Display label',
     None: 'None',
@@ -3579,13 +3922,13 @@ var fr = {
     Retry: 'Réessayer',
     NoResults: 'Aucun collaborateur trouvé',
     EmptyStateHint: 'Essayez de modifier vos critères de recherche ou vos filtres.',
-    AccessDeniedMessage: "Vous n'avez pas les droits nécessaires pour accéder à cet annuaire.",
     LoadingText: 'Chargement...',
     ResultsLabel: 'Résultats :',
     CollaboratorSingular: 'collaborateur',
     CollaboratorPlural: 'collaborateurs',
     ExportCsv: 'Exporter en CSV',
     ClearSearch: 'Effacer la recherche',
+    FilterSearch: 'Rechercher…',
     PropertyPaneHeader: 'Paramètres',
     FilterLabelInput: 'Libellé affiché',
     None: 'Aucun',
@@ -3683,6 +4026,7 @@ var fr = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getLocale: () => (/* binding */ getLocale),
 /* harmony export */   setLanguage: () => (/* binding */ setLanguage),
 /* harmony export */   strings: () => (/* binding */ strings)
 /* harmony export */ });
@@ -3706,17 +4050,23 @@ var locales = {
     fr: _fr__WEBPACK_IMPORTED_MODULE_0__["default"],
     en: _en__WEBPACK_IMPORTED_MODULE_1__["default"],
 };
-var current = _fr__WEBPACK_IMPORTED_MODULE_0__["default"];
+var current = _en__WEBPACK_IMPORTED_MODULE_1__["default"];
+var currentLocale = 'en-US';
 var strings = new Proxy({}, {
     get: function (_target, prop) {
         return current[prop];
     },
 });
-/** Call once at startup with the SharePoint currentCultureName (e.g. "fr-fr", "en-us"). */
+/** Call once at startup with the SharePoint currentUICultureName (e.g. "fr-fr", "en-us"). */
 function setLanguage(locale) {
     var _a;
     var lang = (locale || '').split('-')[0].toLowerCase();
     current = (_a = locales[lang]) !== null && _a !== void 0 ? _a : _en__WEBPACK_IMPORTED_MODULE_1__["default"];
+    currentLocale = locale || 'en-US';
+}
+/** Full locale of the current UI language (e.g. "fr-FR", "en-US") — for date/name formatting. */
+function getLocale() {
+    return currentLocale;
 }
 
 
@@ -9452,7 +9802,7 @@ Callout.displayName = 'Callout';
 
 /***/ },
 
-/***/ 4718
+/***/ 2337
 /*!************************************************************************************!*\
   !*** ./node_modules/@fluentui/react/lib/components/Callout/CalloutContent.base.js ***!
   \************************************************************************************/
@@ -9970,7 +10320,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   CalloutContent: () => (/* binding */ CalloutContent)
 /* harmony export */ });
 /* harmony import */ var _Utilities__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Utilities */ 5336);
-/* harmony import */ var _CalloutContent_base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CalloutContent.base */ 4718);
+/* harmony import */ var _CalloutContent_base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CalloutContent.base */ 2337);
 /* harmony import */ var _CalloutContent_styles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CalloutContent.styles */ 1293);
 
 
@@ -10131,7 +10481,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utilities_contextualMenu_index__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../../utilities/contextualMenu/index */ 256);
 /* harmony import */ var _Callout__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../../Callout */ 6650);
 /* harmony import */ var _ContextualMenuItem__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./ContextualMenuItem */ 627);
-/* harmony import */ var _ContextualMenuItemWrapper_index__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./ContextualMenuItemWrapper/index */ 7066);
+/* harmony import */ var _ContextualMenuItemWrapper_index__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./ContextualMenuItemWrapper/index */ 4685);
 /* harmony import */ var _ContextualMenuItemWrapper_index__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./ContextualMenuItemWrapper/index */ 6083);
 /* harmony import */ var _ContextualMenuItemWrapper_index__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./ContextualMenuItemWrapper/index */ 331);
 /* harmony import */ var _Styling__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ../../Styling */ 8455);
@@ -11826,7 +12176,7 @@ var ContextualMenuItem = (0,_Utilities__WEBPACK_IMPORTED_MODULE_0__.styled)(_Con
 
 /***/ },
 
-/***/ 7066
+/***/ 4685
 /*!**********************************************************************************************************************!*\
   !*** ./node_modules/@fluentui/react/lib/components/ContextualMenu/ContextualMenuItemWrapper/ContextualMenuAnchor.js ***!
   \**********************************************************************************************************************/
@@ -16095,7 +16445,7 @@ var PersonaInitialsColor;
 
 /***/ },
 
-/***/ 2337
+/***/ 9480
 /*!*********************************************************************************************!*\
   !*** ./node_modules/@fluentui/react/lib/components/Persona/PersonaCoin/PersonaCoin.base.js ***!
   \*********************************************************************************************/
@@ -16268,7 +16618,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   PersonaCoin: () => (/* binding */ PersonaCoin)
 /* harmony export */ });
 /* harmony import */ var _Utilities__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../Utilities */ 5336);
-/* harmony import */ var _PersonaCoin_base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PersonaCoin.base */ 2337);
+/* harmony import */ var _PersonaCoin_base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PersonaCoin.base */ 9480);
 /* harmony import */ var _PersonaCoin_styles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PersonaCoin.styles */ 9613);
 
 
@@ -33526,6 +33876,454 @@ function __rewriteRelativeImportExtension(path, preserveJsx) {
 
 /***/ },
 
+/***/ 3759
+/*!***************************************************************!*\
+  !*** ./node_modules/@pnp/sp/node_modules/tslib/tslib.es6.mjs ***!
+  \***************************************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   __addDisposableResource: () => (/* binding */ __addDisposableResource),
+/* harmony export */   __assign: () => (/* binding */ __assign),
+/* harmony export */   __asyncDelegator: () => (/* binding */ __asyncDelegator),
+/* harmony export */   __asyncGenerator: () => (/* binding */ __asyncGenerator),
+/* harmony export */   __asyncValues: () => (/* binding */ __asyncValues),
+/* harmony export */   __await: () => (/* binding */ __await),
+/* harmony export */   __awaiter: () => (/* binding */ __awaiter),
+/* harmony export */   __classPrivateFieldGet: () => (/* binding */ __classPrivateFieldGet),
+/* harmony export */   __classPrivateFieldIn: () => (/* binding */ __classPrivateFieldIn),
+/* harmony export */   __classPrivateFieldSet: () => (/* binding */ __classPrivateFieldSet),
+/* harmony export */   __createBinding: () => (/* binding */ __createBinding),
+/* harmony export */   __decorate: () => (/* binding */ __decorate),
+/* harmony export */   __disposeResources: () => (/* binding */ __disposeResources),
+/* harmony export */   __esDecorate: () => (/* binding */ __esDecorate),
+/* harmony export */   __exportStar: () => (/* binding */ __exportStar),
+/* harmony export */   __extends: () => (/* binding */ __extends),
+/* harmony export */   __generator: () => (/* binding */ __generator),
+/* harmony export */   __importDefault: () => (/* binding */ __importDefault),
+/* harmony export */   __importStar: () => (/* binding */ __importStar),
+/* harmony export */   __makeTemplateObject: () => (/* binding */ __makeTemplateObject),
+/* harmony export */   __metadata: () => (/* binding */ __metadata),
+/* harmony export */   __param: () => (/* binding */ __param),
+/* harmony export */   __propKey: () => (/* binding */ __propKey),
+/* harmony export */   __read: () => (/* binding */ __read),
+/* harmony export */   __rest: () => (/* binding */ __rest),
+/* harmony export */   __rewriteRelativeImportExtension: () => (/* binding */ __rewriteRelativeImportExtension),
+/* harmony export */   __runInitializers: () => (/* binding */ __runInitializers),
+/* harmony export */   __setFunctionName: () => (/* binding */ __setFunctionName),
+/* harmony export */   __spread: () => (/* binding */ __spread),
+/* harmony export */   __spreadArray: () => (/* binding */ __spreadArray),
+/* harmony export */   __spreadArrays: () => (/* binding */ __spreadArrays),
+/* harmony export */   __values: () => (/* binding */ __values),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/******************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+/* global Reflect, Promise, SuppressedError, Symbol, Iterator */
+
+var extendStatics = function(d, b) {
+  extendStatics = Object.setPrototypeOf ||
+      ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+      function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+  return extendStatics(d, b);
+};
+
+function __extends(d, b) {
+  if (typeof b !== "function" && b !== null)
+      throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+  extendStatics(d, b);
+  function __() { this.constructor = d; }
+  d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+var __assign = function() {
+  __assign = Object.assign || function __assign(t) {
+      for (var s, i = 1, n = arguments.length; i < n; i++) {
+          s = arguments[i];
+          for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+      }
+      return t;
+  }
+  return __assign.apply(this, arguments);
+}
+
+function __rest(s, e) {
+  var t = {};
+  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+      t[p] = s[p];
+  if (s != null && typeof Object.getOwnPropertySymbols === "function")
+      for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+          if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+              t[p[i]] = s[p[i]];
+      }
+  return t;
+}
+
+function __decorate(decorators, target, key, desc) {
+  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+function __param(paramIndex, decorator) {
+  return function (target, key) { decorator(target, key, paramIndex); }
+}
+
+function __esDecorate(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+  function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
+  var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+  var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+  var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+  var _, done = false;
+  for (var i = decorators.length - 1; i >= 0; i--) {
+      var context = {};
+      for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+      for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+      context.addInitializer = function (f) { if (done) throw new TypeError("Cannot add initializers after decoration has completed"); extraInitializers.push(accept(f || null)); };
+      var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+      if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+      }
+      else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+      }
+  }
+  if (target) Object.defineProperty(target, contextIn.name, descriptor);
+  done = true;
+};
+
+function __runInitializers(thisArg, initializers, value) {
+  var useValue = arguments.length > 2;
+  for (var i = 0; i < initializers.length; i++) {
+      value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+  }
+  return useValue ? value : void 0;
+};
+
+function __propKey(x) {
+  return typeof x === "symbol" ? x : "".concat(x);
+};
+
+function __setFunctionName(f, name, prefix) {
+  if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
+  return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
+};
+
+function __metadata(metadataKey, metadataValue) {
+  if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+}
+
+function __awaiter(thisArg, _arguments, P, generator) {
+  function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+  return new (P || (P = Promise))(function (resolve, reject) {
+      function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+      function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+      function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+}
+
+function __generator(thisArg, body) {
+  var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+  return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+  function verb(n) { return function (v) { return step([n, v]); }; }
+  function step(op) {
+      if (f) throw new TypeError("Generator is already executing.");
+      while (g && (g = 0, op[0] && (_ = 0)), _) try {
+          if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+          if (y = 0, t) op = [op[0] & 2, t.value];
+          switch (op[0]) {
+              case 0: case 1: t = op; break;
+              case 4: _.label++; return { value: op[1], done: false };
+              case 5: _.label++; y = op[1]; op = [0]; continue;
+              case 7: op = _.ops.pop(); _.trys.pop(); continue;
+              default:
+                  if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                  if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                  if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                  if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                  if (t[2]) _.ops.pop();
+                  _.trys.pop(); continue;
+          }
+          op = body.call(thisArg, _);
+      } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+      if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+  }
+}
+
+var __createBinding = Object.create ? (function(o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  var desc = Object.getOwnPropertyDescriptor(m, k);
+  if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+  }
+  Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  o[k2] = m[k];
+});
+
+function __exportStar(m, o) {
+  for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p)) __createBinding(o, m, p);
+}
+
+function __values(o) {
+  var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+  if (m) return m.call(o);
+  if (o && typeof o.length === "number") return {
+      next: function () {
+          if (o && i >= o.length) o = void 0;
+          return { value: o && o[i++], done: !o };
+      }
+  };
+  throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+}
+
+function __read(o, n) {
+  var m = typeof Symbol === "function" && o[Symbol.iterator];
+  if (!m) return o;
+  var i = m.call(o), r, ar = [], e;
+  try {
+      while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+  }
+  catch (error) { e = { error: error }; }
+  finally {
+      try {
+          if (r && !r.done && (m = i["return"])) m.call(i);
+      }
+      finally { if (e) throw e.error; }
+  }
+  return ar;
+}
+
+/** @deprecated */
+function __spread() {
+  for (var ar = [], i = 0; i < arguments.length; i++)
+      ar = ar.concat(__read(arguments[i]));
+  return ar;
+}
+
+/** @deprecated */
+function __spreadArrays() {
+  for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+  for (var r = Array(s), k = 0, i = 0; i < il; i++)
+      for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+          r[k] = a[j];
+  return r;
+}
+
+function __spreadArray(to, from, pack) {
+  if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+      if (ar || !(i in from)) {
+          if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+          ar[i] = from[i];
+      }
+  }
+  return to.concat(ar || Array.prototype.slice.call(from));
+}
+
+function __await(v) {
+  return this instanceof __await ? (this.v = v, this) : new __await(v);
+}
+
+function __asyncGenerator(thisArg, _arguments, generator) {
+  if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+  var g = generator.apply(thisArg, _arguments || []), i, q = [];
+  return i = Object.create((typeof AsyncIterator === "function" ? AsyncIterator : Object).prototype), verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function () { return this; }, i;
+  function awaitReturn(f) { return function (v) { return Promise.resolve(v).then(f, reject); }; }
+  function verb(n, f) { if (g[n]) { i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; if (f) i[n] = f(i[n]); } }
+  function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+  function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+  function fulfill(value) { resume("next", value); }
+  function reject(value) { resume("throw", value); }
+  function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+}
+
+function __asyncDelegator(o) {
+  var i, p;
+  return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+  function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: false } : f ? f(v) : v; } : f; }
+}
+
+function __asyncValues(o) {
+  if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+  var m = o[Symbol.asyncIterator], i;
+  return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+  function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+  function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+}
+
+function __makeTemplateObject(cooked, raw) {
+  if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+  return cooked;
+};
+
+var __setModuleDefault = Object.create ? (function(o, v) {
+  Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+  o["default"] = v;
+};
+
+var ownKeys = function(o) {
+  ownKeys = Object.getOwnPropertyNames || function (o) {
+    var ar = [];
+    for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+    return ar;
+  };
+  return ownKeys(o);
+};
+
+function __importStar(mod) {
+  if (mod && mod.__esModule) return mod;
+  var result = {};
+  if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+  __setModuleDefault(result, mod);
+  return result;
+}
+
+function __importDefault(mod) {
+  return (mod && mod.__esModule) ? mod : { default: mod };
+}
+
+function __classPrivateFieldGet(receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+}
+
+function __classPrivateFieldSet(receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+}
+
+function __classPrivateFieldIn(state, receiver) {
+  if (receiver === null || (typeof receiver !== "object" && typeof receiver !== "function")) throw new TypeError("Cannot use 'in' operator on non-object");
+  return typeof state === "function" ? receiver === state : state.has(receiver);
+}
+
+function __addDisposableResource(env, value, async) {
+  if (value !== null && value !== void 0) {
+    if (typeof value !== "object" && typeof value !== "function") throw new TypeError("Object expected.");
+    var dispose, inner;
+    if (async) {
+      if (!Symbol.asyncDispose) throw new TypeError("Symbol.asyncDispose is not defined.");
+      dispose = value[Symbol.asyncDispose];
+    }
+    if (dispose === void 0) {
+      if (!Symbol.dispose) throw new TypeError("Symbol.dispose is not defined.");
+      dispose = value[Symbol.dispose];
+      if (async) inner = dispose;
+    }
+    if (typeof dispose !== "function") throw new TypeError("Object not disposable.");
+    if (inner) dispose = function() { try { inner.call(this); } catch (e) { return Promise.reject(e); } };
+    env.stack.push({ value: value, dispose: dispose, async: async });
+  }
+  else if (async) {
+    env.stack.push({ async: true });
+  }
+  return value;
+}
+
+var _SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+  var e = new Error(message);
+  return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
+
+function __disposeResources(env) {
+  function fail(e) {
+    env.error = env.hasError ? new _SuppressedError(e, env.error, "An error was suppressed during disposal.") : e;
+    env.hasError = true;
+  }
+  var r, s = 0;
+  function next() {
+    while (r = env.stack.pop()) {
+      try {
+        if (!r.async && s === 1) return s = 0, env.stack.push(r), Promise.resolve().then(next);
+        if (r.dispose) {
+          var result = r.dispose.call(r.value);
+          if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) { fail(e); return next(); });
+        }
+        else s |= 1;
+      }
+      catch (e) {
+        fail(e);
+      }
+    }
+    if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();
+    if (env.hasError) throw env.error;
+  }
+  return next();
+}
+
+function __rewriteRelativeImportExtension(path, preserveJsx) {
+  if (typeof path === "string" && /^\.\.?\//.test(path)) {
+      return path.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function (m, tsx, d, ext, cm) {
+          return tsx ? preserveJsx ? ".jsx" : ".js" : d && (!ext || !cm) ? m : (d + ext + "." + cm.toLowerCase() + "js");
+      });
+  }
+  return path;
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  __extends,
+  __assign,
+  __rest,
+  __decorate,
+  __param,
+  __esDecorate,
+  __runInitializers,
+  __propKey,
+  __setFunctionName,
+  __metadata,
+  __awaiter,
+  __generator,
+  __createBinding,
+  __exportStar,
+  __values,
+  __read,
+  __spread,
+  __spreadArrays,
+  __spreadArray,
+  __await,
+  __asyncGenerator,
+  __asyncDelegator,
+  __asyncValues,
+  __makeTemplateObject,
+  __importStar,
+  __importDefault,
+  __classPrivateFieldGet,
+  __classPrivateFieldSet,
+  __classPrivateFieldIn,
+  __addDisposableResource,
+  __disposeResources,
+  __rewriteRelativeImportExtension,
+});
+
+
+/***/ },
+
 /***/ 2083
 /*!*********************************************************!*\
   !*** ./node_modules/@pnp/core/behaviors/assign-from.js ***!
@@ -33651,7 +34449,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   request: () => (/* reexport safe */ _moments_js__WEBPACK_IMPORTED_MODULE_2__.request),
 /* harmony export */   stringIsNullOrEmpty: () => (/* reexport safe */ _util_js__WEBPACK_IMPORTED_MODULE_1__.stringIsNullOrEmpty)
 /* harmony export */ });
-/* harmony import */ var _storage_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./storage.js */ 9480);
+/* harmony import */ var _storage_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./storage.js */ 4718);
 /* harmony import */ var _util_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util.js */ 9607);
 /* harmony import */ var _moments_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./moments.js */ 370);
 /* harmony import */ var _timeline_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./timeline.js */ 9596);
@@ -33777,7 +34575,7 @@ function lifecycle() {
 
 /***/ },
 
-/***/ 9480
+/***/ 4718
 /*!*******************************************!*\
   !*** ./node_modules/@pnp/core/storage.js ***!
   \*******************************************/
@@ -37182,6 +37980,1881 @@ function invokable(invokeableAction) {
 }
 
 
+/***/ },
+
+/***/ 2815
+/*!******************************************!*\
+  !*** ./node_modules/@pnp/sp/batching.js ***!
+  \******************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BatchNever: () => (/* binding */ BatchNever),
+/* harmony export */   createBatch: () => (/* binding */ createBatch)
+/* harmony export */ });
+/* harmony import */ var _pnp_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pnp/core */ 9671);
+/* harmony import */ var _pnp_queryable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @pnp/queryable */ 2464);
+/* harmony import */ var _spqueryable_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./spqueryable.js */ 6290);
+/* harmony import */ var _fi_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./fi.js */ 7066);
+/* harmony import */ var _webs_types_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./webs/types.js */ 4970);
+
+
+
+
+
+_fi_js__WEBPACK_IMPORTED_MODULE_3__.SPFI.prototype.batched = function (props) {
+    const batched = (0,_fi_js__WEBPACK_IMPORTED_MODULE_3__.spfi)(this);
+    const [behavior, execute] = createBatch(batched._root, props);
+    batched.using(behavior);
+    return [batched, execute];
+};
+_webs_types_js__WEBPACK_IMPORTED_MODULE_4__._Web.prototype.batched = function (props) {
+    const batched = (0,_webs_types_js__WEBPACK_IMPORTED_MODULE_4__.Web)(this);
+    const [behavior, execute] = createBatch(batched, props);
+    batched.using(behavior);
+    return [batched, execute];
+};
+/**
+ * Tracks on a batched instance that registration is complete (the child request has gotten to the send moment and the request is included in the batch)
+ */
+const RegistrationCompleteSym = Symbol.for("batch_registration");
+/**
+ * Tracks on a batched instance that the child request timeline lifecycle is complete (called in child.dispose)
+ */
+const RequestCompleteSym = Symbol.for("batch_request");
+/**
+ * Special batch parsing behavior used to convert the batch response text into a set of Response objects for each request
+ * @returns A parser behavior
+ */
+function BatchParse() {
+    return (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.parseBinderWithErrorCheck)(async (response) => {
+        const text = await response.text();
+        return parseResponse(text);
+    });
+}
+/**
+ * Internal class used to execute the batch request through the timeline lifecycle
+ */
+class BatchQueryable extends _spqueryable_js__WEBPACK_IMPORTED_MODULE_2__._SPQueryable {
+    constructor(base, requestBaseUrl = base.toUrl().replace(/_api[\\|/].*$/i, "")) {
+        super(requestBaseUrl, "_api/$batch");
+        this.requestBaseUrl = requestBaseUrl;
+        // this will copy over the current observables from the base associated with this batch
+        // this will replace any other parsing present
+        this.using((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.CopyFrom)(base, "replace"), BatchParse());
+        this.on.dispose(() => {
+            // there is a code path where you may invoke a batch, say on items.add, whose return
+            // is an object like { data: any, item: IItem }. The expectation from v1 on is `item` in that object
+            // is immediately usable to make additional queries. Without this step when that IItem instance is
+            // created using "this.getById" within IITems.add all of the current observers of "this" are
+            // linked to the IItem instance created (expected), BUT they will be the set of observers setup
+            // to handle the batch, meaning invoking `item` will result in a half batched call that
+            // doesn't really work. To deliver the expected functionality we "reset" the
+            // observers using the original instance, mimicing the behavior had
+            // the IItem been created from that base without a batch involved. We use CopyFrom to ensure
+            // that we maintain the references to the InternalResolve and InternalReject events through
+            // the end of this timeline lifecycle. This works because CopyFrom by design uses Object.keys
+            // which ignores symbol properties.
+            base.using((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.CopyFrom)(this, "replace", (k) => /(auth|send|pre|init)/i.test(k)));
+        });
+    }
+}
+/**
+ * Creates a batched version of the supplied base, meaning that all chained fluent operations from the new base are part of the batch
+ *
+ * @param base The base from which to initialize the batch
+ * @param props Any properties used to initialize the batch functionality
+ * @returns A tuple of [behavior used to assign objects to the batch, the execute function used to resolve the batch requests]
+ */
+function createBatch(base, props) {
+    const registrationPromises = [];
+    const completePromises = [];
+    const requests = [];
+    const batchQuery = new BatchQueryable(base);
+    // this id will be reused across multiple batches if the number of requests added to the batch
+    // exceeds the configured maxRequests value
+    const batchId = (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.getGUID)();
+    // this query is used to copy back the behaviors after the batch executes
+    // it should not manipulated or have behaviors added.
+    const refQuery = new BatchQueryable(base);
+    const { headersCopyPattern, maxRequests } = {
+        headersCopyPattern: /Accept|Content-Type|IF-Match/i,
+        maxRequests: 20,
+        ...props,
+    };
+    const execute = async () => {
+        await Promise.all(registrationPromises);
+        if (requests.length < 1) {
+            // even if we have no requests we need to await the complete promises to ensure
+            // that execute only resolves AFTER every child request disposes #2457
+            // this likely means caching is being used, we returned values for all child requests from the cache
+            return Promise.all(completePromises).then(() => void (0));
+        }
+        // create a working copy of our requests
+        const requestsWorkingCopy = requests.slice();
+        while (requestsWorkingCopy.length > 0) {
+            const requestsChunk = requestsWorkingCopy.splice(0, maxRequests);
+            const batchBody = [];
+            let currentChangeSetId = "";
+            for (let i = 0; i < requestsChunk.length; i++) {
+                const [, url, init] = requestsChunk[i];
+                if (init.method === "GET") {
+                    if (currentChangeSetId.length > 0) {
+                        // end an existing change set
+                        batchBody.push(`--changeset_${currentChangeSetId}--\n\n`);
+                        currentChangeSetId = "";
+                    }
+                    batchBody.push(`--batch_${batchId}\n`);
+                }
+                else {
+                    if (currentChangeSetId.length < 1) {
+                        // start new change set
+                        currentChangeSetId = (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.getGUID)();
+                        batchBody.push(`--batch_${batchId}\n`);
+                        batchBody.push(`Content-Type: multipart/mixed; boundary="changeset_${currentChangeSetId}"\n\n`);
+                    }
+                    batchBody.push(`--changeset_${currentChangeSetId}\n`);
+                }
+                // common batch part prefix
+                batchBody.push("Content-Type: application/http\n");
+                batchBody.push("Content-Transfer-Encoding: binary\n\n");
+                // these are the per-request headers
+                const headers = new Headers(init.headers);
+                // this is the url of the individual request within the batch
+                const reqUrl = (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.isUrlAbsolute)(url) ? url : (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.combine)(batchQuery.requestBaseUrl, url);
+                if (init.method !== "GET") {
+                    let method = init.method;
+                    if (headers.has("X-HTTP-Method")) {
+                        method = headers.get("X-HTTP-Method");
+                        headers.delete("X-HTTP-Method");
+                    }
+                    batchBody.push(`${method} ${reqUrl} HTTP/1.1\n`);
+                }
+                else {
+                    batchBody.push(`${init.method} ${reqUrl} HTTP/1.1\n`);
+                }
+                // lastly we apply any default headers we need that may not exist
+                if (!headers.has("Accept")) {
+                    headers.append("Accept", "application/json");
+                }
+                if (!headers.has("Content-Type")) {
+                    headers.append("Content-Type", "application/json;charset=utf-8");
+                }
+                // write headers into batch body
+                headers.forEach((value, name) => {
+                    if (headersCopyPattern.test(name)) {
+                        batchBody.push(`${name}: ${value}\n`);
+                    }
+                });
+                batchBody.push("\n");
+                if (init.body) {
+                    batchBody.push(`${init.body}\n\n`);
+                }
+            }
+            if (currentChangeSetId.length > 0) {
+                // Close the changeset
+                batchBody.push(`--changeset_${currentChangeSetId}--\n\n`);
+                currentChangeSetId = "";
+            }
+            batchBody.push(`--batch_${batchId}--\n`);
+            const responses = await (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.spPost)(batchQuery, {
+                body: batchBody.join(""),
+                headers: {
+                    "Content-Type": `multipart/mixed; boundary=batch_${batchId}`,
+                },
+            });
+            if (responses.length !== requestsChunk.length) {
+                throw Error("Could not properly parse responses to match requests in batch.");
+            }
+            for (let index = 0; index < responses.length; index++) {
+                // resolve the child request's send promise with the parsed response
+                requestsChunk[index][3](responses[index]);
+            }
+        } // end of while (requestsWorkingCopy.length > 0)
+        await Promise.all(completePromises).then(() => void (0));
+    };
+    const register = (instance) => {
+        instance.on.init(function () {
+            if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.isFunc)(this[RegistrationCompleteSym])) {
+                throw Error("This instance is already part of a batch. Please review the docs at https://pnp.github.io/pnpjs/concepts/batching#reuse.");
+            }
+            // we need to ensure we wait to start execute until all our batch children hit the .send method to be fully registered
+            registrationPromises.push(new Promise((resolve) => {
+                this[RegistrationCompleteSym] = resolve;
+            }));
+            return this;
+        });
+        instance.on.pre(async function (url, init, result) {
+            // Do not add to timeline if using BatchNever behavior
+            if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.hOP)(init.headers, "X-PnP-BatchNever")) {
+                // clean up the init operations from the timeline
+                // not strictly necessary as none of the logic that uses this should be in the request, but good to keep things tidy
+                if (typeof (this[RequestCompleteSym]) === "function") {
+                    this[RequestCompleteSym]();
+                    delete this[RequestCompleteSym];
+                }
+                this.using((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.CopyFrom)(refQuery, "replace", (k) => /(init|pre)/i.test(k)));
+                return [url, init, result];
+            }
+            // the entire request will be auth'd - we don't need to run this for each batch request
+            this.on.auth.clear();
+            // we replace the send function with our batching logic
+            this.on.send.replace(async function (url, init) {
+                // this is the promise that Queryable will see returned from .emit.send
+                const promise = new Promise((resolve) => {
+                    // add the request information into the batch
+                    requests.push([this, url.toString(), init, resolve]);
+                });
+                this.log(`[batch:${batchId}] (${(new Date()).getTime()}) Adding request ${init.method} ${url.toString()} to batch.`, 0);
+                // we need to ensure we wait to resolve execute until all our batch children have fully completed their request timelines
+                completePromises.push(new Promise((resolve) => {
+                    this[RequestCompleteSym] = resolve;
+                }));
+                // indicate that registration of this request is complete
+                this[RegistrationCompleteSym]();
+                return promise;
+            });
+            this.on.dispose(function () {
+                if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.isFunc)(this[RegistrationCompleteSym])) {
+                    // if this request is in a batch and caching is in play we need to resolve the registration promises to unblock processing of the batch
+                    // because the request will never reach the "send" moment as the result is returned from "pre"
+                    this[RegistrationCompleteSym]();
+                    // remove the symbol props we added for good hygene
+                    delete this[RegistrationCompleteSym];
+                }
+                if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.isFunc)(this[RequestCompleteSym])) {
+                    // let things know we are done with this request
+                    this[RequestCompleteSym]();
+                    delete this[RequestCompleteSym];
+                    // there is a code path where you may invoke a batch, say on items.add, whose return
+                    // is an object like { data: any, item: IItem }. The expectation from v1 on is `item` in that object
+                    // is immediately usable to make additional queries. Without this step when that IItem instance is
+                    // created using "this.getById" within IITems.add all of the current observers of "this" are
+                    // linked to the IItem instance created (expected), BUT they will be the set of observers setup
+                    // to handle the batch, meaning invoking `item` will result in a half batched call that
+                    // doesn't really work. To deliver the expected functionality we "reset" the
+                    // observers using the original instance, mimicing the behavior had
+                    // the IItem been created from that base without a batch involved. We use CopyFrom to ensure
+                    // that we maintain the references to the InternalResolve and InternalReject events through
+                    // the end of this timeline lifecycle. This works because CopyFrom by design uses Object.keys
+                    // which ignores symbol properties.
+                    this.using((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.CopyFrom)(refQuery, "replace", (k) => /(auth|pre|send|init|dispose)/i.test(k)));
+                }
+            });
+            return [url, init, result];
+        });
+        return instance;
+    };
+    return [register, execute];
+}
+/**
+ * Behavior that blocks batching for the request regardless of "method"
+ *
+ * This is used for requests to bypass batching methods. Example - Request Digest where we need to get a request-digest inside of a batch.
+ * @returns TimelinePipe
+ */
+function BatchNever() {
+    return (instance) => {
+        instance.on.pre.prepend(async function (url, init, result) {
+            init.headers = { ...init.headers, "X-PnP-BatchNever": "1" };
+            return [url, init, result];
+        });
+        return instance;
+    };
+}
+/**
+ * Parses the text body returned by the server from a batch request
+ *
+ * @param body String body from the server response
+ * @returns Parsed response objects
+ */
+function parseResponse(body) {
+    const responses = [];
+    const header = "--batchresponse_";
+    // Ex. "HTTP/1.1 500 Internal Server Error"
+    const statusRegExp = new RegExp("^HTTP/[0-9.]+ +([0-9]+) +(.*)", "i");
+    const lines = body.split("\n");
+    let state = "batch";
+    let status;
+    let statusText;
+    let headers = {};
+    const bodyReader = [];
+    for (let i = 0; i < lines.length; ++i) {
+        let line = lines[i];
+        switch (state) {
+            case "batch":
+                if (line.substring(0, header.length) === header) {
+                    state = "batchHeaders";
+                }
+                else {
+                    if (line.trim() !== "") {
+                        throw Error(`Invalid response, line ${i}`);
+                    }
+                }
+                break;
+            case "batchHeaders":
+                if (line.trim() === "") {
+                    state = "status";
+                }
+                break;
+            case "status": {
+                const parts = statusRegExp.exec(line);
+                if (parts.length !== 3) {
+                    throw Error(`Invalid status, line ${i}`);
+                }
+                status = parseInt(parts[1], 10);
+                statusText = parts[2];
+                state = "statusHeaders";
+                break;
+            }
+            case "statusHeaders":
+                if (line.trim() === "") {
+                    state = "body";
+                }
+                else {
+                    const headerParts = line.split(":");
+                    if ((headerParts === null || headerParts === void 0 ? void 0 : headerParts.length) === 2) {
+                        headers[headerParts[0].trim()] = headerParts[1].trim();
+                    }
+                }
+                break;
+            case "body":
+                // reset the body reader
+                bodyReader.length = 0;
+                // this allows us to capture batch bodies that are returned as multi-line (renderListDataAsStream, #2454)
+                while (line.substring(0, header.length) !== header) {
+                    bodyReader.push(line);
+                    line = lines[++i];
+                }
+                // because we have read the closing --batchresponse_ line, we need to move the line pointer back one
+                // so that the logic works as expected either to get the next result or end processing
+                i--;
+                responses.push(new Response(status === 204 ? null : bodyReader.join(""), { status, statusText, headers }));
+                state = "batch";
+                headers = {};
+                break;
+        }
+    }
+    if (state !== "status") {
+        throw Error("Unexpected end of input");
+    }
+    return responses;
+}
+
+
+/***/ },
+
+/***/ 9801
+/*!****************************************************!*\
+  !*** ./node_modules/@pnp/sp/behaviors/defaults.js ***!
+  \****************************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DefaultHeaders: () => (/* binding */ DefaultHeaders),
+/* harmony export */   DefaultInit: () => (/* binding */ DefaultInit)
+/* harmony export */ });
+/* harmony import */ var _pnp_queryable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pnp/queryable */ 2464);
+/* harmony import */ var _telemetry_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./telemetry.js */ 6936);
+
+
+function DefaultInit() {
+    return (instance) => {
+        instance.on.pre(async (url, init, result) => {
+            init.cache = "no-cache";
+            init.credentials = "same-origin";
+            return [url, init, result];
+        });
+        instance.using((0,_telemetry_js__WEBPACK_IMPORTED_MODULE_1__.Telemetry)(), (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_0__.RejectOnError)(), (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_0__.ResolveOnData)());
+        return instance;
+    };
+}
+function DefaultHeaders() {
+    return (instance) => {
+        instance
+            .using((0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_0__.InjectHeaders)({
+            "Accept": "application/json",
+            "Content-Type": "application/json;charset=utf-8",
+        }));
+        return instance;
+    };
+}
+
+
+/***/ },
+
+/***/ 5359
+/*!**********************************************************!*\
+  !*** ./node_modules/@pnp/sp/behaviors/request-digest.js ***!
+  \**********************************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   RequestDigest: () => (/* binding */ RequestDigest)
+/* harmony export */ });
+/* harmony import */ var _pnp_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pnp/core */ 9671);
+/* harmony import */ var _pnp_queryable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @pnp/queryable */ 2464);
+/* harmony import */ var _utils_extract_web_url_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/extract-web-url.js */ 8939);
+/* harmony import */ var _spqueryable_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../spqueryable.js */ 6290);
+/* harmony import */ var _batching_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../batching.js */ 2815);
+
+
+
+
+
+function clearExpired(digest) {
+    const now = new Date();
+    return !(0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.objectDefinedNotNull)(digest) || (now > digest.expiration) ? null : digest;
+}
+// allows for the caching of digests across all calls which each have their own IDigestInfo wrapper.
+const digests = new Map();
+function RequestDigest(hook) {
+    return (instance) => {
+        instance.on.pre(async function (url, init, result) {
+            // add the request to the auth moment of the timeline
+            this.on.auth(async (url, init) => {
+                // eslint-disable-next-line max-len
+                if (/get/i.test(init.method) || (init.headers && ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.hOP)(init.headers, "X-RequestDigest") || (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.hOP)(init.headers, "Authorization") || (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.hOP)(init.headers, "X-PnPjs-NoDigest")))) {
+                    return [url, init];
+                }
+                const urlAsString = url.toString();
+                const webUrl = (0,_utils_extract_web_url_js__WEBPACK_IMPORTED_MODULE_2__.extractWebUrl)(urlAsString);
+                // do we have one in the cache that is still valid
+                // from #2186 we need to always ensure the digest we get isn't expired
+                let digest = clearExpired(digests.get(webUrl));
+                if (!(0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.objectDefinedNotNull)(digest) && (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.isFunc)(hook)) {
+                    digest = clearExpired(hook(urlAsString, init));
+                }
+                if (!(0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.objectDefinedNotNull)(digest)) {
+                    digest = await (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_3__.spPost)((0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_3__.SPQueryable)([this, (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.combine)(webUrl, "_api/contextinfo")]).using((0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.JSONParse)(), (0,_batching_js__WEBPACK_IMPORTED_MODULE_4__.BatchNever)()), {
+                        headers: {
+                            "Accept": "application/json",
+                            "X-PnPjs-NoDigest": "1",
+                        },
+                    }).then(p => ({
+                        expiration: (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.dateAdd)(new Date(), "second", p.FormDigestTimeoutSeconds),
+                        value: p.FormDigestValue,
+                    }));
+                }
+                if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.objectDefinedNotNull)(digest)) {
+                    // if we got a digest, set it in the headers
+                    init.headers = {
+                        "X-RequestDigest": digest.value,
+                        ...init.headers,
+                    };
+                    // and cache it for future requests
+                    digests.set(webUrl, digest);
+                }
+                return [url, init];
+            });
+            return [url, init, result];
+        });
+        return instance;
+    };
+}
+
+
+/***/ },
+
+/***/ 6438
+/*!*****************************************************!*\
+  !*** ./node_modules/@pnp/sp/behaviors/spbrowser.js ***!
+  \*****************************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SPBrowser: () => (/* binding */ SPBrowser)
+/* harmony export */ });
+/* harmony import */ var _pnp_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pnp/core */ 9671);
+/* harmony import */ var _pnp_queryable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @pnp/queryable */ 2464);
+/* harmony import */ var _defaults_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./defaults.js */ 9801);
+/* harmony import */ var _request_digest_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./request-digest.js */ 5359);
+
+
+
+
+function SPBrowser(props) {
+    if ((props === null || props === void 0 ? void 0 : props.baseUrl) && !(0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.isUrlAbsolute)(props.baseUrl)) {
+        throw Error("SPBrowser props.baseUrl must be absolute when supplied.");
+    }
+    return (instance) => {
+        instance.using((0,_defaults_js__WEBPACK_IMPORTED_MODULE_2__.DefaultHeaders)(), (0,_defaults_js__WEBPACK_IMPORTED_MODULE_2__.DefaultInit)(), (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.BrowserFetchWithRetry)(), (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.DefaultParse)(), (0,_request_digest_js__WEBPACK_IMPORTED_MODULE_3__.RequestDigest)());
+        if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.isUrlAbsolute)(props === null || props === void 0 ? void 0 : props.baseUrl)) {
+            // we want to fix up the url first
+            instance.on.pre.prepend(async (url, init, result) => {
+                if (!(0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.isUrlAbsolute)(url)) {
+                    url = (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.combine)(props.baseUrl, url);
+                }
+                return [url, init, result];
+            });
+        }
+        return instance;
+    };
+}
+
+
+/***/ },
+
+/***/ 9754
+/*!************************************************!*\
+  !*** ./node_modules/@pnp/sp/behaviors/spfx.js ***!
+  \************************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SPFx: () => (/* binding */ SPFx),
+/* harmony export */   SPFxToken: () => (/* binding */ SPFxToken)
+/* harmony export */ });
+/* harmony import */ var _pnp_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pnp/core */ 9671);
+/* harmony import */ var _pnp_queryable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @pnp/queryable */ 2464);
+/* harmony import */ var _defaults_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./defaults.js */ 9801);
+/* harmony import */ var _request_digest_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./request-digest.js */ 5359);
+
+
+
+
+class SPFxTokenNullOrUndefinedError extends Error {
+    constructor(behaviorName) {
+        super(`SPFx Context supplied to ${behaviorName} Behavior is null or undefined.`);
+    }
+    static check(behaviorName, context) {
+        if (typeof context === "undefined" || context === null) {
+            throw new SPFxTokenNullOrUndefinedError(behaviorName);
+        }
+    }
+}
+function SPFxToken(context) {
+    SPFxTokenNullOrUndefinedError.check("SPFxToken", context);
+    return (instance) => {
+        instance.on.auth.replace(async function (url, init) {
+            const provider = await context.aadTokenProviderFactory.getTokenProvider();
+            const token = await provider.getToken(`${url.protocol}//${url.hostname}`);
+            // eslint-disable-next-line @typescript-eslint/dot-notation
+            init.headers["Authorization"] = `Bearer ${token}`;
+            return [url, init];
+        });
+        return instance;
+    };
+}
+function SPFx(context) {
+    SPFxTokenNullOrUndefinedError.check("SPFx", context);
+    return (instance) => {
+        instance.using((0,_defaults_js__WEBPACK_IMPORTED_MODULE_2__.DefaultHeaders)(), (0,_defaults_js__WEBPACK_IMPORTED_MODULE_2__.DefaultInit)(), (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.BrowserFetchWithRetry)(), (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.DefaultParse)(), 
+        // remove SPFx Token in default due to issues #2570, #2571
+        // SPFxToken(context),
+        (0,_request_digest_js__WEBPACK_IMPORTED_MODULE_3__.RequestDigest)((url) => {
+            var _a, _b, _c;
+            const sameWeb = (new RegExp(`^${(0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.combine)(context.pageContext.web.absoluteUrl, "/_api")}`, "i")).test(url);
+            if (sameWeb && ((_b = (_a = context === null || context === void 0 ? void 0 : context.pageContext) === null || _a === void 0 ? void 0 : _a.legacyPageContext) === null || _b === void 0 ? void 0 : _b.formDigestValue)) {
+                const creationDateFromDigest = new Date(context.pageContext.legacyPageContext.formDigestValue.split(",")[1]);
+                // account for page lifetime in timeout #2304 & others
+                // account for tab sleep #2550
+                return {
+                    value: context.pageContext.legacyPageContext.formDigestValue,
+                    expiration: (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.dateAdd)(creationDateFromDigest, "second", ((_c = context.pageContext.legacyPageContext) === null || _c === void 0 ? void 0 : _c.formDigestTimeoutSeconds) - 15 || 1585),
+                };
+            }
+        }));
+        // we want to fix up the url first
+        instance.on.pre.prepend(async (url, init, result) => {
+            if (!(0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.isUrlAbsolute)(url)) {
+                url = (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.combine)(context.pageContext.web.absoluteUrl, url);
+            }
+            return [url, init, result];
+        });
+        return instance;
+    };
+}
+
+
+/***/ },
+
+/***/ 6936
+/*!*****************************************************!*\
+  !*** ./node_modules/@pnp/sp/behaviors/telemetry.js ***!
+  \*****************************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Telemetry: () => (/* binding */ Telemetry)
+/* harmony export */ });
+/* harmony import */ var _pnp_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pnp/core */ 9671);
+
+function Telemetry() {
+    return (instance) => {
+        instance.on.pre(async function (url, init, result) {
+            let clientTag = "PnPCoreJS:4.20.0:";
+            // make our best guess based on url to the method called
+            const { pathname } = new URL(url);
+            // remove anything before the _api as that is potentially PII and we don't care, just want to get the called path to the REST API
+            // and we want to modify any (*) calls at the end such as items(3) and items(344) so we just track "items()"
+            clientTag = pathname.split("/")
+                .filter((v) => !(0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.stringIsNullOrEmpty)(v) && ["_api", "v2.1", "v2.0"].indexOf(v) < 0)
+                .map((value, index, arr) => index === arr.length - 1 ? value.replace(/\(.*?$/i, "()") : value[0])
+                .join(".");
+            if (clientTag.length > 32) {
+                clientTag = clientTag.substring(0, 32);
+            }
+            this.log(`Request Tag: ${clientTag}`, 0);
+            init.headers = { ...init.headers, ["X-ClientService-ClientTag"]: clientTag };
+            return [url, init, result];
+        });
+        return instance;
+    };
+}
+
+
+/***/ },
+
+/***/ 3445
+/*!********************************************!*\
+  !*** ./node_modules/@pnp/sp/decorators.js ***!
+  \********************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   defaultPath: () => (/* binding */ defaultPath)
+/* harmony export */ });
+/**
+ * Decorator used to specify the default path for SPQueryable objects
+ *
+ * @param path
+ */
+function defaultPath(path) {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    return function (target) {
+        return class extends target {
+            constructor(...args) {
+                super(args[0], args.length > 1 && args[1] !== undefined ? args[1] : path);
+            }
+        };
+    };
+}
+
+
+/***/ },
+
+/***/ 7066
+/*!************************************!*\
+  !*** ./node_modules/@pnp/sp/fi.js ***!
+  \************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SPFI: () => (/* binding */ SPFI),
+/* harmony export */   spfi: () => (/* binding */ spfi)
+/* harmony export */ });
+/* harmony import */ var _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./spqueryable.js */ 6290);
+
+class SPFI {
+    /**
+     * Creates a new instance of the SPFI class
+     *
+     * @param root Establishes a root url/configuration
+     */
+    constructor(root = "") {
+        this._root = (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.SPQueryable)(root);
+    }
+    /**
+     * Applies one or more behaviors which will be inherited by all instances chained from this root
+     *
+     */
+    using(...behaviors) {
+        this._root.using(...behaviors);
+        return this;
+    }
+    /**
+     * Used by extending classes to create new objects directly from the root
+     *
+     * @param factory The factory for the type of object to create
+     * @returns A configured instance of that object
+     */
+    create(factory, path) {
+        return factory(this._root, path);
+    }
+}
+function spfi(root = "") {
+    if (typeof root === "object" && !Reflect.has(root, "length")) {
+        root = root._root;
+    }
+    return new SPFI(root);
+}
+
+
+/***/ },
+
+/***/ 2011
+/*!***************************************!*\
+  !*** ./node_modules/@pnp/sp/index.js ***!
+  \***************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ComparisonResult: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.ComparisonResult),
+/* harmony export */   DefaultHeaders: () => (/* reexport safe */ _behaviors_defaults_js__WEBPACK_IMPORTED_MODULE_10__.DefaultHeaders),
+/* harmony export */   DefaultInit: () => (/* reexport safe */ _behaviors_defaults_js__WEBPACK_IMPORTED_MODULE_10__.DefaultInit),
+/* harmony export */   InitialFieldQuery: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.InitialFieldQuery),
+/* harmony export */   PageType: () => (/* reexport safe */ _types_js__WEBPACK_IMPORTED_MODULE_3__.PageType),
+/* harmony export */   PrincipalSource: () => (/* reexport safe */ _types_js__WEBPACK_IMPORTED_MODULE_3__.PrincipalSource),
+/* harmony export */   PrincipalType: () => (/* reexport safe */ _types_js__WEBPACK_IMPORTED_MODULE_3__.PrincipalType),
+/* harmony export */   RequestDigest: () => (/* reexport safe */ _behaviors_request_digest_js__WEBPACK_IMPORTED_MODULE_12__.RequestDigest),
+/* harmony export */   SPBrowser: () => (/* reexport safe */ _behaviors_spbrowser_js__WEBPACK_IMPORTED_MODULE_13__.SPBrowser),
+/* harmony export */   SPCollection: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.SPCollection),
+/* harmony export */   SPFI: () => (/* reexport safe */ _fi_js__WEBPACK_IMPORTED_MODULE_2__.SPFI),
+/* harmony export */   SPFx: () => (/* reexport safe */ _behaviors_spfx_js__WEBPACK_IMPORTED_MODULE_14__.SPFx),
+/* harmony export */   SPFxToken: () => (/* reexport safe */ _behaviors_spfx_js__WEBPACK_IMPORTED_MODULE_14__.SPFxToken),
+/* harmony export */   SPInstance: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.SPInstance),
+/* harmony export */   SPQueryable: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.SPQueryable),
+/* harmony export */   Telemetry: () => (/* reexport safe */ _behaviors_telemetry_js__WEBPACK_IMPORTED_MODULE_11__.Telemetry),
+/* harmony export */   _SPCollection: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__._SPCollection),
+/* harmony export */   _SPInstance: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__._SPInstance),
+/* harmony export */   _SPQueryable: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__._SPQueryable),
+/* harmony export */   containsInvalidFileFolderChars: () => (/* reexport safe */ _utils_file_names_js__WEBPACK_IMPORTED_MODULE_6__.containsInvalidFileFolderChars),
+/* harmony export */   createChangeToken: () => (/* reexport safe */ _utils_create_change_token_js__WEBPACK_IMPORTED_MODULE_4__.createChangeToken),
+/* harmony export */   defaultPath: () => (/* reexport safe */ _decorators_js__WEBPACK_IMPORTED_MODULE_1__.defaultPath),
+/* harmony export */   deleteable: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.deleteable),
+/* harmony export */   deleteableWithETag: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.deleteableWithETag),
+/* harmony export */   emptyGuid: () => (/* reexport safe */ _types_js__WEBPACK_IMPORTED_MODULE_3__.emptyGuid),
+/* harmony export */   encodePath: () => (/* reexport safe */ _utils_encode_path_str_js__WEBPACK_IMPORTED_MODULE_9__.encodePath),
+/* harmony export */   encodePathNoURIEncode: () => (/* reexport safe */ _utils_encode_path_str_js__WEBPACK_IMPORTED_MODULE_9__.encodePathNoURIEncode),
+/* harmony export */   extractWebUrl: () => (/* reexport safe */ _utils_extract_web_url_js__WEBPACK_IMPORTED_MODULE_5__.extractWebUrl),
+/* harmony export */   odataUrlFrom: () => (/* reexport safe */ _utils_odata_url_from_js__WEBPACK_IMPORTED_MODULE_7__.odataUrlFrom),
+/* harmony export */   spDelete: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.spDelete),
+/* harmony export */   spGet: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.spGet),
+/* harmony export */   spInvokableFactory: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.spInvokableFactory),
+/* harmony export */   spPatch: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.spPatch),
+/* harmony export */   spPost: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.spPost),
+/* harmony export */   spPostDelete: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.spPostDelete),
+/* harmony export */   spPostDeleteETag: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.spPostDeleteETag),
+/* harmony export */   spPostMerge: () => (/* reexport safe */ _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__.spPostMerge),
+/* harmony export */   spfi: () => (/* reexport safe */ _fi_js__WEBPACK_IMPORTED_MODULE_2__.spfi),
+/* harmony export */   stripInvalidFileFolderChars: () => (/* reexport safe */ _utils_file_names_js__WEBPACK_IMPORTED_MODULE_6__.stripInvalidFileFolderChars),
+/* harmony export */   toResourcePath: () => (/* reexport safe */ _utils_to_resource_path_js__WEBPACK_IMPORTED_MODULE_8__.toResourcePath)
+/* harmony export */ });
+/* harmony import */ var _spqueryable_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./spqueryable.js */ 6290);
+/* harmony import */ var _decorators_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./decorators.js */ 3445);
+/* harmony import */ var _fi_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./fi.js */ 7066);
+/* harmony import */ var _types_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./types.js */ 8986);
+/* harmony import */ var _utils_create_change_token_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/create-change-token.js */ 1870);
+/* harmony import */ var _utils_extract_web_url_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utils/extract-web-url.js */ 8939);
+/* harmony import */ var _utils_file_names_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils/file-names.js */ 70);
+/* harmony import */ var _utils_odata_url_from_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils/odata-url-from.js */ 4177);
+/* harmony import */ var _utils_to_resource_path_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils/to-resource-path.js */ 6897);
+/* harmony import */ var _utils_encode_path_str_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils/encode-path-str.js */ 6181);
+/* harmony import */ var _behaviors_defaults_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./behaviors/defaults.js */ 9801);
+/* harmony import */ var _behaviors_telemetry_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./behaviors/telemetry.js */ 6936);
+/* harmony import */ var _behaviors_request_digest_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./behaviors/request-digest.js */ 5359);
+/* harmony import */ var _behaviors_spbrowser_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./behaviors/spbrowser.js */ 6438);
+/* harmony import */ var _behaviors_spfx_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./behaviors/spfx.js */ 9754);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ },
+
+/***/ 6290
+/*!*********************************************!*\
+  !*** ./node_modules/@pnp/sp/spqueryable.js ***!
+  \*********************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ComparisonResult: () => (/* binding */ ComparisonResult),
+/* harmony export */   InitialFieldQuery: () => (/* binding */ InitialFieldQuery),
+/* harmony export */   SPCollection: () => (/* binding */ SPCollection),
+/* harmony export */   SPInstance: () => (/* binding */ SPInstance),
+/* harmony export */   SPQueryable: () => (/* binding */ SPQueryable),
+/* harmony export */   _SPCollection: () => (/* binding */ _SPCollection),
+/* harmony export */   _SPInstance: () => (/* binding */ _SPInstance),
+/* harmony export */   _SPQueryable: () => (/* binding */ _SPQueryable),
+/* harmony export */   deleteable: () => (/* binding */ deleteable),
+/* harmony export */   deleteableWithETag: () => (/* binding */ deleteableWithETag),
+/* harmony export */   spDelete: () => (/* binding */ spDelete),
+/* harmony export */   spGet: () => (/* binding */ spGet),
+/* harmony export */   spInvokableFactory: () => (/* binding */ spInvokableFactory),
+/* harmony export */   spPatch: () => (/* binding */ spPatch),
+/* harmony export */   spPost: () => (/* binding */ spPost),
+/* harmony export */   spPostDelete: () => (/* binding */ spPostDelete),
+/* harmony export */   spPostDeleteETag: () => (/* binding */ spPostDeleteETag),
+/* harmony export */   spPostMerge: () => (/* binding */ spPostMerge)
+/* harmony export */ });
+/* harmony import */ var _pnp_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pnp/core */ 9671);
+/* harmony import */ var _pnp_queryable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @pnp/queryable */ 2464);
+
+
+const spInvokableFactory = (f) => {
+    return (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.queryableFactory)(f);
+};
+/**
+ * SharePointQueryable Base Class
+ *
+ */
+class _SPQueryable extends _pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.Queryable {
+    /**
+     * Creates a new instance of the SharePointQueryable class
+     *
+     * @constructor
+     * @param base A string or SharePointQueryable that should form the base part of the url
+     *
+     */
+    constructor(base, path) {
+        if (typeof base === "string") {
+            let url = "";
+            let parentUrl = "";
+            // we need to do some extra parsing to get the parent url correct if we are
+            // being created from just a string.
+            if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.isUrlAbsolute)(base) || base.lastIndexOf("/") < 0) {
+                parentUrl = base;
+                url = (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.combine)(base, path);
+            }
+            else if (base.lastIndexOf("/") > base.lastIndexOf("(")) {
+                // .../items(19)/fields
+                const index = base.lastIndexOf("/");
+                parentUrl = base.slice(0, index);
+                path = (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.combine)(base.slice(index), path);
+                url = (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.combine)(parentUrl, path);
+            }
+            else {
+                // .../items(19)
+                const index = base.lastIndexOf("(");
+                parentUrl = base.slice(0, index);
+                url = (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.combine)(base, path);
+            }
+            // init base with corrected string value
+            super(url);
+            this.parentUrl = parentUrl;
+        }
+        else {
+            super(base, path);
+            const q = (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.isArray)(base) ? base[0] : base;
+            this.parentUrl = (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.isArray)(base) ? base[1] : q.toUrl();
+        }
+    }
+    /**
+     * Gets the full url with query information
+     */
+    toRequestUrl() {
+        const aliasedParams = new URLSearchParams(this.query);
+        // this regex is designed to locate aliased parameters within url paths
+        let url = this.toUrl().replace(/'!(@.+?)::((?:[^']|'')+)'/ig, (match, labelName, value) => {
+            this.log(`Rewriting aliased parameter from match ${match} to label: ${labelName} value: ${value}`, 0);
+            aliasedParams.set(labelName, `'${value}'`);
+            return labelName;
+        });
+        const query = aliasedParams.toString();
+        if (!(0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.stringIsNullOrEmpty)(query)) {
+            url += `${url.indexOf("?") > -1 ? "&" : "?"}${query}`;
+        }
+        return url;
+    }
+    /**
+     * Choose which fields to return
+     *
+     * @param selects One or more fields to return
+     */
+    select(...selects) {
+        if (selects.length > 0) {
+            this.query.set("$select", selects.join(","));
+        }
+        return this;
+    }
+    /**
+     * Expands fields such as lookups to get additional data
+     *
+     * @param expands The Fields for which to expand the values
+     */
+    expand(...expands) {
+        if (expands.length > 0) {
+            this.query.set("$expand", expands.join(","));
+        }
+        return this;
+    }
+    /**
+     * Gets a parent for this instance as specified
+     *
+     * @param factory The contructor for the class to create
+     */
+    getParent(factory, path, base = this.parentUrl) {
+        return factory([this, base], path);
+    }
+}
+const SPQueryable = spInvokableFactory(_SPQueryable);
+/**
+ * Represents a REST collection which can be filtered, paged, and selected
+ *
+ */
+class _SPCollection extends _SPQueryable {
+    /**
+     * Filters the returned collection (https://msdn.microsoft.com/en-us/library/office/fp142385.aspx#bk_supported)
+     *
+     * @param filter The string representing the filter query
+     */
+    filter(filter) {
+        if (typeof filter === "object") {
+            this.query.set("$filter", filter.toString());
+            return this;
+        }
+        if (typeof filter === "function") {
+            this.query.set("$filter", filter(SPOData.Where()).toString());
+            return this;
+        }
+        this.query.set("$filter", filter.toString());
+        return this;
+    }
+    /**
+     * Orders based on the supplied fields
+     *
+     * @param orderby The name of the field on which to sort
+     * @param ascending If false DESC is appended, otherwise ASC (default)
+     */
+    orderBy(orderBy, ascending = true) {
+        const o = "$orderby";
+        const query = this.query.has(o) ? this.query.get(o).split(",") : [];
+        query.push(`${orderBy} ${ascending ? "asc" : "desc"}`);
+        this.query.set(o, query.join(","));
+        return this;
+    }
+    /**
+     * Skips the specified number of items
+     *
+     * @param skip The number of items to skip
+     */
+    skip(skip) {
+        this.query.set("$skip", skip.toString());
+        return this;
+    }
+    /**
+     * Limits the query to only return the specified number of items
+     *
+     * @param top The query row limit
+     */
+    top(top) {
+        this.query.set("$top", top.toString());
+        return this;
+    }
+}
+const SPCollection = spInvokableFactory(_SPCollection);
+/**
+ * Represents an instance that can be selected
+ *
+ */
+class _SPInstance extends _SPQueryable {
+}
+const SPInstance = spInvokableFactory(_SPInstance);
+/**
+ * Adds the a delete method to the tagged class taking no parameters and calling spPostDelete
+ */
+function deleteable() {
+    return function () {
+        return spPostDelete(this);
+    };
+}
+function deleteableWithETag() {
+    return function (eTag = "*") {
+        return spPostDeleteETag(this, {}, eTag);
+    };
+}
+const spGet = (o, init) => {
+    return (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.op)(o, _pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.get, init);
+};
+const spPost = (o, init) => (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.op)(o, _pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.post, init);
+const spPostMerge = (o, init) => {
+    init = init || {};
+    init.headers = { ...init.headers, "X-HTTP-Method": "MERGE" };
+    return spPost(o, init);
+};
+const spPostDelete = (o, init) => {
+    init = init || {};
+    init.headers = { ...init.headers || {}, "X-HTTP-Method": "DELETE" };
+    return spPost(o, init);
+};
+const spPostDeleteETag = (o, init, eTag = "*") => {
+    init = init || {};
+    init.headers = { ...init.headers || {}, "IF-Match": eTag };
+    return spPostDelete(o, init);
+};
+const spDelete = (o, init) => (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.op)(o, _pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.del, init);
+const spPatch = (o, init) => (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.op)(o, _pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.patch, init);
+var FilterOperation;
+(function (FilterOperation) {
+    FilterOperation["Equals"] = "eq";
+    FilterOperation["NotEquals"] = "ne";
+    FilterOperation["GreaterThan"] = "gt";
+    FilterOperation["GreaterThanOrEqualTo"] = "ge";
+    FilterOperation["LessThan"] = "lt";
+    FilterOperation["LessThanOrEqualTo"] = "le";
+    FilterOperation["StartsWith"] = "startswith";
+    FilterOperation["SubstringOf"] = "substringof";
+})(FilterOperation || (FilterOperation = {}));
+var FilterJoinOperator;
+(function (FilterJoinOperator) {
+    FilterJoinOperator["And"] = "and";
+    FilterJoinOperator["AndWithSpace"] = " and ";
+    FilterJoinOperator["Or"] = "or";
+    FilterJoinOperator["OrWithSpace"] = " or ";
+})(FilterJoinOperator || (FilterJoinOperator = {}));
+class SPOData {
+    static Where() {
+        return new InitialFieldQuery([]);
+    }
+}
+// Linting complains that TBaseInterface is unused, but without it all the intellisense is lost since it's carrying it through the chain
+class BaseQuery {
+    constructor(query) {
+        this.query = [];
+        this.query = query;
+    }
+}
+class QueryableFields extends BaseQuery {
+    constructor(q) {
+        super(q);
+    }
+    text(internalName) {
+        return new TextField([...this.query, internalName]);
+    }
+    choice(internalName) {
+        return new TextField([...this.query, internalName]);
+    }
+    multiChoice(internalName) {
+        return new TextField([...this.query, internalName]);
+    }
+    number(internalName) {
+        return new NumberField([...this.query, internalName]);
+    }
+    date(internalName) {
+        return new DateField([...this.query, internalName]);
+    }
+    boolean(internalName) {
+        return new BooleanField([...this.query, internalName]);
+    }
+    lookup(internalName) {
+        return new LookupQueryableFields([...this.query], internalName);
+    }
+    lookupId(internalName) {
+        const col = internalName.endsWith("Id") ? internalName : `${internalName}Id`;
+        return new NumberField([...this.query, col]);
+    }
+}
+class QueryableAndResult extends QueryableFields {
+    or(...queries) {
+        return new ComparisonResult([...this.query, `(${queries.map(x => x.toString()).join(FilterJoinOperator.OrWithSpace)})`]);
+    }
+}
+class QueryableOrResult extends QueryableFields {
+    and(...queries) {
+        return new ComparisonResult([...this.query, `(${queries.map(x => x.toString()).join(FilterJoinOperator.AndWithSpace)})`]);
+    }
+}
+class InitialFieldQuery extends QueryableFields {
+    or(...queries) {
+        if (queries == null || queries.length === 0) {
+            return new QueryableFields([...this.query, FilterJoinOperator.Or]);
+        }
+        return new ComparisonResult([...this.query, `(${queries.map(x => x.toString()).join(FilterJoinOperator.OrWithSpace)})`]);
+    }
+    and(...queries) {
+        if (queries == null || queries.length === 0) {
+            return new QueryableFields([...this.query, FilterJoinOperator.And]);
+        }
+        return new ComparisonResult([...this.query, `(${queries.map(x => x.toString()).join(FilterJoinOperator.AndWithSpace)})`]);
+    }
+}
+class LookupQueryableFields extends BaseQuery {
+    constructor(q, LookupField) {
+        super(q);
+        this.LookupField = LookupField;
+    }
+    Id(id) {
+        return new ComparisonResult([...this.query, `${this.LookupField}/Id`, FilterOperation.Equals, id.toString()]);
+    }
+    text(internalName) {
+        return new TextField([...this.query, `${this.LookupField}/${internalName}`]);
+    }
+    number(internalName) {
+        return new NumberField([...this.query, `${this.LookupField}/${internalName}`]);
+    }
+}
+class NullableField extends BaseQuery {
+    constructor(q) {
+        super(q);
+        this.LastIndex = q.length - 1;
+        this.InternalName = q[this.LastIndex];
+    }
+    toODataValue(value) {
+        return `'${value}'`;
+    }
+    isNull() {
+        return new ComparisonResult([...this.query, FilterOperation.Equals, "null"]);
+    }
+    isNotNull() {
+        return new ComparisonResult([...this.query, FilterOperation.NotEquals, "null"]);
+    }
+}
+class ComparableField extends NullableField {
+    equals(value) {
+        return new ComparisonResult([...this.query, FilterOperation.Equals, this.toODataValue(value)]);
+    }
+    notEquals(value) {
+        return new ComparisonResult([...this.query, FilterOperation.NotEquals, this.toODataValue(value)]);
+    }
+    in(...values) {
+        return SPOData.Where().or(...values.map(x => this.equals(x)));
+    }
+    notIn(...values) {
+        return SPOData.Where().and(...values.map(x => this.notEquals(x)));
+    }
+}
+class TextField extends ComparableField {
+    startsWith(value) {
+        const filter = `${FilterOperation.StartsWith}(${this.InternalName}, ${this.toODataValue(value)})`;
+        this.query[this.LastIndex] = filter;
+        return new ComparisonResult([...this.query]);
+    }
+    contains(value) {
+        const filter = `${FilterOperation.SubstringOf}(${this.toODataValue(value)}, ${this.InternalName})`;
+        this.query[this.LastIndex] = filter;
+        return new ComparisonResult([...this.query]);
+    }
+}
+class BooleanField extends NullableField {
+    toODataValue(value) {
+        return `${value == null ? "null" : value ? 1 : 0}`;
+    }
+    isTrue() {
+        return new ComparisonResult([...this.query, FilterOperation.Equals, this.toODataValue(true)]);
+    }
+    isFalse() {
+        return new ComparisonResult([...this.query, FilterOperation.Equals, this.toODataValue(false)]);
+    }
+    isFalseOrNull() {
+        const filter = `(${[
+            this.InternalName,
+            FilterOperation.Equals,
+            this.toODataValue(null),
+            FilterJoinOperator.Or,
+            this.InternalName,
+            FilterOperation.Equals,
+            this.toODataValue(false),
+        ].join(" ")})`;
+        this.query[this.LastIndex] = filter;
+        return new ComparisonResult([...this.query]);
+    }
+}
+class NumericField extends ComparableField {
+    greaterThan(value) {
+        return new ComparisonResult([...this.query, FilterOperation.GreaterThan, this.toODataValue(value)]);
+    }
+    greaterThanOrEquals(value) {
+        return new ComparisonResult([...this.query, FilterOperation.GreaterThanOrEqualTo, this.toODataValue(value)]);
+    }
+    lessThan(value) {
+        return new ComparisonResult([...this.query, FilterOperation.LessThan, this.toODataValue(value)]);
+    }
+    lessThanOrEquals(value) {
+        return new ComparisonResult([...this.query, FilterOperation.LessThanOrEqualTo, this.toODataValue(value)]);
+    }
+}
+class NumberField extends NumericField {
+    toODataValue(value) {
+        return `${value}`;
+    }
+}
+class DateField extends NumericField {
+    toODataValue(value) {
+        return `'${value.toISOString()}'`;
+    }
+    isBetween(startDate, endDate) {
+        const filter = `(${[
+            this.InternalName,
+            FilterOperation.GreaterThan,
+            this.toODataValue(startDate),
+            FilterJoinOperator.And,
+            this.InternalName,
+            FilterOperation.LessThan,
+            this.toODataValue(endDate),
+        ].join(" ")})`;
+        this.query[this.LastIndex] = filter;
+        return new ComparisonResult([...this.query]);
+    }
+    isToday() {
+        const StartToday = new Date();
+        StartToday.setHours(0, 0, 0, 0);
+        const EndToday = new Date();
+        EndToday.setHours(23, 59, 59, 999);
+        return this.isBetween(StartToday, EndToday);
+    }
+}
+class ComparisonResult extends BaseQuery {
+    // eslint-disable-next-line max-len
+    and(...queries) {
+        if (queries == null || queries.length === 0) {
+            return new QueryableAndResult([...this.query, FilterJoinOperator.And]);
+        }
+        return new ComparisonResult([...this.query, FilterJoinOperator.And, `(${queries.map(x => x.toString()).join(FilterJoinOperator.AndWithSpace)})`]);
+    }
+    // eslint-disable-next-line max-len
+    or(...queries) {
+        if (queries == null || queries.length === 0) {
+            return new QueryableOrResult([...this.query, FilterJoinOperator.Or]);
+        }
+        return new ComparisonResult([...this.query, FilterJoinOperator.Or, `(${queries.map(x => x.toString()).join(FilterJoinOperator.OrWithSpace)})`]);
+    }
+    toString() {
+        return this.query.join(" ");
+    }
+}
+
+
+/***/ },
+
+/***/ 8986
+/*!***************************************!*\
+  !*** ./node_modules/@pnp/sp/types.js ***!
+  \***************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PageType: () => (/* binding */ PageType),
+/* harmony export */   PrincipalSource: () => (/* binding */ PrincipalSource),
+/* harmony export */   PrincipalType: () => (/* binding */ PrincipalType),
+/* harmony export */   emptyGuid: () => (/* binding */ emptyGuid)
+/* harmony export */ });
+// reference: https://msdn.microsoft.com/en-us/library/office/dn600183.aspx
+const emptyGuid = "00000000-0000-0000-0000-000000000000";
+/**
+ * Specifies the type of a principal.
+ */
+var PrincipalType;
+(function (PrincipalType) {
+    /**
+     * Enumeration whose value specifies no principal type.
+     */
+    PrincipalType[PrincipalType["None"] = 0] = "None";
+    /**
+     * Enumeration whose value specifies a user as the principal type.
+     */
+    PrincipalType[PrincipalType["User"] = 1] = "User";
+    /**
+     * Enumeration whose value specifies a distribution list as the principal type.
+     */
+    PrincipalType[PrincipalType["DistributionList"] = 2] = "DistributionList";
+    /**
+     * Enumeration whose value specifies a security group as the principal type.
+     */
+    PrincipalType[PrincipalType["SecurityGroup"] = 4] = "SecurityGroup";
+    /**
+     * Enumeration whose value specifies a group as the principal type.
+     */
+    PrincipalType[PrincipalType["SharePointGroup"] = 8] = "SharePointGroup";
+    /**
+     * Enumeration whose value specifies all principal types.
+     */
+    // eslint-disable-next-line no-bitwise
+    PrincipalType[PrincipalType["All"] = 15] = "All";
+})(PrincipalType || (PrincipalType = {}));
+/**
+ * Specifies the source of a principal.
+ */
+var PrincipalSource;
+(function (PrincipalSource) {
+    /**
+     * Enumeration whose value specifies no principal source.
+     */
+    PrincipalSource[PrincipalSource["None"] = 0] = "None";
+    /**
+     * Enumeration whose value specifies user information list as the principal source.
+     */
+    PrincipalSource[PrincipalSource["UserInfoList"] = 1] = "UserInfoList";
+    /**
+     * Enumeration whose value specifies Active Directory as the principal source.
+     */
+    PrincipalSource[PrincipalSource["Windows"] = 2] = "Windows";
+    /**
+     * Enumeration whose value specifies the current membership provider as the principal source.
+     */
+    PrincipalSource[PrincipalSource["MembershipProvider"] = 4] = "MembershipProvider";
+    /**
+     * Enumeration whose value specifies the current role provider as the principal source.
+     */
+    PrincipalSource[PrincipalSource["RoleProvider"] = 8] = "RoleProvider";
+    /**
+     * Enumeration whose value specifies all principal sources.
+     */
+    // eslint-disable-next-line no-bitwise
+    PrincipalSource[PrincipalSource["All"] = 15] = "All";
+})(PrincipalSource || (PrincipalSource = {}));
+var PageType;
+(function (PageType) {
+    PageType[PageType["Invalid"] = -1] = "Invalid";
+    PageType[PageType["DefaultView"] = 0] = "DefaultView";
+    PageType[PageType["NormalView"] = 1] = "NormalView";
+    PageType[PageType["DialogView"] = 2] = "DialogView";
+    PageType[PageType["View"] = 3] = "View";
+    PageType[PageType["DisplayForm"] = 4] = "DisplayForm";
+    PageType[PageType["DisplayFormDialog"] = 5] = "DisplayFormDialog";
+    PageType[PageType["EditForm"] = 6] = "EditForm";
+    PageType[PageType["EditFormDialog"] = 7] = "EditFormDialog";
+    PageType[PageType["NewForm"] = 8] = "NewForm";
+    PageType[PageType["NewFormDialog"] = 9] = "NewFormDialog";
+    PageType[PageType["SolutionForm"] = 10] = "SolutionForm";
+    PageType[PageType["PAGE_MAXITEMS"] = 11] = "PAGE_MAXITEMS";
+})(PageType || (PageType = {}));
+
+
+/***/ },
+
+/***/ 1870
+/*!***********************************************************!*\
+  !*** ./node_modules/@pnp/sp/utils/create-change-token.js ***!
+  \***********************************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createChangeToken: () => (/* binding */ createChangeToken)
+/* harmony export */ });
+/**
+ * Creates a change token for use with sites, webs, or lists
+ *
+ * @param resourceType The type of resource for which you want a change token
+ * @param resource The identifier (GUID) of the resource site.Id, web.Id, or List.Id
+ * @param tokenDate The date for this token (if start token, start date of chages; if end token, end date of the changes)
+ * @param versionNumber Version number for token (default = 1)
+ * @returns A properly formatted change token
+ */
+function createChangeToken(resourceType = "site", resource, tokenDate = new Date(), versionNumber = 1) {
+    const resourceTypeMapping = new Map([["site", 1], ["web", 2], ["list", 3]]).get(resourceType);
+    // The value of the string assigned to ChangeTokenStart.StringValue is semicolon delimited, and takes the following parameters in the order listed:
+    // Version number.
+    // The change scope (0 - Content Database, 1 - site collection, 2 - site, 3 - list).
+    // GUID of the item the scope applies to (for example, GUID of the list).
+    // Time (in UTC) from when changes occurred in Ticks (but its .NET ticks so we do this math)
+    // Initialize the change item on the ChangeToken using a default value of -1.
+    const tokenDateTicks = (tokenDate.getTime() * 10000) + 621355968000000000;
+    return { StringValue: `${versionNumber};${resourceTypeMapping};${resource};${tokenDateTicks};-1` };
+}
+
+
+/***/ },
+
+/***/ 6181
+/*!*******************************************************!*\
+  !*** ./node_modules/@pnp/sp/utils/encode-path-str.js ***!
+  \*******************************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   encodePath: () => (/* binding */ encodePath),
+/* harmony export */   encodePathNoURIEncode: () => (/* binding */ encodePathNoURIEncode)
+/* harmony export */ });
+/* harmony import */ var _pnp_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pnp/core */ 9671);
+
+/**
+ * Encodes path portions of SharePoint urls such as decodedUrl=`encodePath(pathStr)`
+ *
+ * @param value The string path to encode
+ * @returns A path encoded for use in SP urls
+ */
+function encodePath(value) {
+    if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.stringIsNullOrEmpty)(value)) {
+        return "";
+    }
+    // replace all instance of ' with ''
+    if (/!(@.*?)::(.*?)/ig.test(value)) {
+        return value.replace(/!(@.*?)::(.*)$/ig, (match, labelName, v) => {
+            // we do not need to encodeURIComponent v as it will be encoded automatically when it is added as a query string param
+            // we do need to double any ' chars
+            return `!${labelName}::${v.replace(/'/ig, "''")}`;
+        });
+    }
+    else {
+        // because this is a literal path value we encodeURIComponent after doubling any ' chars
+        return encodeURIComponent(value.replace(/'/ig, "''"));
+    }
+}
+function encodePathNoURIEncode(value) {
+    if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.stringIsNullOrEmpty)(value)) {
+        return "";
+    }
+    // replace all instance of ' with ''
+    if (/!(@.*?)::(.*?)/ig.test(value)) {
+        return value.replace(/!(@.*?)::(.*)$/ig, (match, labelName, v) => {
+            // we do not need to encodeURIComponent v as it will be encoded automatically when it is added as a query string param
+            // we do need to double any ' chars
+            return `!${labelName}::${v.replace(/'/ig, "''")}`;
+        });
+    }
+    else {
+        // because this is a literal path value we encodeURIComponent after doubling any ' chars
+        return value.replace(/'/ig, "''");
+    }
+}
+
+
+/***/ },
+
+/***/ 8939
+/*!*******************************************************!*\
+  !*** ./node_modules/@pnp/sp/utils/extract-web-url.js ***!
+  \*******************************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   extractWebUrl: () => (/* binding */ extractWebUrl)
+/* harmony export */ });
+/* harmony import */ var _pnp_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pnp/core */ 9671);
+
+function extractWebUrl(candidateUrl) {
+    if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.stringIsNullOrEmpty)(candidateUrl)) {
+        return "";
+    }
+    let index = candidateUrl.indexOf("_api/");
+    if (index < 0) {
+        index = candidateUrl.indexOf("_vti_bin/");
+    }
+    if (index > -1) {
+        return candidateUrl.substring(0, index);
+    }
+    // if all else fails just give them what they gave us back
+    return candidateUrl;
+}
+
+
+/***/ },
+
+/***/ 70
+/*!**************************************************!*\
+  !*** ./node_modules/@pnp/sp/utils/file-names.js ***!
+  \**************************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   containsInvalidFileFolderChars: () => (/* binding */ containsInvalidFileFolderChars),
+/* harmony export */   stripInvalidFileFolderChars: () => (/* binding */ stripInvalidFileFolderChars)
+/* harmony export */ });
+// eslint-disable-next-line no-control-regex
+const InvalidFileFolderNameCharsOnlineRegex = /["*:<>?/\\|\x00-\x1f\x7f-\x9f]/g;
+// eslint-disable-next-line no-control-regex
+const InvalidFileFolderNameCharsOnPremiseRegex = /["#%*:<>?/\\|\x00-\x1f\x7f-\x9f]/g;
+/**
+ * Checks if file or folder name contains invalid characters
+ *
+ * @param input File or folder name to check
+ * @param onPremise Set to true for SharePoint On-Premise
+ * @returns True if contains invalid chars, false otherwise
+ */
+function containsInvalidFileFolderChars(input, onPremise = false) {
+    if (onPremise) {
+        return InvalidFileFolderNameCharsOnPremiseRegex.test(input);
+    }
+    else {
+        return InvalidFileFolderNameCharsOnlineRegex.test(input);
+    }
+}
+/**
+ * Removes invalid characters from file or folder name
+ *
+ * @param input File or folder name
+ * @param replacer Value that will replace invalid characters
+ * @param onPremise Set to true for SharePoint On-Premise
+ * @returns File or folder name with replaced invalid characters
+ */
+function stripInvalidFileFolderChars(input, replacer = "", onPremise = false) {
+    if (onPremise) {
+        return input.replace(InvalidFileFolderNameCharsOnPremiseRegex, replacer);
+    }
+    else {
+        return input.replace(InvalidFileFolderNameCharsOnlineRegex, replacer);
+    }
+}
+
+
+/***/ },
+
+/***/ 4177
+/*!******************************************************!*\
+  !*** ./node_modules/@pnp/sp/utils/odata-url-from.js ***!
+  \******************************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   odataUrlFrom: () => (/* binding */ odataUrlFrom)
+/* harmony export */ });
+/* harmony import */ var _pnp_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @pnp/core */ 9671);
+/* harmony import */ var _extract_web_url_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./extract-web-url.js */ 8939);
+
+
+function odataUrlFrom(candidate) {
+    const parts = [];
+    const s = ["odata.type", "odata.editLink", "__metadata", "odata.metadata", "odata.id"];
+    if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.hOP)(candidate, s[0]) && candidate[s[0]] === "SP.Web") {
+        // webs return an absolute url in the id
+        if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.hOP)(candidate, s[4])) {
+            parts.push(candidate[s[4]]);
+        }
+        else if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.hOP)(candidate, s[2])) {
+            // we are dealing with verbose, which has an absolute uri
+            parts.push(candidate.__metadata.uri);
+        }
+    }
+    else {
+        if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.hOP)(candidate, s[3]) && (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.hOP)(candidate, s[1])) {
+            // we are dealign with minimal metadata (default)
+            // some entities return an abosolute url in the editlink while for others it is relative
+            // without the _api. This code is meant to handle both situations
+            const editLink = (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.isUrlAbsolute)(candidate[s[1]]) ? candidate[s[1]].split("_api")[1] : candidate[s[1]];
+            parts.push((0,_extract_web_url_js__WEBPACK_IMPORTED_MODULE_1__.extractWebUrl)(candidate[s[3]]), "_api", editLink);
+        }
+        else if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.hOP)(candidate, s[1])) {
+            parts.push("_api", candidate[s[1]]);
+        }
+        else if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.hOP)(candidate, s[2])) {
+            // we are dealing with verbose, which has an absolute uri
+            parts.push(candidate.__metadata.uri);
+        }
+    }
+    if (parts.length < 1) {
+        return "";
+    }
+    return (0,_pnp_core__WEBPACK_IMPORTED_MODULE_0__.combine)(...parts);
+}
+
+
+/***/ },
+
+/***/ 6897
+/*!********************************************************!*\
+  !*** ./node_modules/@pnp/sp/utils/to-resource-path.js ***!
+  \********************************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   toResourcePath: () => (/* binding */ toResourcePath)
+/* harmony export */ });
+function toResourcePath(url) {
+    return {
+        DecodedUrl: url,
+    };
+}
+
+
+/***/ },
+
+/***/ 7339
+/*!********************************************!*\
+  !*** ./node_modules/@pnp/sp/webs/index.js ***!
+  \********************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Web: () => (/* reexport safe */ _types_js__WEBPACK_IMPORTED_MODULE_0__.Web),
+/* harmony export */   Webs: () => (/* reexport safe */ _types_js__WEBPACK_IMPORTED_MODULE_0__.Webs)
+/* harmony export */ });
+/* harmony import */ var _types_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./types.js */ 4970);
+/* harmony import */ var _fi_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../fi.js */ 7066);
+
+
+
+Reflect.defineProperty(_fi_js__WEBPACK_IMPORTED_MODULE_1__.SPFI.prototype, "web", {
+    configurable: true,
+    enumerable: true,
+    get: function () {
+        return this.create(_types_js__WEBPACK_IMPORTED_MODULE_0__.Web);
+    },
+});
+
+
+/***/ },
+
+/***/ 4970
+/*!********************************************!*\
+  !*** ./node_modules/@pnp/sp/webs/types.js ***!
+  \********************************************/
+(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Web: () => (/* binding */ Web),
+/* harmony export */   Webs: () => (/* binding */ Webs),
+/* harmony export */   _Web: () => (/* binding */ _Web),
+/* harmony export */   _Webs: () => (/* binding */ _Webs)
+/* harmony export */ });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ 3759);
+/* harmony import */ var _pnp_queryable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @pnp/queryable */ 2464);
+/* harmony import */ var _spqueryable_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../spqueryable.js */ 6290);
+/* harmony import */ var _decorators_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../decorators.js */ 3445);
+/* harmony import */ var _utils_extract_web_url_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/extract-web-url.js */ 8939);
+/* harmony import */ var _pnp_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @pnp/core */ 9671);
+/* harmony import */ var _utils_encode_path_str_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/encode-path-str.js */ 6181);
+
+
+
+
+
+
+
+let _Webs = class _Webs extends _spqueryable_js__WEBPACK_IMPORTED_MODULE_2__._SPCollection {
+    /**
+     * Adds a new web to the collection
+     *
+     * @param title The new web's title
+     * @param url The new web's relative url
+     * @param description The new web's description
+     * @param template The new web's template internal name (default = STS)
+     * @param language The locale id that specifies the new web's language (default = 1033 [English, US])
+     * @param inheritPermissions When true, permissions will be inherited from the new web's parent (default = true)
+     */
+    async add(Title, Url, Description = "", WebTemplate = "STS", Language = 1033, UseSamePermissionsAsParentSite = true) {
+        const postBody = (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.body)({
+            "parameters": {
+                Description,
+                Language,
+                Title,
+                Url,
+                UseSamePermissionsAsParentSite,
+                WebTemplate,
+            },
+        });
+        return (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.spPost)(Webs(this, "add"), postBody);
+    }
+};
+_Webs = (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__decorate)([
+    (0,_decorators_js__WEBPACK_IMPORTED_MODULE_3__.defaultPath)("webs")
+], _Webs);
+
+const Webs = (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.spInvokableFactory)(_Webs);
+/**
+ * Ensures the url passed to the constructor is correctly rebased to a web url
+ *
+ * @param candidate The candidate web url
+ * @param path The caller supplied path, which may contain _api, meaning we don't append _api/web
+ */
+function rebaseWebUrl(candidate, path) {
+    let replace = "_api/web";
+    // this allows us to both:
+    // - test if `candidate` already has an api path
+    // - ensure that we append the correct one as sometimes a web is not defined
+    //   by _api/web, in the case of _api/site/rootweb for example
+    const matches = /(_api[/|\\](site\/rootweb|site|web))/i.exec(candidate);
+    if ((matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
+        // we want just the base url part (before the _api)
+        candidate = (0,_utils_extract_web_url_js__WEBPACK_IMPORTED_MODULE_4__.extractWebUrl)(candidate);
+        // we want to ensure we put back the correct string
+        replace = matches[1];
+    }
+    // we only need to append the _api part IF `path` doesn't already include it.
+    if ((path === null || path === void 0 ? void 0 : path.indexOf("_api")) < 0) {
+        candidate = (0,_pnp_core__WEBPACK_IMPORTED_MODULE_5__.combine)(candidate, replace);
+    }
+    return candidate;
+}
+/**
+ * Describes a web
+ *
+ */
+let _Web = class _Web extends _spqueryable_js__WEBPACK_IMPORTED_MODULE_2__._SPInstance {
+    constructor(base, path) {
+        if (typeof base === "string") {
+            base = rebaseWebUrl(base, path);
+        }
+        else if ((0,_pnp_core__WEBPACK_IMPORTED_MODULE_5__.isArray)(base)) {
+            base = [base[0], rebaseWebUrl(base[1], path)];
+        }
+        else {
+            base = [base, rebaseWebUrl(base.toUrl(), path)];
+        }
+        super(base, path);
+        this.delete = (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.deleteable)();
+    }
+    /**
+     * Gets this web's subwebs
+     *
+     */
+    get webs() {
+        return Webs(this);
+    }
+    /**
+     * Allows access to the web's all properties collection
+     */
+    get allProperties() {
+        return (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.SPInstance)(this, "allproperties");
+    }
+    /**
+     * Gets a collection of WebInfos for this web's subwebs
+     *
+     */
+    get webinfos() {
+        return (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.SPCollection)(this, "webinfos");
+    }
+    /**
+     * Gets this web's parent web and data
+     *
+     */
+    async getParentWeb() {
+        const { Url, ParentWeb } = await this.select("Url", "ParentWeb/ServerRelativeUrl").expand("ParentWeb")();
+        if (ParentWeb === null || ParentWeb === void 0 ? void 0 : ParentWeb.ServerRelativeUrl) {
+            return Web([this, (0,_pnp_core__WEBPACK_IMPORTED_MODULE_5__.combine)((new URL(Url)).origin, ParentWeb.ServerRelativeUrl)]);
+        }
+        return null;
+    }
+    /**
+     * Updates this web instance with the supplied properties
+     *
+     * @param properties A plain object hash of values to update for the web
+     */
+    async update(properties) {
+        return (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.spPostMerge)(this, (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.body)(properties));
+    }
+    /**
+     * Applies the theme specified by the contents of each of the files specified in the arguments to the site
+     *
+     * @param colorPaletteUrl The server-relative URL of the color palette file
+     * @param fontSchemeUrl The server-relative URL of the font scheme
+     * @param backgroundImageUrl The server-relative URL of the background image
+     * @param shareGenerated When true, the generated theme files are stored in the root site. When false, they are stored in this web
+     */
+    applyTheme(colorPaletteUrl, fontSchemeUrl, backgroundImageUrl, shareGenerated) {
+        const postBody = (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.body)({
+            backgroundImageUrl,
+            colorPaletteUrl,
+            fontSchemeUrl,
+            shareGenerated,
+        });
+        return (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.spPost)(Web(this, "applytheme"), postBody);
+    }
+    /**
+     * Applies the specified site definition or site template to the Web site that has no template applied to it
+     *
+     * @param template Name of the site definition or the name of the site template
+     */
+    applyWebTemplate(template) {
+        return (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.spPost)(Web(this, `applywebtemplate(webTemplate='${(0,_utils_encode_path_str_js__WEBPACK_IMPORTED_MODULE_6__.encodePath)(template)}')`));
+    }
+    /**
+     * Returns the collection of changes from the change log that have occurred within the list, based on the specified query
+     *
+     * @param query The change query
+     */
+    getChanges(query) {
+        return (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.spPost)(Web(this, "getchanges"), (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.body)({ query }));
+    }
+    /**
+     * Returns the name of the image file for the icon that is used to represent the specified file
+     *
+     * @param filename The file name. If this parameter is empty, the server returns an empty string
+     * @param size The size of the icon: 16x16 pixels = 0, 32x32 pixels = 1 (default = 0)
+     * @param progId The ProgID of the application that was used to create the file, in the form OLEServerName.ObjectName
+     */
+    mapToIcon(filename, size = 0, progId = "") {
+        return Web(this, `maptoicon(filename='${(0,_utils_encode_path_str_js__WEBPACK_IMPORTED_MODULE_6__.encodePath)(filename)}',progid='${(0,_utils_encode_path_str_js__WEBPACK_IMPORTED_MODULE_6__.encodePath)(progId)}',size=${size})`)();
+    }
+    /**
+     * Returns the tenant property corresponding to the specified key in the app catalog site
+     *
+     * @param key Id of storage entity to be set
+     */
+    getStorageEntity(key) {
+        return Web(this, `getStorageEntity('${(0,_utils_encode_path_str_js__WEBPACK_IMPORTED_MODULE_6__.encodePath)(key)}')`)();
+    }
+    /**
+     * This will set the storage entity identified by the given key (MUST be called in the context of the app catalog)
+     *
+     * @param key Id of storage entity to be set
+     * @param value Value of storage entity to be set
+     * @param description Description of storage entity to be set
+     * @param comments Comments of storage entity to be set
+     */
+    setStorageEntity(key, value, description = "", comments = "") {
+        return (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.spPost)(Web(this, "setStorageEntity"), (0,_pnp_queryable__WEBPACK_IMPORTED_MODULE_1__.body)({
+            comments,
+            description,
+            key,
+            value,
+        }));
+    }
+    /**
+     * This will remove the storage entity identified by the given key
+     *
+     * @param key Id of storage entity to be removed
+     */
+    removeStorageEntity(key) {
+        return (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.spPost)(Web(this, `removeStorageEntity('${(0,_utils_encode_path_str_js__WEBPACK_IMPORTED_MODULE_6__.encodePath)(key)}')`));
+    }
+    /**
+    * Returns a collection of objects that contain metadata about subsites of the current site in which the current user is a member.
+    *
+    * @param nWebTemplateFilter Specifies the site definition (default = -1)
+    * @param nConfigurationFilter A 16-bit integer that specifies the identifier of a configuration (default = -1)
+    */
+    getSubwebsFilteredForCurrentUser(nWebTemplateFilter = -1, nConfigurationFilter = -1) {
+        return (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.SPCollection)(this, `getSubwebsFilteredForCurrentUser(nWebTemplateFilter=${nWebTemplateFilter},nConfigurationFilter=${nConfigurationFilter})`);
+    }
+    /**
+     * Returns a collection of site templates available for the site
+     *
+     * @param language The locale id of the site templates to retrieve (default = 1033 [English, US])
+     * @param includeCrossLanguage When true, includes language-neutral site templates; otherwise false (default = true)
+     */
+    availableWebTemplates(language = 1033, includeCrossLanugage = true) {
+        return (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.SPCollection)(this, `getavailablewebtemplates(lcid=${language},doincludecrosslanguage=${includeCrossLanugage})`);
+    }
+};
+_Web = (0,tslib__WEBPACK_IMPORTED_MODULE_0__.__decorate)([
+    (0,_decorators_js__WEBPACK_IMPORTED_MODULE_3__.defaultPath)("_api/web")
+], _Web);
+
+const Web = (0,_spqueryable_js__WEBPACK_IMPORTED_MODULE_2__.spInvokableFactory)(_Web);
+
+
 /***/ }
 
 /******/ 	});
@@ -37269,7 +39942,7 @@ function invokable(invokeableAction) {
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("6a6e5314e45a4fcf549b")
+/******/ 		__webpack_require__.h = () => ("cb4ac5224d26ae2135d5")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
@@ -37292,7 +39965,7 @@ function invokable(invokeableAction) {
 /******/ 	/* webpack/runtime/load script */
 /******/ 	(() => {
 /******/ 		var inProgress = {};
-/******/ 		var dataWebpackPrefix = "b3c4d5e6-f7a8-9012-cdef-123456789012_1.3.0:";
+/******/ 		var dataWebpackPrefix = "b3c4d5e6-f7a8-9012-cdef-123456789012_1.6.0:";
 /******/ 		// loadScript function to load a script via script tag
 /******/ 		__webpack_require__.l = (url, done, key, chunkId) => {
 /******/ 			if(inProgress[url]) { inProgress[url].push(done); return; }
@@ -37801,7 +40474,7 @@ function invokable(invokeableAction) {
 /******/ 			});
 /******/ 		}
 /******/ 		
-/******/ 		self["webpackHotUpdateb3c4d5e6_f7a8_9012_cdef_123456789012_1_3_0"] = (chunkId, moreModules, runtime) => {
+/******/ 		self["webpackHotUpdateb3c4d5e6_f7a8_9012_cdef_123456789012_1_6_0"] = (chunkId, moreModules, runtime) => {
 /******/ 			for(var moduleId in moreModules) {
 /******/ 				if(__webpack_require__.o(moreModules, moduleId)) {
 /******/ 					currentUpdate[moduleId] = moreModules[moduleId];

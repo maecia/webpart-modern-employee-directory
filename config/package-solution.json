@@ -3,13 +3,13 @@
   "solution": {
     "name": "sharepoint-directory-client-side-solution",
     "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "version": "1.4.0.0",
+    "version": "1.6.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
     "developer": {
       "name": "Maecia",
-      "websiteUrl": "https://intranetinside82.sharepoint.com",
+      "websiteUrl": "https://maecia.sharepoint.com",
       "privacyUrl": "",
       "termsOfUseUrl": "",
       "mpnId": ""
@@ -26,10 +26,12 @@
     ],
     "metadata": {
       "shortDescription": {
-        "default": "Annuaire SharePoint"
+        "default": "SharePoint Directory",
+        "fr-fr": "Annuaire SharePoint"
       },
       "longDescription": {
-        "default": "Web Part annuaire des membres du site SharePoint"
+        "default": "Web part that displays a directory of SharePoint site members",
+        "fr-fr": "Web Part annuaire des membres du site SharePoint"
       },
       "screenshotPaths": [],
       "videoUrl": "",
@@ -37,8 +39,8 @@
     },
     "features": [
       {
-        "title": "Annuaire SharePoint Feature",
-        "description": "Déploie la Web Part annuaire",
+        "title": "SharePoint Directory Feature",
+        "description": "Deploys the directory web part",
         "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
         "version": "1.0.0.0"
       }

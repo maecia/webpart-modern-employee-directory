@@ -18,6 +18,8 @@ import {
   IPropertyPaneCustomFieldProps,
   PropertyPaneFieldType,
 } from '@microsoft/sp-property-pane'
+import { spfi, SPFx as SpSPFx } from '@pnp/sp'
+import '@pnp/sp/webs'
 import Directory from './components/Directory'
 import {
   DirectoryConfig,
@@ -27,6 +29,8 @@ import {
 } from '../../models/DirectoryConfig'
 import { FilterField } from '../../models/Filter'
 import { useMembers } from '../../hooks/useMembers'
+import { usePhotoCache } from '../../hooks/usePhotoCache'
+import { PhotoContext } from './components/PhotoContext'
 import {
   useDirectoryConfig,
   DEFAULT_CARD_ORDER,
@@ -89,51 +93,143 @@ const DirectoryContainer: React.FC<{
     onDetectedExtAttrs,
   )
 
-  return React.createElement(Directory, {
-    config,
-    members,
-    isLoading,
-    error,
-    onRetry: retry,
-  })
+  const getPhoto = usePhotoCache(context)
+
+  return React.createElement(
+    PhotoContext.Provider,
+    { value: getPhoto },
+    React.createElement(Directory, {
+      config,
+      members,
+      isLoading,
+      error,
+      onRetry: retry,
+    }),
+  )
 }
 
 export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<ISharepointDirectoryWebPartProps> {
   private _themePrimary: string = '#1B7A6E'
 
-  // ── LCID → language code mapping ──────────────────────────────────────────
+  // ── LCID → language code mapping (all SharePoint Online display languages) ──
   private static LCID_TO_LANG: Record<number, string> = {
-    1033: 'en', 1036: 'fr', 1031: 'de', 3082: 'es',
-    1040: 'it', 1043: 'nl', 1046: 'pt', 1049: 'ru',
-    1055: 'tr', 1025: 'ar', 1028: 'zh', 1041: 'ja',
-    1042: 'ko', 1053: 'sv', 1044: 'nb', 1030: 'da',
-    1035: 'fi', 1029: 'cs', 1038: 'hu', 1045: 'pl',
-    2070: 'pt', 1069: 'eu', 1081: 'hi', 1110: 'gl',
+    1025: 'ar',
+    1026: 'bg',
+    1027: 'ca',
+    1028: 'zh-tw',
+    1029: 'cs',
+    1030: 'da',
+    1031: 'de',
+    1032: 'el',
+    1033: 'en',
+    1035: 'fi',
+    1036: 'fr',
+    1037: 'he',
+    1038: 'hu',
+    1040: 'it',
+    1041: 'ja',
+    1042: 'ko',
+    1043: 'nl',
+    1044: 'nb',
+    1045: 'pl',
+    1046: 'pt-br',
+    1048: 'ro',
+    1049: 'ru',
+    1050: 'hr',
+    1051: 'sk',
+    1053: 'sv',
+    1054: 'th',
+    1055: 'tr',
+    1057: 'id',
+    1058: 'uk',
+    1060: 'sl',
+    1061: 'et',
+    1062: 'lv',
+    1063: 'lt',
+    1066: 'vi',
+    1069: 'eu',
+    1081: 'hi',
+    1086: 'ms',
+    1087: 'kk',
+    1106: 'cy',
+    1110: 'gl',
+    1164: 'prs',
+    2052: 'zh-cn',
+    2070: 'pt-pt',
+    2074: 'sr-latn',
+    3082: 'es',
+    3098: 'sr-cyrl',
+    5146: 'bs-latn',
+    8218: 'bs-cyrl',
+  }
+
+  /** Map an LCID to a language code — unknown LCIDs get a synthetic key instead of being dropped */
+  private static langKeyFromLcid(id: number): string {
+    return SharepointDirectoryWebPart.LCID_TO_LANG[id] || `l-${id}`
+  }
+
+  /** Human-readable name for a language code in the current UI language (e.g. "de" → "Allemand") */
+  private getLangDisplayName(code: string): string {
+    const direct = (strings as any)[`Lang_${code}`]
+    if (direct) return direct
+    try {
+      const name = new (Intl as any).DisplayNames(
+        [this.context.pageContext.cultureInfo.currentUICultureName],
+        { type: 'language' },
+      ).of(code)
+      if (name && name.toLowerCase() !== code.toLowerCase()) return name
+    } catch {
+      // fall through to the raw code
+    }
+    return code.toUpperCase()
   }
 
   private _supportedLanguages: string[] = []
 
   private getSupportedLanguages(): string[] {
     if (this._supportedLanguages.length > 0) return this._supportedLanguages
-    const ids: number[] | undefined =
-      (this.context.pageContext.legacyPageContext as any)?.web?.supportedUILanguageIds
+    const lang = (
+      this.context.pageContext.cultureInfo.currentUICultureName || ''
+    )
+      .split('-')[0]
+      .toLowerCase()
+    return [lang || 'en']
+  }
+
+  private async loadSupportedLanguages(): Promise<void> {
+    this._supportedLanguages = this.getSupportedLanguages()
+
+    // Classic pages expose the list directly in the legacy page context
+    const ids: number[] | undefined = (
+      this.context.pageContext.legacyPageContext as any
+    )?.web?.supportedUILanguageIds
     if (ids && ids.length > 0) {
-      this._supportedLanguages = ids
-        .map((id) => SharepointDirectoryWebPart.LCID_TO_LANG[id])
-        .filter(Boolean)
+      this._supportedLanguages = ids.map((id) =>
+        SharepointDirectoryWebPart.langKeyFromLcid(id),
+      )
+      return
     }
-    if (this._supportedLanguages.length === 0) {
-      const lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase()
-      this._supportedLanguages = [lang || 'en']
+
+    // Modern pages: query the web's SupportedUILanguageIds via REST
+    try {
+      const sp = spfi().using(SpSPFx(this.context))
+      const web: any = await sp.web.select('SupportedUILanguageIds')()
+      const webIds: number[] = web?.SupportedUILanguageIds || []
+      const langs = webIds.map((id) =>
+        SharepointDirectoryWebPart.langKeyFromLcid(id),
+      )
+      if (langs.length > 0) {
+        this._supportedLanguages = langs
+      }
+    } catch {
+      // keep the current-language fallback
     }
-    return this._supportedLanguages
   }
 
   protected onInit(): Promise<void> {
-    setLanguage(this.context.pageContext.cultureInfo.currentCultureName)
+    setLanguage(this.context.pageContext.cultureInfo.currentUICultureName)
     if (!this.properties.activeViewTab) this.properties.activeViewTab = 'card'
-    this.getSupportedLanguages()
-    return super.onInit()
+    return this.loadSupportedLanguages().then(() => super.onInit())
   }
 
   private detectedExtAttrs: string[] = []
@@ -169,15 +265,17 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
         null,
         React.createElement(ThemeExtractor),
         React.createElement(DirectoryContainer, {
-        context: this.context,
-        config,
-        onDetectedExtAttrs: (attrs: string[]) => {
-          if (JSON.stringify(this.detectedExtAttrs) !== JSON.stringify(attrs)) {
-            this.detectedExtAttrs = attrs
-            this.context.propertyPane.refresh()
-          }
-        },
-      }),
+          context: this.context,
+          config,
+          onDetectedExtAttrs: (attrs: string[]) => {
+            if (
+              JSON.stringify(this.detectedExtAttrs) !== JSON.stringify(attrs)
+            ) {
+              this.detectedExtAttrs = attrs
+              this.context.propertyPane.refresh()
+            }
+          },
+        }),
       ),
       this.domElement,
     )
@@ -194,7 +292,10 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
   private getFiltersFromProperties(): FilterField[] {
     const filters: FilterField[] = []
     const count = this.properties.filterCount || 0
-    const lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase()
+    const culture = (
+      this.context.pageContext.cultureInfo.currentUICultureName || ''
+    ).toLowerCase()
+    const lang = culture.split('-')[0]
 
     for (let i = 1; i <= count; i++) {
       const fieldName = this.properties[`filterField${i}`]
@@ -206,12 +307,19 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
       if (json) {
         try {
           const labels = JSON.parse(json)
-          label = labels[lang] || ''
+          label = labels[culture] || labels[lang] || ''
         } catch {
-          label = props[`filterLabel_${i}_${lang}`] || ''
+          label =
+            props[`filterLabel_${i}_${culture}`] ||
+            props[`filterLabel_${i}_${lang}`] ||
+            ''
         }
       } else {
-        label = props[`filterLabel_${i}_${lang}`] || props[`filterLabelFr${i}`] || ''
+        label =
+          props[`filterLabel_${i}_${culture}`] ||
+          props[`filterLabel_${i}_${lang}`] ||
+          props[`filterLabelFr${i}`] ||
+          ''
       }
       filters.push({ fieldName, label })
     }
@@ -303,15 +411,16 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
   }
 
   /** Return localized (single string) labels per field key for the given view */
-  private getLocalizedLabels(
-    view: 'list' | 'modal',
-  ): Record<string, string> {
-    const lang = (this.context.pageContext.cultureInfo.currentCultureName || '').split('-')[0].toLowerCase()
+  private getLocalizedLabels(view: 'list' | 'modal'): Record<string, string> {
+    const culture = (
+      this.context.pageContext.cultureInfo.currentUICultureName || ''
+    ).toLowerCase()
+    const lang = culture.split('-')[0]
     const record = this.parseFieldLabelsRecord(view)
     const result: Record<string, string> = {}
     for (const [key, labels] of Object.entries(record)) {
       const labelMap = labels as Record<string, string>
-      result[key] = labelMap[lang] || labels.en || ''
+      result[key] = labelMap[culture] || labelMap[lang] || labelMap['en'] || ''
     }
     return result
   }
@@ -371,7 +480,7 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
       // Dynamic label fields — one per supported language
       for (const lang of this._supportedLanguages) {
         const propName = `filterLabel_${i}_${lang}`
-        const langLabel = (strings as any)[`Lang_${lang}`] || lang
+        const langLabel = this.getLangDisplayName(lang)
         filterGroupFields.push(
           PropertyPaneTextField(propName, {
             label: langLabel,

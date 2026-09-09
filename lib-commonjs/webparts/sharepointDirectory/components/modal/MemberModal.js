@@ -9,7 +9,7 @@ var DirectoryConfig_1 = require("../../../../models/DirectoryConfig");
 var teamsDeepLink_1 = require("../../../../utils/teamsDeepLink");
 var formatUtils_1 = require("../../../../utils/formatUtils");
 var mystrings_1 = require("../../loc/mystrings");
-var PersonaAvatar_1 = tslib_1.__importDefault(require("../shared/PersonaAvatar"));
+var LazyPersonaAvatar_1 = tslib_1.__importDefault(require("../shared/LazyPersonaAvatar"));
 var TeamsIcon_1 = tslib_1.__importDefault(require("../shared/TeamsIcon"));
 var OutlookIcon_1 = tslib_1.__importDefault(require("../shared/OutlookIcon"));
 var Divider = function () { return (React.createElement("hr", { style: {
@@ -111,7 +111,7 @@ var MemberModal = function (_a) {
                 } },
                 React.createElement("svg", { width: "12", height: "12", viewBox: "0 0 12 12", fill: "currentColor", "aria-hidden": "true" },
                     React.createElement("path", { d: "M.293.293a1 1 0 0 1 1.414 0L6 4.586 10.293.293a1 1 0 1 1 1.414 1.414L7.414 6l4.293 4.293a1 1 0 0 1-1.414 1.414L6 7.414l-4.293 4.293A1 1 0 0 1 .293 10.707L4.586 6 .293 1.707A1 1 0 0 1 .293.293Z" }))),
-            showPhoto && (React.createElement(PersonaAvatar_1.default, { photoUrl: member.photoUrl, displayName: member.displayName, givenName: member.givenName, size: Persona_1.PersonaSize.size100, coinSize: 80, imageShouldFadeIn: false })),
+            showPhoto && (React.createElement(LazyPersonaAvatar_1.default, { userId: member.id, displayName: member.displayName, givenName: member.givenName, size: Persona_1.PersonaSize.size100, coinSize: 80, imageShouldFadeIn: false })),
             showName && (React.createElement("h2", { id: "spdir-modal-title", style: {
                     margin: '16px 0 4px',
                     fontSize: 20,

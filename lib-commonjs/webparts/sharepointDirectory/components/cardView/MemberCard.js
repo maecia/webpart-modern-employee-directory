@@ -7,7 +7,7 @@ var Theme_1 = require("@fluentui/react/lib/Theme");
 var mystrings_1 = require("../../loc/mystrings");
 var teamsDeepLink_1 = require("../../../../utils/teamsDeepLink");
 var formatUtils_1 = require("../../../../utils/formatUtils");
-var PersonaAvatar_1 = tslib_1.__importDefault(require("../shared/PersonaAvatar"));
+var LazyPersonaAvatar_1 = tslib_1.__importDefault(require("../shared/LazyPersonaAvatar"));
 var TeamsIcon_1 = tslib_1.__importDefault(require("../shared/TeamsIcon"));
 var OutlookIcon_1 = tslib_1.__importDefault(require("../shared/OutlookIcon"));
 var MemberCard = function (_a) {
@@ -133,7 +133,7 @@ var MemberCard = function (_a) {
             e.currentTarget.style.boxShadow =
                 '0 2px 8px rgba(0,0,0,0.08)';
         }, "aria-label": "".concat(fullName, " - ").concat(mystrings_1.strings.ClickForDetails) },
-        showPhoto && (React.createElement(PersonaAvatar_1.default, { photoUrl: member.photoUrl, displayName: member.displayName, givenName: member.givenName, size: Persona_1.PersonaSize.size100, coinSize: 80 })),
+        showPhoto && (React.createElement(LazyPersonaAvatar_1.default, { userId: member.id, displayName: member.displayName, givenName: member.givenName, size: Persona_1.PersonaSize.size100, coinSize: 80 })),
         React.createElement("div", { style: {
                 display: 'flex',
                 flexDirection: 'column',

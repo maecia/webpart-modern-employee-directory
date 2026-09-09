@@ -13,8 +13,8 @@ interface BannerProps {
   onSearchChange: (value: string) => void
   filters: FilterField[]
   members: Member[]
-  filterValues: Record<string, string | null>
-  onFilterChange: (fieldName: string, value: string | null) => void
+  filterValues: Record<string, string[] | null>
+  onFilterChange: (fieldName: string, value: string[] | null) => void
   resultCount: number
   activeView: 'card' | 'list'
   onViewChange: (view: 'card' | 'list') => void

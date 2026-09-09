@@ -10,7 +10,7 @@
 // That's it — no other file needs to change.
 // ─────────────────────────────────────────────────────────────────────────────
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setLanguage = exports.strings = void 0;
+exports.getLocale = exports.setLanguage = exports.strings = void 0;
 var tslib_1 = require("tslib");
 var fr_1 = tslib_1.__importDefault(require("./fr"));
 var en_1 = tslib_1.__importDefault(require("./en"));
@@ -20,17 +20,24 @@ var locales = {
     fr: fr_1.default,
     en: en_1.default,
 };
-var current = fr_1.default;
+var current = en_1.default;
+var currentLocale = 'en-US';
 exports.strings = new Proxy({}, {
     get: function (_target, prop) {
         return current[prop];
     },
 });
-/** Call once at startup with the SharePoint currentCultureName (e.g. "fr-fr", "en-us"). */
+/** Call once at startup with the SharePoint currentUICultureName (e.g. "fr-fr", "en-us"). */
 function setLanguage(locale) {
     var _a;
     var lang = (locale || '').split('-')[0].toLowerCase();
     current = (_a = locales[lang]) !== null && _a !== void 0 ? _a : en_1.default;
+    currentLocale = locale || 'en-US';
 }
 exports.setLanguage = setLanguage;
+/** Full locale of the current UI language (e.g. "fr-FR", "en-US") — for date/name formatting. */
+function getLocale() {
+    return currentLocale;
+}
+exports.getLocale = getLocale;
 //# sourceMappingURL=mystrings.js.map

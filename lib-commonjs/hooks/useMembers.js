@@ -14,8 +14,7 @@ function useMembers(context, customFieldKeys, onDetectedExtensionAttrs) {
     var _d = (0, react_1.useState)(0), retryCount = _d[0], setRetryCount = _d[1];
     var serviceRef = (0, react_1.useRef)(null);
     var loadMembers = (0, react_1.useCallback)(function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
-        var service_1, _a, data, detectedExtensionAttrs, membersWithPhotos, err_1;
-        var _this = this;
+        var service, _a, data, detectedExtensionAttrs, err_1;
         var _b;
         return tslib_1.__generator(this, function (_c) {
             switch (_c.label) {
@@ -24,42 +23,26 @@ function useMembers(context, customFieldKeys, onDetectedExtensionAttrs) {
                     setError(null);
                     _c.label = 1;
                 case 1:
-                    _c.trys.push([1, 4, 5, 6]);
+                    _c.trys.push([1, 3, 4, 5]);
                     (_b = serviceRef.current) === null || _b === void 0 ? void 0 : _b.dispose();
-                    service_1 = new GraphService_1.GraphService(context);
-                    serviceRef.current = service_1;
-                    return [4 /*yield*/, service_1.getMembers(customFieldKeys)];
+                    service = new GraphService_1.GraphService(context);
+                    serviceRef.current = service;
+                    return [4 /*yield*/, service.getMembers(customFieldKeys)];
                 case 2:
                     _a = _c.sent(), data = _a.members, detectedExtensionAttrs = _a.detectedExtensionAttrs;
                     if (detectedExtensionAttrs.length > 0 && onDetectedExtensionAttrs) {
                         onDetectedExtensionAttrs(detectedExtensionAttrs);
                     }
-                    return [4 /*yield*/, Promise.all(data.map(function (member) { return tslib_1.__awaiter(_this, void 0, void 0, function () {
-                            var photoUrl;
-                            return tslib_1.__generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0:
-                                        if (!member.id) return [3 /*break*/, 2];
-                                        return [4 /*yield*/, service_1.getMemberPhoto(member.id)];
-                                    case 1:
-                                        photoUrl = _a.sent();
-                                        return [2 /*return*/, tslib_1.__assign(tslib_1.__assign({}, member), { photoUrl: photoUrl || undefined })];
-                                    case 2: return [2 /*return*/, member];
-                                }
-                            });
-                        }); }))];
+                    setMembers(data);
+                    return [3 /*break*/, 5];
                 case 3:
-                    membersWithPhotos = _c.sent();
-                    setMembers(membersWithPhotos);
-                    return [3 /*break*/, 6];
-                case 4:
                     err_1 = _c.sent();
                     setError(mystrings_1.strings.ErrorLoading);
-                    return [3 /*break*/, 6];
-                case 5:
+                    return [3 /*break*/, 5];
+                case 4:
                     setIsLoading(false);
                     return [7 /*endfinally*/];
-                case 6: return [2 /*return*/];
+                case 5: return [2 /*return*/];
             }
         });
     }); }, [context, retryCount, customFieldKeys.join(',')]);

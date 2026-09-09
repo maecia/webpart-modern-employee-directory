@@ -1,14 +1,14 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Member } from '../models/Member';
-import { GraphService } from '../services/GraphService';
-import { strings } from '../webparts/sharepointDirectory/loc/mystrings';
-import { WebPartContext } from '@microsoft/sp-webpart-base';
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { Member } from '../models/Member'
+import { GraphService } from '../services/GraphService'
+import { strings } from '../webparts/sharepointDirectory/loc/mystrings'
+import { WebPartContext } from '@microsoft/sp-webpart-base'
 
 interface UseMembersResult {
-  members: Member[];
-  isLoading: boolean;
-  error: string | null;
-  retry: () => void;
+  members: Member[]
+  isLoading: boolean
+  error: string | null
+  retry: () => void
 }
 
 export function useMembers(
@@ -16,55 +16,46 @@ export function useMembers(
   customFieldKeys: string[] = [],
   onDetectedExtensionAttrs?: (attrs: string[]) => void,
 ): UseMembersResult {
-  const [members, setMembers] = useState<Member[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
-  const serviceRef = useRef<GraphService | null>(null);
+  const [members, setMembers] = useState<Member[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
+  const serviceRef = useRef<GraphService | null>(null)
 
   const loadMembers = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
 
     try {
-      serviceRef.current?.dispose();
-      const service = new GraphService(context);
-      serviceRef.current = service;
+      serviceRef.current?.dispose()
+      const service = new GraphService(context)
+      serviceRef.current = service
 
-      const { members: data, detectedExtensionAttrs } = await service.getMembers(customFieldKeys);
+      const { members: data, detectedExtensionAttrs } =
+        await service.getMembers(customFieldKeys)
 
       if (detectedExtensionAttrs.length > 0 && onDetectedExtensionAttrs) {
-        onDetectedExtensionAttrs(detectedExtensionAttrs);
+        onDetectedExtensionAttrs(detectedExtensionAttrs)
       }
 
-      const membersWithPhotos = await Promise.all(
-        data.map(async (member) => {
-          if (member.id) {
-            const photoUrl = await service.getMemberPhoto(member.id);
-            return { ...member, photoUrl: photoUrl || undefined };
-          }
-          return member;
-        })
-      );
-
-      setMembers(membersWithPhotos);
+      setMembers(data)
     } catch (err) {
-      setError(strings.ErrorLoading);
+      setError(strings.ErrorLoading)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  }, [context, retryCount, customFieldKeys.join(',')]);
+  }, [context, retryCount, customFieldKeys.join(',')])
 
   useEffect(() => {
-    loadMembers();
+    loadMembers()
     return () => {
-      serviceRef.current?.dispose();
-    };
-  }, [loadMembers]);
+      serviceRef.current?.dispose()
+    }
+  }, [loadMembers])
 
   const retry = useCallback(() => {
-    setRetryCount(c => c + 1);
-  }, []);
+    setRetryCount((c) => c + 1)
+  }, [])
 
-  return { members, isLoading, error, retry };
+  return { members, isLoading, error, retry }
 }

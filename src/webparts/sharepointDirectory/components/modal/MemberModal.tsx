@@ -8,6 +8,7 @@ import { getTeamsDeepLink } from '../../../../utils/teamsDeepLink'
 import { getMailtoLink } from '../../../../utils/formatUtils'
 import { strings } from '../../loc/mystrings'
 import PersonaAvatar from '../shared/PersonaAvatar'
+import LazyPersonaAvatar from '../shared/LazyPersonaAvatar'
 import TeamsIcon from '../shared/TeamsIcon'
 import OutlookIcon from '../shared/OutlookIcon'
 
@@ -209,8 +210,8 @@ const MemberModal: React.FC<MemberModalProps> = ({
         </button>
 
         {showPhoto && (
-          <PersonaAvatar
-            photoUrl={member.photoUrl}
+          <LazyPersonaAvatar
+            userId={member.id}
             displayName={member.displayName}
             givenName={member.givenName}
             size={PersonaSize.size100}

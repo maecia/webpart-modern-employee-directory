@@ -48,8 +48,8 @@ const Banner: React.FC<BannerProps> = ({
         gap: 8,
         padding: '12px 24px',
         minHeight: 64,
-        backgroundColor: '#ffffff',
-        borderBottom: '1px solid #edebe9',
+        backgroundColor: 'var(--spdc-surface)',
+        borderBottom: '1px solid var(--spdc-divider)',
         boxSizing: 'border-box',
       }}
     >
@@ -72,7 +72,7 @@ const Banner: React.FC<BannerProps> = ({
       {/* Count */}
       <Text
         variant="small"
-        styles={{ root: { whiteSpace: 'nowrap', color: '#605e5c' } }}
+        styles={{ root: { whiteSpace: 'nowrap', color: 'var(--spdc-text-secondary)' } }}
       >
         {strings.ResultsLabel} {resultCount}{' '}
         {resultCount <= 1
@@ -85,11 +85,11 @@ const Banner: React.FC<BannerProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          border: '1px solid #e0e0e0',
+          border: '1px solid var(--spdc-border-alt)',
           borderRadius: 20,
           padding: 3,
           gap: 2,
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--spdc-surface)',
           flexShrink: 0,
         }}
       >
@@ -107,7 +107,7 @@ const Banner: React.FC<BannerProps> = ({
             borderRadius: '50%',
             backgroundColor:
               activeView === 'card' ? primaryColor : 'transparent',
-            color: activeView === 'card' ? '#ffffff' : '#605e5c',
+            color: activeView === 'card' ? '#ffffff' : 'var(--spdc-text-secondary)',
             cursor: 'pointer',
             border: 'none',
             padding: 0,
@@ -142,7 +142,7 @@ const Banner: React.FC<BannerProps> = ({
             borderRadius: '50%',
             backgroundColor:
               activeView === 'list' ? primaryColor : 'transparent',
-            color: activeView === 'list' ? '#ffffff' : '#605e5c',
+            color: activeView === 'list' ? '#ffffff' : 'var(--spdc-text-secondary)',
             cursor: 'pointer',
             border: 'none',
             padding: 0,

@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: User description: "Construis une Web Part SharePoint Framework (SPFx) qui affichera un annuaire sur notre tenant SharePoint. Le but est de récupérer les membres du site et de les afficher sous forme de cards ou de liste. Il faudra faire attention aux différents droits pour que l'utilisateur ait accès à l'annuaire ou non et s'il doit remonter dessus. Le descriptif de l'attendu est dans le ticket Jira CP-1505, que tu peux charger grâce au MCP Jira."
+**Input**: User description: "Construis une Web Part SharePoint Framework (SPFx) qui affichera un annuaire sur notre tenant SharePoint. Le but est de récupérer les membres du site et de les afficher sous forme de cards ou de liste. Il faudra faire attention aux différents droits pour que l'utilisateur ait accès à l'annuaire ou non et s'il doit remonter dessus."
 
 ## User Scenarios & Testing *(mandatory)*
 

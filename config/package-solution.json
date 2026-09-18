@@ -1,46 +1,46 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
   "solution": {
-    "name": "sharepoint-directory-client-side-solution",
+    "name": "maecia-directory-client-side-solution",
     "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "version": "1.6.0.0",
+    "title": "Maecia Directory",
+    "version": "1.7.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
     "developer": {
       "name": "Maecia",
-      "websiteUrl": "https://maecia.sharepoint.com",
-      "privacyUrl": "",
-      "termsOfUseUrl": "",
+      "websiteUrl": "https://www.maecia.com/agence-sharepoint",
+      "privacyUrl": "https://www.maecia.com/politique-de-confidentialite",
+      "termsOfUseUrl": "https://www.maecia.com/mentions-legales",
       "mpnId": ""
     },
     "webApiPermissionRequests": [
       {
         "resource": "Microsoft Graph",
         "scope": "User.Read.All"
-      },
-      {
-        "resource": "Microsoft Graph",
-        "scope": "User.ReadBasic.All"
       }
     ],
     "metadata": {
       "shortDescription": {
-        "default": "SharePoint Directory",
-        "fr-fr": "Annuaire SharePoint"
+        "default": "Maecia Directory - a configurable employee directory for your SharePoint team.",
+        "fr-FR": "Maecia Annuaire - un annuaire des collaborateurs configurable pour votre equipe SharePoint."
       },
       "longDescription": {
-        "default": "Web part that displays a directory of SharePoint site members",
-        "fr-fr": "Web Part annuaire des membres du site SharePoint"
+        "default": "<b>Maecia Directory</b> turns any SharePoint page into a modern, searchable employee directory. It lists the active members of your Microsoft 365 tenant and lets page authors choose exactly which fields appear in the card view, the list view and the detail panel. End users can search in real time, combine up to three multi-select filters, contact colleagues through Microsoft Teams or email, open a full profile card and export the filtered list to CSV. Administrators configure everything from the property pane, with built-in French and English labels and support for custom Entra ID attributes. The solution contains a single web part and uses the Microsoft Graph <i>User.Read.All</i> permission to read user profiles and photos.",
+        "fr-FR": "<b>Maecia Annuaire</b> transforme n'importe quelle page SharePoint en un annuaire des collaborateurs moderne et recherchable. La webpart liste les membres actifs de votre tenant Microsoft 365 et laisse les auteurs de page choisir precisement les champs affiches dans la vue carte, la vue liste et la fiche detaillee. Les utilisateurs peuvent rechercher en temps reel, combiner jusqu'a trois filtres a selection multiple, contacter un collegue via Microsoft Teams ou par email, ouvrir une fiche complete et exporter la liste filtree au format CSV. L'administrateur configure l'ensemble depuis le volet de proprietes, avec des libelles francais et anglais integres et la prise en charge des attributs Entra ID personnalises. La solution contient une seule webpart et utilise la permission Microsoft Graph <i>User.Read.All</i> pour lire les profils et les photos des utilisateurs."
       },
       "screenshotPaths": [],
       "videoUrl": "",
-      "categories": []
+      "categories": [
+        "Collaboration",
+        "Productivity"
+      ]
     },
     "features": [
       {
-        "title": "SharePoint Directory Feature",
-        "description": "Deploys the directory web part",
+        "title": "Maecia Directory web part",
+        "description": "Deploys the Maecia Directory web part, which displays a configurable directory of Microsoft 365 users.",
         "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
         "version": "1.0.0.0"
       }

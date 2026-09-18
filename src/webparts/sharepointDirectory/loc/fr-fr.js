@@ -54,7 +54,11 @@ define([], function () {
     "ResultCount": "{0} résultat(s)",
 
     // UI - Card view
-    "LoadMore": "Voir plus de collaborateurs",
+    "PaginationLabel": "Pagination",
+    "PaginationPrevious": "Page précédente",
+    "PaginationNext": "Page suivante",
+    "PaginationRange": "{0}–{1} sur {2}",
+    "PageSizeLabel": "Éléments par page",
     "ViewProfile": "Voir la fiche",
     "ClickForDetails": "Cliquez pour les détails",
 

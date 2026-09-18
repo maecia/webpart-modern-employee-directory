@@ -54,7 +54,11 @@ define([], function () {
     "ResultCount": "{0} result(s)",
 
     // UI - Card view
-    "LoadMore": "Load more",
+    "PaginationLabel": "Pagination",
+    "PaginationPrevious": "Previous page",
+    "PaginationNext": "Next page",
+    "PaginationRange": "{0}–{1} of {2}",
+    "PageSizeLabel": "Items per page",
     "ViewProfile": "View profile",
     "ClickForDetails": "Click for details",
 

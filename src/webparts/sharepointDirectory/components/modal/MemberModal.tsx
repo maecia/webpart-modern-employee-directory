@@ -6,6 +6,7 @@ import { Member } from '../../../../models/Member'
 import { getEntraFieldLabel } from '../../../../models/DirectoryConfig'
 import { getTeamsDeepLink } from '../../../../utils/teamsDeepLink'
 import { getMailtoLink } from '../../../../utils/formatUtils'
+import { themeColorVars } from '../../../../utils/themeColors'
 import { strings } from '../../loc/mystrings'
 import PersonaAvatar from '../shared/PersonaAvatar'
 import LazyPersonaAvatar from '../shared/LazyPersonaAvatar'
@@ -25,7 +26,7 @@ const Divider = () => (
   <hr
     style={{
       border: 'none',
-      borderTop: '1px solid #edebe9',
+      borderTop: '1px solid var(--spdc-divider)',
       margin: '12px 0',
       width: '100%',
     }}
@@ -43,19 +44,19 @@ const FieldRow = ({
   link?: string
 }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-    <span style={{ fontSize: 12, color: '#605e5c' }}>{label}</span>
+    <span style={{ fontSize: 12, color: 'var(--spdc-text-secondary)' }}>{label}</span>
     {link ? (
       <a
         href={link}
         target="_blank"
         rel="noopener noreferrer"
-        style={{ fontSize: 14, color: '#201f1e', textDecoration: 'none' }}
+        style={{ fontSize: 14, color: 'var(--spdc-text-primary)', textDecoration: 'none' }}
         onClick={(e) => e.stopPropagation()}
       >
         {value}
       </a>
     ) : (
-      <span style={{ fontSize: 14, color: '#201f1e' }}>{value}</span>
+      <span style={{ fontSize: 14, color: 'var(--spdc-text-primary)' }}>{value}</span>
     )}
   </div>
 )
@@ -70,6 +71,10 @@ const MemberModal: React.FC<MemberModalProps> = ({
 }) => {
   const theme = useTheme()
   const primaryColor = theme?.palette?.themePrimary || '#1B7A6E'
+  const themeVars = React.useMemo(
+    () => themeColorVars(theme) as React.CSSProperties,
+    [theme],
+  )
 
   if (!member) return null
 
@@ -144,6 +149,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
     >
       <div
         style={{
+          ...themeVars,
           position: 'relative',
           padding: '32px 28px 28px',
           display: 'flex',
@@ -195,7 +201,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#605e5c',
+            color: 'var(--spdc-text-secondary)',
           }}
         >
           <svg
@@ -227,7 +233,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
               margin: '16px 0 4px',
               fontSize: 20,
               fontWeight: 600,
-              color: '#201f1e',
+              color: 'var(--spdc-text-primary)',
               textAlign: 'center',
             }}
           >
@@ -314,7 +320,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                         <span
                           style={{
                             fontSize: 12,
-                            color: '#605e5c',
+                            color: 'var(--spdc-text-secondary)',
                             marginBottom: 4,
                           }}
                         >
@@ -353,7 +359,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                             {member.managerDisplayName}
                           </span>
                         ) : (
-                          <span style={{ fontSize: 14, color: '#201f1e' }}>
+                          <span style={{ fontSize: 14, color: 'var(--spdc-text-primary)' }}>
                             {member.managerDisplayName}
                           </span>
                         )}
@@ -389,7 +395,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                   window.open(getTeamsDeepLink(member.teamsId!), '_blank')
                 }
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#f3f4f6'
+                  e.currentTarget.style.backgroundColor = 'var(--spdc-action-hover)'
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'transparent'
@@ -421,7 +427,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                   window.open(getMailtoLink(member.email!), '_blank')
                 }
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#f3f4f6'
+                  e.currentTarget.style.backgroundColor = 'var(--spdc-action-hover)'
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = 'transparent'

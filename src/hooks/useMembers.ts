@@ -22,6 +22,12 @@ export function useMembers(
   const [retryCount, setRetryCount] = useState(0)
   const serviceRef = useRef<GraphService | null>(null)
 
+  // Stable primitive key so the callback is not recreated on every array render,
+  // and a ref for the callback so it never becomes a reactive dependency.
+  const customFieldsKey = customFieldKeys.join(',')
+  const onDetectedExtAttrsRef = useRef(onDetectedExtensionAttrs)
+  onDetectedExtAttrsRef.current = onDetectedExtensionAttrs
+
   const loadMembers = useCallback(async () => {
     setIsLoading(true)
     setError(null)
@@ -31,11 +37,12 @@ export function useMembers(
       const service = new GraphService(context)
       serviceRef.current = service
 
+      const keys = customFieldsKey ? customFieldsKey.split(',') : []
       const { members: data, detectedExtensionAttrs } =
-        await service.getMembers(customFieldKeys)
+        await service.getMembers(keys)
 
-      if (detectedExtensionAttrs.length > 0 && onDetectedExtensionAttrs) {
-        onDetectedExtensionAttrs(detectedExtensionAttrs)
+      if (detectedExtensionAttrs.length > 0 && onDetectedExtAttrsRef.current) {
+        onDetectedExtAttrsRef.current(detectedExtensionAttrs)
       }
 
       setMembers(data)
@@ -44,7 +51,9 @@ export function useMembers(
     } finally {
       setIsLoading(false)
     }
-  }, [context, retryCount, customFieldKeys.join(',')])
+    // retryCount is a deliberate trigger: bumping it re-creates this callback and reloads.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [context, retryCount, customFieldsKey])
 
   useEffect(() => {
     loadMembers()

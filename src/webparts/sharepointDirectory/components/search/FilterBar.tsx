@@ -85,9 +85,9 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         style={{
           height: 38,
           borderRadius: 20,
-          border: `1px solid ${open ? '#1B7A6E' : hasSelection ? '#1B7A6E' : '#c7c9cc'}`,
-          backgroundColor: hasSelection ? '#f0faf8' : disabled ? '#f3f2f1' : '#ffffff',
-          color: hasSelection ? '#1B7A6E' : disabled ? '#a19f9d' : '#605e5c',
+          border: `1px solid ${open ? 'var(--spdc-brand-solid)' : hasSelection ? 'var(--spdc-brand-solid)' : 'var(--spdc-border-input)'}`,
+          backgroundColor: hasSelection ? 'var(--spdc-brand-tint)' : disabled ? 'var(--spdc-hover)' : 'var(--spdc-surface)',
+          color: hasSelection ? 'var(--spdc-brand-text)' : disabled ? 'var(--spdc-placeholder)' : 'var(--spdc-text-secondary)',
           fontWeight: hasSelection ? 600 : 400,
           fontSize: 13,
           paddingLeft: 16,
@@ -117,7 +117,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           position: 'absolute',
           right: hasSelection ? 30 : 14,
           pointerEvents: 'none',
-          color: hasSelection ? '#1B7A6E' : '#605e5c',
+          color: hasSelection ? 'var(--spdc-brand-text)' : 'var(--spdc-text-secondary)',
           transform: open ? 'rotate(180deg)' : 'none',
           transition: 'transform 0.15s ease',
         }}
@@ -143,7 +143,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#1B7A6E',
+            color: 'var(--spdc-brand-text)',
             borderRadius: '50%',
             width: 16,
             height: 16,
@@ -167,15 +167,15 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
             marginTop: 4,
             minWidth: '100%',
             maxWidth: 320,
-            backgroundColor: '#ffffff',
-            border: '1px solid #edebe9',
+            backgroundColor: 'var(--spdc-surface)',
+            border: '1px solid var(--spdc-divider)',
             borderRadius: 8,
             boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
             zIndex: 9999,
             overflow: 'hidden',
           }}
         >
-          <div style={{ padding: '8px 8px 4px', borderBottom: '1px solid #f3f2f1' }}>
+          <div style={{ padding: '8px 8px 4px', borderBottom: '1px solid var(--spdc-hover)' }}>
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
               <svg
                 width="14"
@@ -183,7 +183,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                 viewBox="0 0 16 16"
                 fill="none"
                 aria-hidden="true"
-                style={{ position: 'absolute', left: 8, color: '#605e5c', pointerEvents: 'none' }}
+                style={{ position: 'absolute', left: 8, color: 'var(--spdc-text-secondary)', pointerEvents: 'none' }}
               >
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z" fill="currentColor" />
               </svg>
@@ -198,12 +198,12 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                   height: 32,
                   paddingLeft: 30,
                   paddingRight: 8,
-                  border: '1px solid #c7c9cc',
+                  border: '1px solid var(--spdc-border-input)',
                   borderRadius: 6,
                   fontSize: 13,
                   outline: 'none',
                   boxSizing: 'border-box',
-                  color: '#323130',
+                  color: 'var(--spdc-text-strong)',
                 }}
               />
             </div>
@@ -211,7 +211,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
           <ul style={{ margin: 0, padding: '4px 0', listStyle: 'none', maxHeight: 220, overflowY: 'auto' }}>
             {filtered.length === 0 ? (
-              <li style={{ padding: '8px 16px', fontSize: 13, color: '#605e5c' }}>—</li>
+              <li style={{ padding: '8px 16px', fontSize: 13, color: 'var(--spdc-text-secondary)' }}>—</li>
             ) : (
               filtered.map((opt) => {
                 const isChecked = selected.includes(opt)
@@ -229,15 +229,15 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                       display: 'flex',
                       alignItems: 'center',
                       gap: 8,
-                      color: '#323130',
-                      backgroundColor: isChecked ? '#f0faf8' : 'transparent',
+                      color: 'var(--spdc-text-strong)',
+                      backgroundColor: isChecked ? 'var(--spdc-brand-tint)' : 'transparent',
                       userSelect: 'none',
                     }}
                     onMouseEnter={(e) => {
-                      if (!isChecked) (e.currentTarget as HTMLElement).style.backgroundColor = '#faf9f8'
+                      if (!isChecked) (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--spdc-page-bg)'
                     }}
                     onMouseLeave={(e) => {
-                      ;(e.currentTarget as HTMLElement).style.backgroundColor = isChecked ? '#f0faf8' : 'transparent'
+                      ;(e.currentTarget as HTMLElement).style.backgroundColor = isChecked ? 'var(--spdc-brand-tint)' : 'transparent'
                     }}
                   >
                     <span
@@ -246,8 +246,8 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                         width: 16,
                         height: 16,
                         borderRadius: 3,
-                        border: `2px solid ${isChecked ? '#1B7A6E' : '#c7c9cc'}`,
-                        backgroundColor: isChecked ? '#1B7A6E' : '#ffffff',
+                        border: `2px solid ${isChecked ? 'var(--spdc-brand-solid)' : 'var(--spdc-border-input)'}`,
+                        backgroundColor: isChecked ? 'var(--spdc-brand-solid)' : 'var(--spdc-surface)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',

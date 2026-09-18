@@ -85,7 +85,7 @@ const MemberCard: React.FC<MemberCardProps> = ({
             tabIndex={managerMember ? 0 : undefined}
             style={{
               fontSize: 13,
-              color: managerMember ? primaryColor : '#605e5c',
+              color: managerMember ? primaryColor : 'var(--spdc-text-secondary)',
               lineHeight: 1.4,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
@@ -126,7 +126,7 @@ const MemberCard: React.FC<MemberCardProps> = ({
         <span
           style={{
             fontSize: 13,
-            color: '#605e5c',
+            color: 'var(--spdc-text-secondary)',
             lineHeight: 1.4,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -145,7 +145,7 @@ const MemberCard: React.FC<MemberCardProps> = ({
       <span
         style={{
           fontSize: 13,
-          color: '#605e5c',
+          color: 'var(--spdc-text-secondary)',
           lineHeight: 1.4,
           whiteSpace: 'nowrap',
           overflow: 'hidden',
@@ -160,7 +160,7 @@ const MemberCard: React.FC<MemberCardProps> = ({
   return (
     <div
       style={{
-        background: '#ffffff',
+        background: 'var(--spdc-surface)',
         borderRadius: 12,
         boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
         cursor: 'pointer',
@@ -214,7 +214,7 @@ const MemberCard: React.FC<MemberCardProps> = ({
             style={{
               fontSize: 16,
               fontWeight: 600,
-              color: '#201f1e',
+              color: 'var(--spdc-text-primary)',
               lineHeight: 1.3,
               whiteSpace: 'nowrap',
               overflow: 'hidden',

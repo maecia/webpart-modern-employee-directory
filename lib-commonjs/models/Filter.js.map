@@ -1,1 +1,0 @@
-{"version":3,"file":"Filter.js","sourceRoot":"","sources":["../../src/models/Filter.ts"],"names":[],"mappings":"","sourcesContent":["export interface FilterField {\n  fieldName: string;\n  label: string;\n}\n"]}

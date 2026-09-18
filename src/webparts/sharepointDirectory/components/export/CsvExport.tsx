@@ -67,6 +67,7 @@ const CsvExport: React.FC<CsvExportProps> = ({
   listFieldLabels,
 }) => {
   const csvService = new CsvService()
+  const containerRef = React.useRef<HTMLSpanElement>(null)
   const disabled = members.length === 0
   const [hovered, setHovered] = React.useState(false)
 
@@ -76,49 +77,60 @@ const CsvExport: React.FC<CsvExportProps> = ({
     const headers = keys.map((k) => getColumnHeader(k, listFieldLabels))
     const rows = members.map((m) => keys.map((k) => getMemberFieldValue(m, k)))
     const date = new Date().toISOString().split('T')[0]
-    csvService.exportToCsv(headers, rows, `annuaire-sharepoint-${date}.csv`)
+    csvService.exportToCsv(
+      headers,
+      rows,
+      `annuaire-sharepoint-${date}.csv`,
+      containerRef.current || undefined,
+    )
   }
 
   return (
-    <button
-      onClick={handleExport}
-      disabled={disabled}
-      title={strings.ExportCsv}
-      aria-label={strings.ExportCsv}
-      onMouseEnter={() => !disabled && setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 6,
-        height: 38,
-        paddingLeft: 14,
-        paddingRight: 14,
-        borderRadius: 20,
-        border: '1px solid #c7c9cc',
-        backgroundColor: hovered ? '#f3f2f1' : '#ffffff',
-        color: disabled ? '#605e5c' : '#605e5c',
-        fontSize: 13,
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        whiteSpace: 'nowrap',
-        flexShrink: 0,
-        outline: 'none',
-        transition: 'background-color 0.15s ease',
-      }}
-    >
-      <svg
-        width="13"
-        height="13"
-        viewBox="0 0 16 16"
-        fill="currentColor"
-        aria-hidden="true"
+    <>
+      <button
+        onClick={handleExport}
+        disabled={disabled}
+        title={strings.ExportCsv}
+        aria-label={strings.ExportCsv}
+        onMouseEnter={() => !disabled && setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          height: 38,
+          paddingLeft: 14,
+          paddingRight: 14,
+          borderRadius: 20,
+          border: '1px solid var(--spdc-border-input)',
+          backgroundColor: hovered
+            ? 'var(--spdc-hover)'
+            : 'var(--spdc-surface)',
+          color: 'var(--spdc-text-secondary)',
+          fontSize: 13,
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          whiteSpace: 'nowrap',
+          flexShrink: 0,
+          outline: 'none',
+          transition: 'background-color 0.15s ease',
+        }}
       >
-        <path d="M8 12.5a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 1 0v9a.5.5 0 0 1-.5.5z" />
-        <path d="M4.646 9.146a.5.5 0 0 1 .708 0L8 11.793l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z" />
-        <path d="M2 14a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-1a.5.5 0 0 0-1 0v1H3v-1a.5.5 0 0 0-1 0v1z" />
-      </svg>
-      {strings.ExportCsv}
-    </button>
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M8 12.5a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 1 0v9a.5.5 0 0 1-.5.5z" />
+          <path d="M4.646 9.146a.5.5 0 0 1 .708 0L8 11.793l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z" />
+          <path d="M2 14a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-1a.5.5 0 0 0-1 0v1H3v-1a.5.5 0 0 0-1 0v1z" />
+        </svg>
+        {strings.ExportCsv}
+      </button>
+      {/* Internal host for the transient download anchor — never document.body */}
+      <span ref={containerRef} style={{ display: 'none' }} aria-hidden="true" />
+    </>
   )
 }
 

@@ -1,7 +1,16 @@
 import * as React from 'react'
 import * as ReactDom from 'react-dom'
 import { Version } from '@microsoft/sp-core-library'
-import { useTheme } from '@fluentui/react/lib/Theme'
+import {
+  useTheme,
+  ThemeProvider as FluentThemeProvider,
+  ITheme as IFluentTheme,
+} from '@fluentui/react/lib/Theme'
+import {
+  ThemeProvider as SPThemeProvider,
+  IReadonlyTheme,
+  ThemeChangedEventArgs,
+} from '@microsoft/sp-component-base'
 import {
   BaseClientSideWebPart,
   IPropertyPaneConfiguration,
@@ -37,6 +46,7 @@ import {
   DEFAULT_LIST_ORDER,
   DEFAULT_MODAL_ORDER,
 } from '../../hooks/useDirectoryConfig'
+import { PAGE_SIZE_OPTIONS } from '../../hooks/usePagination'
 import { setLanguage, strings } from './loc/mystrings'
 import DnDFieldSelector from './components/propertyPane/DnDFieldSelector'
 
@@ -53,6 +63,8 @@ export interface ISharepointDirectoryWebPartProps {
   /** JSON-serialised Record<string, Record<string, string>> for labels */
   listFieldLabelsJson: string
   modalFieldLabelsJson: string
+  /** Number of members displayed per page in the card and list views */
+  pageSize: number
   /** Filters */
   filterCount: number
   filterField1: string
@@ -110,6 +122,8 @@ const DirectoryContainer: React.FC<{
 
 export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<ISharepointDirectoryWebPartProps> {
   private _themePrimary: string = '#1B7A6E'
+  private _spThemeProvider?: SPThemeProvider
+  private _theme?: IReadonlyTheme
 
   // ── LCID → language code mapping (all SharePoint Online display languages) ──
   private static LCID_TO_LANG: Record<number, string> = {
@@ -147,7 +161,9 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
     1062: 'lv',
     1063: 'lt',
     1066: 'vi',
+    1068: 'az',
     1069: 'eu',
+    1071: 'mk',
     1081: 'hi',
     1086: 'ms',
     1087: 'kk',
@@ -156,11 +172,12 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
     1164: 'prs',
     2052: 'zh-cn',
     2070: 'pt-pt',
-    2074: 'sr-latn',
+    2108: 'ga',
     3082: 'es',
-    3098: 'sr-cyrl',
     5146: 'bs-latn',
     8218: 'bs-cyrl',
+    9242: 'sr-latn',
+    10266: 'sr-cyrl',
   }
 
   /** Map an LCID to a language code — unknown LCIDs get a synthetic key instead of being dropped */
@@ -168,20 +185,22 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
     return SharepointDirectoryWebPart.LCID_TO_LANG[id] || `l-${id}`
   }
 
-  /** Human-readable name for a language code in the current UI language (e.g. "de" → "Allemand") */
+  /** Human-readable "Label <language>" in the current UI language (e.g. "de" → "Label allemand") */
   private getLangDisplayName(code: string): string {
-    const direct = (strings as any)[`Lang_${code}`]
-    if (direct) return direct
+    let name = ''
     try {
-      const name = new (Intl as any).DisplayNames(
-        [this.context.pageContext.cultureInfo.currentUICultureName],
-        { type: 'language' },
-      ).of(code)
-      if (name && name.toLowerCase() !== code.toLowerCase()) return name
+      name =
+        new (Intl as any).DisplayNames(
+          [this.context.pageContext.cultureInfo.currentUICultureName],
+          { type: 'language' },
+        ).of(code) || ''
     } catch {
-      // fall through to the raw code
+      // Intl.DisplayNames unavailable — fall through to the raw code
     }
-    return code.toUpperCase()
+    if (!name || name.toLowerCase() === code.toLowerCase()) {
+      name = code.toUpperCase()
+    }
+    return strings.LangFieldLabel.replace('{0}', name)
   }
 
   private _supportedLanguages: string[] = []
@@ -229,7 +248,25 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
   protected onInit(): Promise<void> {
     setLanguage(this.context.pageContext.cultureInfo.currentUICultureName)
     if (!this.properties.activeViewTab) this.properties.activeViewTab = 'card'
+
+    // Subscribe to the SharePoint page theme so the web part reacts to
+    // light/dark theme switches and Fluent's useTheme() returns the real theme.
+    try {
+      this._spThemeProvider = this.context.serviceScope.consume(
+        SPThemeProvider.serviceKey,
+      )
+      this._theme = this._spThemeProvider.tryGetTheme()
+      this._spThemeProvider.themeChangedEvent.add(this, this._handleThemeChanged)
+    } catch {
+      // Theme provider unavailable — fall back to the default Fluent theme.
+    }
+
     return this.loadSupportedLanguages().then(() => super.onInit())
+  }
+
+  private _handleThemeChanged = (args: ThemeChangedEventArgs): void => {
+    this._theme = args.theme
+    this.render()
   }
 
   private detectedExtAttrs: string[] = []
@@ -249,6 +286,7 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
     const rawConfig: Partial<DirectoryConfig> = {
       defaultView: this.properties.defaultView || 'card',
       sortOrder: (this.properties.sortOrder || 'lastNameAsc') as any,
+      pageSize: this.properties.pageSize as any,
       cardFieldOrder: this.getEffectiveFieldOrder('card'),
       listFieldOrder: this.getEffectiveFieldOrder('list'),
       modalFieldOrder: this.getEffectiveFieldOrder('modal'),
@@ -261,8 +299,8 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
 
     ReactDom.render(
       React.createElement(
-        React.Fragment,
-        null,
+        FluentThemeProvider,
+        { theme: this._theme as IFluentTheme },
         React.createElement(ThemeExtractor),
         React.createElement(DirectoryContainer, {
           context: this.context,
@@ -282,6 +320,7 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
   }
 
   protected onDispose(): void {
+    this._spThemeProvider?.themeChangedEvent.remove(this, this._handleThemeChanged)
     ReactDom.unmountComponentAtNode(this.domElement)
   }
 
@@ -525,30 +564,6 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
         onRender: (elem: HTMLElement) => {
           const primaryColor = this._themePrimary
 
-          // Inject CSS override — primary color for choice group, label font size
-          const doc = elem.ownerDocument!
-          if (!doc.getElementById('spdir-chocegroup-override')) {
-            const style = doc.createElement('style')
-            style.id = 'spdir-chocegroup-override'
-            style.textContent = `
-            .ms-ChoiceField--image.is-checked::before { border-color: ${primaryColor} !important; }
-            .ms-ChoiceField--image.is-checked .ms-ChoiceField-icon { color: ${primaryColor} !important; }
-            .ms-ChoiceField--image:hover::before { border-color: ${primaryColor} !important; }
-            .ms-ChoiceField-field.is-checked::before { border-color: ${primaryColor} !important; }
-            .ms-ChoiceField-field.is-checked .ms-ChoiceField-icon { color: ${primaryColor} !important; }
-            [class*="PropertyPane"] label { color: #323130 !important; }
-          `
-            doc.head.appendChild(style)
-          }
-
-          // Reduce ChoiceGroup tab label font size from 14px to 12px
-          if (!doc.getElementById('spdir-chocegroup-font')) {
-            const fontStyle = doc.createElement('style')
-            fontStyle.id = 'spdir-chocegroup-font'
-            fontStyle.textContent = `[class*="ChoiceGroup"] label, [role="radiogroup"] label { font-size: 12px !important; }`
-            doc.head.appendChild(fontStyle)
-          }
-
           const tab = (this.properties.activeViewTab || 'card') as
             | 'card'
             | 'list'
@@ -626,6 +641,17 @@ export default class SharepointDirectoryWebPart extends BaseClientSideWebPart<IS
                     { key: 'random', text: strings.SortRandom },
                   ],
                   selectedKey: this.properties.sortOrder || 'lastNameAsc',
+                }),
+                PropertyPaneDropdown('pageSize', {
+                  label: strings.PageSizeLabel,
+                  options: PAGE_SIZE_OPTIONS.map((size) => ({
+                    key: size,
+                    text: String(size),
+                  })),
+                  selectedKey:
+                    PAGE_SIZE_OPTIONS.indexOf(Number(this.properties.pageSize)) >= 0
+                      ? Number(this.properties.pageSize)
+                      : 24,
                 }),
               ],
             },

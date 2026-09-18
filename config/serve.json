@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/spfx-serve.schema.json",
   "port": 4321,
   "https": true,
-  "initialPage": "https://{tenantDomain}/sites/Bacsable?debugManifestsFile=https://localhost:4321/temp/build/manifests.js&debug=true&noredir=true",
+  "initialPage": "https://{tenantDomain}/SitePages/Home.aspx?debugManifestsFile=https://localhost:4321/temp/build/manifests.js&debug=true&noredir=true",
   "serveConfigurations": {
     "default": {
-      "pageUrl": "https://maecia.sharepoint.com/sites/Bacsable"
+      "pageUrl": "https://{tenantDomain}/SitePages/Home.aspx"
     }
   }
 }

@@ -20,8 +20,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
         alignItems: 'center',
         height: 38,
         borderRadius: 20,
-        border: '1px solid #c7c9cc',
-        backgroundColor: '#ffffff',
+        border: '1px solid var(--spdc-border-input)',
+        backgroundColor: 'var(--spdc-surface)',
         paddingLeft: 12,
         paddingRight: 12,
         gap: 8,
@@ -35,9 +35,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
         width="14"
         height="14"
         viewBox="0 0 16 16"
-        fill="#605e5c"
         aria-hidden="true"
-        style={{ flexShrink: 0 }}
+        style={{ flexShrink: 0, fill: 'var(--spdc-text-secondary)' }}
       >
         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z" />
       </svg>
@@ -52,7 +51,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           outline: 'none',
           background: 'transparent',
           fontSize: 13,
-          color: '#323130',
+          color: 'var(--spdc-text-strong)',
           width: '100%',
           lineHeight: '1',
         }}
@@ -68,7 +67,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             padding: 0,
             display: 'flex',
             alignItems: 'center',
-            color: '#605e5c',
+            color: 'var(--spdc-text-secondary)',
             flexShrink: 0,
           }}
         >

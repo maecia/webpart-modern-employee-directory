@@ -22,7 +22,7 @@ Build a native SPFx Web Part serving as an organizational directory on the Maeci
 
 **Testing**: Jest (included in SPFx scaffold), @microsoft/spfx-test, React Testing Library
 
-**Target Platform**: SharePoint Online (tenant: intranetinside82.sharepoint.com), desktop-first with functional mobile rendering
+**Target Platform**: SharePoint Online, desktop-first with functional mobile rendering
 
 **Project Type**: SPFx Web Part (single project, client-side only)
 

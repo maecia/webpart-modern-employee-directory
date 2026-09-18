@@ -1,9 +1,37 @@
+# Dependencies
 node_modules/
-lib/
+
+# SPFx / Heft build output
 dist/
+lib/
+lib-commonjs/
+lib-dts/
+lib-esm/
 temp/
-*.sppkg
+release/
+jest-output/
+coverage/
 sharepoint/solution/
+*.sppkg
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
 .env
 .env.local
-npm-debug.log*
+.env.*.local
+
+# Editors and OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local AI / Spec Kit tooling (kept out of the public repository)
+.kilo/
+.kilocode/
+.specify/

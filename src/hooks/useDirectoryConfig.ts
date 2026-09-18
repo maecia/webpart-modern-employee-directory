@@ -1,4 +1,10 @@
 import { DirectoryConfig } from '../models/DirectoryConfig'
+import { PAGE_SIZE_OPTIONS, DEFAULT_PAGE_SIZE } from './usePagination'
+
+function normalizePageSize(value: unknown): number {
+  const size = Number(value)
+  return PAGE_SIZE_OPTIONS.indexOf(size) >= 0 ? size : DEFAULT_PAGE_SIZE
+}
 
 const DEFAULT_CARD_ORDER: string[] = [
   'photo',
@@ -38,6 +44,7 @@ export function useDirectoryConfig(
   return {
     defaultView: rawConfig.defaultView || 'card',
     sortOrder: rawConfig.sortOrder || 'lastNameAsc',
+    pageSize: normalizePageSize(rawConfig.pageSize),
     filters: rawConfig.filters || [],
     cardFieldOrder: rawConfig.cardFieldOrder || DEFAULT_CARD_ORDER,
     listFieldOrder: rawConfig.listFieldOrder || DEFAULT_LIST_ORDER,

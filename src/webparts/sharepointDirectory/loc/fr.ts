@@ -40,7 +40,11 @@ const fr = {
   CustomFieldsPrefix: '— Champs EntraID',
   SearchPlaceholder: 'Rechercher un collaborateur...',
   ResultCount: '{0} résultat(s)',
-  LoadMore: 'Voir plus de collaborateurs',
+  PaginationLabel: 'Pagination',
+  PaginationPrevious: 'Page précédente',
+  PaginationNext: 'Page suivante',
+  PaginationRange: '{0}–{1} sur {2}',
+  PageSizeLabel: 'Éléments par page',
   ViewProfile: 'Voir la fiche',
   ClickForDetails: 'Cliquez pour les détails',
   HeaderCollaborator: 'Collaborateur',
@@ -150,8 +154,7 @@ const fr = {
   DnD_Group_OnPrem: 'On-premises',
   DnD_Group_Other: 'Divers',
   DnD_NoSelection: 'Aucun champ sélectionné.',
-  Lang_fr: 'Label français',
-  Lang_en: 'Label anglais',
+  LangFieldLabel: 'Label {0}',
   DirectoryRegionLabel: 'Annuaire SharePoint',
 }
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
-import EmptyState from '../../../../src/webparts/sharepointDirectory/components/shared/EmptyState';
+import EmptyState from '../../../../../src/webparts/sharepointDirectory/components/shared/EmptyState';
 
 describe('EmptyState', () => {
   it('renders empty state message', () => {

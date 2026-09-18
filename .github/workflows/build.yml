@@ -1,11 +1,23 @@
-name: Build SPFx Webpart SharePoint Directory
+name: CI
 
 on:
+  push:
+    branches:
+      - master
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - master
+      - main
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
-    name: Build SPFx Webpart SharePoint Directory
+    name: Build, test and package
     runs-on: ubuntu-latest
 
     steps:
@@ -16,22 +28,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Bundle solution
+      - name: Run unit tests
+        run: npm test -- --ci
+
+      - name: Build production bundle
         run: npx heft build --clean --production
 
       - name: Package solution
         run: npx heft package-solution --production
 
       - name: Verify .sppkg
-        run: find . -name "*.sppkg" -type f 2>/dev/null || echo "Aucun .sppkg trouvé"
+        run: find . -name "*.sppkg" -type f
 
       - name: Upload .sppkg artifact
         uses: actions/upload-artifact@v4
         with:
-          name: maecia-webpart-sharepoint-directory-sppkg
+          name: maecia-directory-sppkg
           path: sharepoint/solution/*.sppkg
           if-no-files-found: error

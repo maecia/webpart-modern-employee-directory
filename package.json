@@ -1,21 +1,52 @@
 {
   "name": "sharepoint-directory",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
+  "description": "Maecia Directory - a configurable SharePoint Framework web part that displays a searchable directory of Microsoft 365 users.",
+  "license": "MIT",
+  "author": {
+    "name": "Maecia",
+    "url": "https://www.maecia.com"
+  },
+  "homepage": "https://github.com/maecia/webpart-sharepoint-directory#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maecia/webpart-sharepoint-directory.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maecia/webpart-sharepoint-directory/issues"
+  },
+  "keywords": [
+    "sharepoint",
+    "spfx",
+    "web-part",
+    "react",
+    "typescript",
+    "directory",
+    "staff-directory",
+    "microsoft-graph",
+    "pnpjs",
+    "maecia"
+  ],
+  "engines": {
+    "node": ">=22.0.0 <23.0.0"
+  },
   "scripts": {
     "build": "heft build --clean",
+    "build:production": "heft build --clean --production && heft package-solution --production",
     "clean": "heft clean",
-    "test": "heft test",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "serve": "heft start --clean"
   },
   "dependencies": {
+    "@microsoft/sp-component-base": "1.23.2",
     "@microsoft/sp-core-library": "1.23.2",
     "@microsoft/sp-lodash-subset": "1.23.2",
     "@microsoft/sp-property-pane": "1.23.2",
     "@microsoft/sp-webpart-base": "1.23.2",
     "@pnp/graph": "^4.20.0",
     "@pnp/sp": "^4.20.0",
-    "@pnp/spfx-controls-react": "^3.25.0",
     "@types/papaparse": "^5.5.2",
     "papaparse": "^5.5.4",
     "react": "17.0.1",

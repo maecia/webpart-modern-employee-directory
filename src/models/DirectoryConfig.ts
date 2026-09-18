@@ -39,6 +39,8 @@ export const STANDARD_FIELD_KEYS: ReadonlySet<string> = new Set<string>([
 export interface DirectoryConfig {
   defaultView: 'card' | 'list'
   sortOrder: SortOrder
+  /** Number of members displayed per page in the card and list views. */
+  pageSize: number
   filters: FilterField[]
   /** Ordered list of all field keys (CardFieldName + custom) for card view */
   cardFieldOrder: string[]

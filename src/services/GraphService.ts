@@ -21,7 +21,8 @@ const SELECT_FIELDS = [
   'onPremisesExtensionAttributes',
 ];
 
-const PAGE_SIZE = 100;
+/** Graph allows up to 999 users per page for /users, which drastically reduces the number of round trips. */
+const PAGE_SIZE = 999;
 
 const DATE_FIELDS = new Set([
   'birthday',
@@ -47,7 +48,9 @@ function formatValue(key: string, v: any): string {
 }
 
 export interface IGraphService {
-  getMembers(customFieldKeys?: string[]): Promise<{ members: Member[]; detectedExtensionAttrs: string[] }>;
+  getMembers(
+    customFieldKeys?: string[],
+  ): Promise<{ members: Member[]; detectedExtensionAttrs: string[] }>;
   getMemberPhoto(userId: string): Promise<string | null>;
   dispose(): void;
 }
@@ -60,8 +63,11 @@ export class GraphService implements IGraphService {
     this.graph = graphfi().using(GraphSPFx(context));
   }
 
-  async getMembers(customFieldKeys: string[] = []): Promise<{ members: Member[]; detectedExtensionAttrs: string[] }> {
+  async getMembers(
+    customFieldKeys: string[] = [],
+  ): Promise<{ members: Member[]; detectedExtensionAttrs: string[] }> {
     const allUsers: any[] = [];
+    const detectedExtAttrs = new Set<string>();
 
     const rawUsers = this.graph.users
       .select(...SELECT_FIELDS)
@@ -71,6 +77,9 @@ export class GraphService implements IGraphService {
 
     for await (const page of (rawUsers as any)) {
       allUsers.push(...page);
+      for (const user of page) {
+        this.detectExtensionAttrs(user, detectedExtAttrs);
+      }
     }
 
     let customDataMap: Record<string, Record<string, string>> = {};
@@ -79,42 +88,40 @@ export class GraphService implements IGraphService {
       customDataMap = await this.fetchCustomProperties(allUsers, customFieldKeys);
     }
 
-    const detectedExtAttrs = new Set<string>();
-    for (const user of allUsers) {
-      if (user.onPremisesExtensionAttributes) {
-        for (let i = 1; i <= 15; i++) {
-          const v = user.onPremisesExtensionAttributes[`extensionAttribute${i}`];
-          if (v !== null && v !== undefined && v !== '') {
-            detectedExtAttrs.add(`extensionAttribute${i}`);
-          }
-        }
-      }
-    }
-
-    const members: Member[] = [];
-
-    for (const user of allUsers) {
-      const cp = customDataMap[user.id] || {};
-
-      members.push({
-        id: user.id || '',
-        displayName: user.displayName || '',
-        givenName: user.givenName || '',
-        surname: user.surname || '',
-        email: user.mail || user.userPrincipalName || '',
-        jobTitle: user.jobTitle || '',
-        department: user.department || '',
-        officeLocation: user.officeLocation || '',
-        mobilePhone: user.mobilePhone || '',
-        managerId: (user.manager as any)?.id || undefined,
-        managerDisplayName: (user.manager as any)?.displayName || undefined,
-        isVisible: true,
-        teamsId: user.userPrincipalName || undefined,
-        customProperties: cp,
-      });
-    }
+    const members = allUsers.map((user) =>
+      this.toMember(user, customDataMap[user.id] || {}),
+    );
 
     return { members, detectedExtensionAttrs: Array.from(detectedExtAttrs).sort() };
+  }
+
+  private detectExtensionAttrs(user: any, detected: Set<string>): void {
+    if (!user.onPremisesExtensionAttributes) return;
+    for (let i = 1; i <= 15; i++) {
+      const v = user.onPremisesExtensionAttributes[`extensionAttribute${i}`];
+      if (v !== null && v !== undefined && v !== '') {
+        detected.add(`extensionAttribute${i}`);
+      }
+    }
+  }
+
+  private toMember(user: any, customProperties: Record<string, string>): Member {
+    return {
+      id: user.id || '',
+      displayName: user.displayName || '',
+      givenName: user.givenName || '',
+      surname: user.surname || '',
+      email: user.mail || user.userPrincipalName || '',
+      jobTitle: user.jobTitle || '',
+      department: user.department || '',
+      officeLocation: user.officeLocation || '',
+      mobilePhone: user.mobilePhone || '',
+      managerId: (user.manager as any)?.id || undefined,
+      managerDisplayName: (user.manager as any)?.displayName || undefined,
+      isVisible: true,
+      teamsId: user.userPrincipalName || undefined,
+      customProperties,
+    };
   }
 
   private async fetchCustomProperties(

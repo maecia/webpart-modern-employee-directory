@@ -12,6 +12,7 @@ import ErrorState from './shared/ErrorState'
 import EmptyState from './shared/EmptyState'
 import ErrorBoundary from './shared/ErrorBoundary'
 import { strings, getLocale } from '../loc/mystrings'
+import { themeColorVars } from '../../../utils/themeColors'
 
 function applySortOrder(members: Member[], sortOrder: SortOrder): Member[] {
   const copy = [...members]
@@ -117,28 +118,10 @@ const Directory: React.FC<DirectoryProps> = ({
   )
   const theme = useTheme()
   const primaryColor = theme?.palette?.themePrimary || '#1B7A6E'
-
-  React.useEffect(() => {
-    const id = 'spdir-no-outline'
-    if (document.getElementById(id)) return
-    const style = document.createElement('style')
-    style.id = id
-    // Scope to .spdir-root so we don't affect the rest of SharePoint.
-    // Cover :focus, :focus-visible and :focus-within (wrapper divs).
-    // Use ID selector (specificity 1,0,0) to override SharePoint's !important rules.
-    style.textContent = [
-      '#spdir-root *:focus,',
-      '#spdir-root *:focus-visible,',
-      '#spdir-root *:focus-within,',
-      '#spdir-root:focus-within',
-      '{outline:none!important;box-shadow:none!important;}',
-    ].join('')
-    document.head.appendChild(style)
-    return () => {
-      const el = document.getElementById(id)
-      if (el && el.parentNode) el.parentNode.removeChild(el)
-    }
-  }, [])
+  const themeVars = React.useMemo(
+    () => themeColorVars(theme) as React.CSSProperties,
+    [theme],
+  )
 
   React.useEffect(() => {
     setView(config.defaultView)
@@ -186,14 +169,25 @@ const Directory: React.FC<DirectoryProps> = ({
       })
     }
 
-    if (!searchQuery.trim()) {
+    // While pages are still arriving, keep the order returned by Graph so the
+    // list does not jump around; apply the configured sort once loading is done.
+    if (!searchQuery.trim() && !isLoading) {
       result = applySortOrder([...result], config.sortOrder)
     }
 
     return result
-  }, [members, searchQuery, filterValues, config.filters, config.sortOrder])
+  }, [
+    members,
+    searchQuery,
+    filterValues,
+    config.filters,
+    config.sortOrder,
+    isLoading,
+  ])
 
   const resultCount = filteredMembers.length
+  // Any change of search or filters returns the user to the first page.
+  const paginationResetKey = `${searchQuery}|${JSON.stringify(filterValues)}`
 
   const handleFilterChange = (fieldName: string, value: string[] | null) => {
     setFilterValues((prev) => ({
@@ -217,7 +211,11 @@ const Directory: React.FC<DirectoryProps> = ({
         role="region"
         aria-label={strings.DirectoryRegionLabel}
         aria-live="polite"
-        style={{ backgroundColor: '#faf9f8', minHeight: '100%' }}
+        style={{
+          ...themeVars,
+          backgroundColor: 'var(--spdc-page-bg)',
+          minHeight: '100%',
+        }}
       >
         <Banner
           searchQuery={searchQuery}
@@ -241,12 +239,19 @@ const Directory: React.FC<DirectoryProps> = ({
           }}
         >
           <style>{`
+          #spdir-root *:focus,
+          #spdir-root *:focus-visible,
+          #spdir-root *:focus-within,
+          #spdir-root:focus-within {
+            outline: none !important;
+            box-shadow: none !important;
+          }
           @keyframes spdir-fadein {
             from { opacity: 0; transform: translateY(6px); }
             to   { opacity: 1; transform: translateY(0); }
           }
           @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
+            #spdir-root *, #spdir-root *::before, #spdir-root *::after {
               animation-duration: 0.01ms !important;
               animation-iteration-count: 1 !important;
               transition-duration: 0.01ms !important;
@@ -259,6 +264,8 @@ const Directory: React.FC<DirectoryProps> = ({
             <CardView
               members={filteredMembers}
               cardFieldOrder={config.cardFieldOrder}
+              pageSize={config.pageSize}
+              resetKey={paginationResetKey}
               onMemberClick={setSelectedMember}
             />
           ) : (
@@ -266,6 +273,8 @@ const Directory: React.FC<DirectoryProps> = ({
               members={filteredMembers}
               listFieldOrder={config.listFieldOrder}
               listFieldLabels={config.listFieldLabels}
+              pageSize={config.pageSize}
+              resetKey={paginationResetKey}
               onMemberClick={setSelectedMember}
             />
           )}

@@ -1,22 +1,24 @@
 import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import ErrorState from '../../../../src/webparts/sharepointDirectory/components/shared/ErrorState';
+import ErrorState from '../../../../../src/webparts/sharepointDirectory/components/shared/ErrorState';
 
 describe('ErrorState', () => {
-  it('renders error message', () => {
-    const { getByText } = render(React.createElement(ErrorState, { onRetry: jest.fn() }));
-    expect(getByText(/Impossible de charger les données/)).toBeTruthy();
+  it('renders the default error message', async () => {
+    const { findByText } = render(React.createElement(ErrorState, { onRetry: jest.fn() }));
+    expect(await findByText(/Impossible de charger les données/)).toBeTruthy();
   });
 
-  it('renders custom error message', () => {
-    const { getByText } = render(React.createElement(ErrorState, { message: 'Custom error', onRetry: jest.fn() }));
-    expect(getByText('Custom error')).toBeTruthy();
+  it('renders a custom error message', async () => {
+    const { findByText } = render(
+      React.createElement(ErrorState, { message: 'Custom error', onRetry: jest.fn() })
+    );
+    expect(await findByText('Custom error')).toBeTruthy();
   });
 
-  it('calls onRetry when retry button clicked', () => {
+  it('calls onRetry when the retry button is clicked', async () => {
     const onRetry = jest.fn();
-    const { getByText } = render(React.createElement(ErrorState, { onRetry }));
-    fireEvent.click(getByText('Réessayer'));
+    const { findByText } = render(React.createElement(ErrorState, { onRetry }));
+    fireEvent.click(await findByText('Réessayer'));
     expect(onRetry).toHaveBeenCalled();
   });
 });

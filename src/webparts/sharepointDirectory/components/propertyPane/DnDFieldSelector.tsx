@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { strings, getLocale } from '../../loc/mystrings'
+import { themeColorVars } from '../../../../utils/themeColors'
 import {
   STANDARD_FIELD_KEYS,
   getAvailableEntraIdFieldGroups,
@@ -19,20 +20,21 @@ export interface DnDFieldSelectorProps {
   onUpdateLabels: (labelsJson: string) => void
 }
 
-/** Return the human-readable name for a language code, e.g. "fr" → "Français" */
-function getLangName(code: string): string {
-  const key = `Lang_${code}`
-  const direct = (strings as any)[key]
-  if (direct) return direct
+/** Human-readable "Label <language>" in the current UI language, e.g. "fr" → "Label français" */
+function getLangLabel(code: string): string {
+  let name = ''
   try {
-    const name = new (Intl as any).DisplayNames([getLocale()], {
-      type: 'language',
-    }).of(code)
-    if (name && name.toLowerCase() !== code.toLowerCase()) return name
+    name =
+      new (Intl as any).DisplayNames([getLocale()], {
+        type: 'language',
+      }).of(code) || ''
   } catch {
-    // fall through to the raw code
+    // Intl.DisplayNames unavailable — fall through to the raw code
   }
-  return code.toUpperCase()
+  if (!name || name.toLowerCase() === code.toLowerCase()) {
+    name = code.toUpperCase()
+  }
+  return strings.LangFieldLabel.replace('{0}', name)
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -98,7 +100,7 @@ function createStyles(primary: string) {
       display: 'block',
       fontSize: 14,
       fontWeight: 600,
-      color: '#323130',
+      color: 'var(--spdc-text-strong)',
       marginTop: 12,
       marginBottom: 4,
     } as React.CSSProperties,
@@ -113,16 +115,16 @@ function createStyles(primary: string) {
       appearance: 'none' as any,
       WebkitAppearance: 'none' as any,
       borderRadius: 'var(--borderRadiusMedium, 4px)',
-      border: '1px solid var(--colorNeutralStroke1, #d1d1d1)',
+      border: '1px solid var(--colorNeutralStroke1, var(--spdc-border-strong))',
       borderBottomWidth: open ? '2px' : '1px',
       borderBottomStyle: 'solid',
-      borderBottomColor: open ? primary : 'var(--colorNeutralStrokeAccessiblePressed, #616161)',
-      background: '#ffffff',
+      borderBottomColor: open ? primary : 'var(--colorNeutralStrokeAccessiblePressed, var(--spdc-text-muted))',
+      background: 'var(--spdc-surface)',
       fontSize: 14,
       fontFamily:
         '"Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif',
       fontWeight: 400,
-      color: '#323130',
+      color: 'var(--spdc-text-strong)',
       cursor: 'pointer',
       textAlign: 'left' as const,
       boxSizing: 'border-box' as const,
@@ -135,8 +137,8 @@ function createStyles(primary: string) {
       left: 0,
       right: 0,
       zIndex: 9999,
-      background: '#ffffff',
-      border: '1px solid #8a8886',
+      background: 'var(--spdc-surface)',
+      border: '1px solid var(--spdc-text-tertiary)',
       borderRadius: 2,
       maxHeight: 300,
       overflowY: 'auto' as const,
@@ -146,12 +148,12 @@ function createStyles(primary: string) {
     groupHeader: {
       fontSize: 11,
       fontWeight: 700,
-      color: '#a19f9d',
+      color: 'var(--spdc-placeholder)',
       textTransform: 'uppercase' as const,
       letterSpacing: '0.05em',
       padding: '8px 8px 3px',
-      background: '#faf9f8',
-      borderBottom: '1px solid #f3f2f1',
+      background: 'var(--spdc-page-bg)',
+      borderBottom: '1px solid var(--spdc-hover)',
       position: 'sticky' as const,
       top: 0,
       zIndex: 1,
@@ -166,14 +168,14 @@ function createStyles(primary: string) {
       cursor: 'pointer',
       background: 'transparent',
       userSelect: 'none' as const,
-      color: '#201f1e',
+      color: 'var(--spdc-text-primary)',
       fontSize: 14,
     }),
 
     checkBox: (checked: boolean): React.CSSProperties => ({
       width: 16,
       height: 16,
-      border: checked ? `2px solid ${primary}` : '1.5px solid #8a8886',
+      border: checked ? `2px solid ${primary}` : '1.5px solid var(--spdc-text-tertiary)',
       borderRadius: 2,
       background: checked ? primary : '#fff',
       flexShrink: 0,
@@ -185,7 +187,7 @@ function createStyles(primary: string) {
     // ── DnD ordered list ──────────────────────────────────────────────────
     divider: {
       height: 1,
-      background: '#edebe9',
+      background: 'var(--spdc-divider)',
       margin: '12px 0 8px',
     } as React.CSSProperties,
 
@@ -198,8 +200,8 @@ function createStyles(primary: string) {
       gap: 8,
       padding: '6px 8px',
       marginBottom: 4,
-      background: isDragOver ? '#f0f6ff' : isDragging ? '#f3f2f1' : '#faf9f8',
-      border: isDragOver ? `1.5px dashed ${primary}` : '1px solid #edebe9',
+      background: isDragOver ? 'var(--spdc-info-tint)' : isDragging ? 'var(--spdc-hover)' : 'var(--spdc-page-bg)',
+      border: isDragOver ? `1.5px dashed ${primary}` : '1px solid var(--spdc-divider)',
       borderRadius: 4,
       opacity: isDragging ? 0.5 : 1,
       transition: 'background 0.1s, border 0.1s',
@@ -211,14 +213,14 @@ function createStyles(primary: string) {
       gap: 8,
       padding: '6px 8px',
       marginBottom: 4,
-      background: '#faf9f8',
-      border: '1px solid #edebe9',
+      background: 'var(--spdc-page-bg)',
+      border: '1px solid var(--spdc-divider)',
       borderRadius: 4,
       opacity: 0.7,
     } as React.CSSProperties,
 
     handle: {
-    color: '#8a8886',
+    color: 'var(--spdc-text-tertiary)',
     cursor: 'grab',
       userSelect: 'none' as const,
       flexShrink: 0,
@@ -226,7 +228,7 @@ function createStyles(primary: string) {
     } as React.CSSProperties,
 
     handleLocked: {
-      color: '#e1dfdd',
+      color: 'var(--spdc-border)',
       cursor: 'default',
       userSelect: 'none' as const,
       flexShrink: 0,
@@ -236,7 +238,7 @@ function createStyles(primary: string) {
     fieldLabel: {
       flex: 1,
       fontSize: 13,
-      color: '#201f1e',
+      color: 'var(--spdc-text-primary)',
       paddingTop: 1,
     } as React.CSSProperties,
 
@@ -250,7 +252,7 @@ function createStyles(primary: string) {
     labelCaption: {
       fontSize: 11,
       fontWeight: 600,
-      color: '#605e5c',
+      color: 'var(--spdc-text-secondary)',
       marginBottom: 2,
     } as React.CSSProperties,
 
@@ -259,9 +261,9 @@ function createStyles(primary: string) {
       height: 28,
       fontSize: 13,
       padding: '0 6px',
-      border: '1px solid #8a8886',
+      border: '1px solid var(--spdc-text-tertiary)',
       borderRadius: 2,
-      color: '#201f1e',
+      color: 'var(--spdc-text-primary)',
       background: '#fff',
       boxSizing: 'border-box' as const,
       outline: 'none',
@@ -269,9 +271,9 @@ function createStyles(primary: string) {
 
     lockedLabel: {
       fontSize: 13,
-      color: '#605e5c',
+      color: 'var(--spdc-text-secondary)',
       padding: '4px 6px',
-      background: '#f3f2f1',
+      background: 'var(--spdc-hover)',
       borderRadius: 2,
       userSelect: 'none' as const,
     } as React.CSSProperties,
@@ -281,7 +283,7 @@ function createStyles(primary: string) {
       border: 'none',
       padding: '2px 4px',
       cursor: 'pointer',
-      color: '#605e5c',
+      color: 'var(--spdc-text-secondary)',
       fontSize: 16,
       lineHeight: '1',
       flexShrink: 0,
@@ -289,7 +291,7 @@ function createStyles(primary: string) {
 
     hint: {
       fontSize: 11,
-      color: '#605e5c',
+      color: 'var(--spdc-text-secondary)',
       marginBottom: 6,
     } as React.CSSProperties,
   }
@@ -308,6 +310,12 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
   onUpdateLabels,
 }) => {
   const S = React.useMemo(() => createStyles(primaryColor), [primaryColor])
+  // The SPFx property pane chrome is always light, so the custom field must not
+  // follow the site theme; keep the original light colors here.
+  const themeVars = React.useMemo(
+    () => themeColorVars(null) as React.CSSProperties,
+    [],
+  )
 
   // ── Inner sub‑components (closed over S) ────────────────────────────────
   const DragHandle: React.FC = () => (
@@ -315,8 +323,7 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
       width="10"
       height="16"
       viewBox="0 0 10 16"
-      fill="#8a8886"
-      style={S.handle}
+      style={{ ...S.handle, fill: 'var(--spdc-text-tertiary)' }}
       aria-hidden
     >
       <circle cx="3" cy="3" r="1.5" />
@@ -491,7 +498,7 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div style={S.root}>
+    <div style={{ ...themeVars, ...S.root }}>
       {/* ══ FIELD PICKER ════════════════════════════════════════════════════ */}
       <span style={S.sectionLabel}>{strings.DnD_AvailableFields}</span>
 
@@ -510,7 +517,7 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
                 flex: 1,
-                color: selectedCount === 0 ? '#605e5c' : '#323130',
+                color: selectedCount === 0 ? 'var(--spdc-text-secondary)' : 'var(--spdc-text-strong)',
               }}
             >
               {buttonText}
@@ -530,7 +537,7 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
               transform: 'translateY(-50%)',
               pointerEvents: 'none',
               fontSize: 14,
-              color: '#605e5c',
+              color: 'var(--spdc-text-secondary)',
             }}
           >
             <path
@@ -623,8 +630,7 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
                     width="10"
                     height="16"
                     viewBox="0 0 10 16"
-                    fill="#e1dfdd"
-                    style={S.handleLocked}
+                    style={{ ...S.handleLocked, fill: 'var(--spdc-border)' }}
                     aria-hidden
                   >
                     <circle cx="3" cy="3" r="1.5" />
@@ -645,7 +651,7 @@ const DnDFieldSelector: React.FC<DnDFieldSelectorProps> = ({
                     <div style={S.labelRow}>
                       {supportedLanguages.map((lang) => (
                         <div key={lang}>
-                          <div style={S.labelCaption}>{getLangName(lang)}</div>
+                          <div style={S.labelCaption}>{getLangLabel(lang)}</div>
                           <input
                             type="text"
                             style={S.labelInput}

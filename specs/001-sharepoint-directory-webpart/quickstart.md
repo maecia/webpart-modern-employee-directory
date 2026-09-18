@@ -10,7 +10,7 @@
 - SharePoint Framework generator: `npm install -g @microsoft/generator-sharepoint`
 - **Important** : SPFx 1.20.x nécessite Node.js 20.x (`>=20.11.0 <21.0.0`). Node 22 est incompatible.
 - L'installation des dépendances nécessite `npm install --legacy-peer-deps` (conflit @types/react).
-- Access to tenant: `https://intranetinside82.sharepoint.com/sites/Bacsable`
+- Access to a SharePoint Online tenant: `https://{tenant}.sharepoint.com/sites/<your-site>`
 - Microsoft Graph API permissions granted in tenant App Catalog
 
 ## Project Setup
@@ -48,7 +48,7 @@ npm run serve
 
 # Open Workbench (authenticated - allows Graph API calls)
 # Navigate to:
-# https://intranetinside82.sharepoint.com/_layouts/15/workbench.aspx
+# https://{tenant}.sharepoint.com/_layouts/15/workbench.aspx
 #
 # Add the "SharepointDirectory" web part to the canvas
 ```

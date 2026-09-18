@@ -44,7 +44,11 @@ const en: Strings = {
   CustomFieldsPrefix: '— Entra ID Fields',
   SearchPlaceholder: 'Search a collaborator...',
   ResultCount: '{0} result(s)',
-  LoadMore: 'Load more',
+  PaginationLabel: 'Pagination',
+  PaginationPrevious: 'Previous page',
+  PaginationNext: 'Next page',
+  PaginationRange: '{0}–{1} of {2}',
+  PageSizeLabel: 'Items per page',
   ViewProfile: 'View profile',
   ClickForDetails: 'Click for details',
   HeaderCollaborator: 'Collaborator',
@@ -151,8 +155,7 @@ const en: Strings = {
   DnD_Group_OnPrem: 'On-premises',
   DnD_Group_Other: 'Other',
   DnD_NoSelection: 'No fields selected.',
-  Lang_fr: 'French label',
-  Lang_en: 'English label',
+  LangFieldLabel: '{0} label',
   DirectoryRegionLabel: 'SharePoint Directory',
 }
 

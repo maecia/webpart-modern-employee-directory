@@ -11,6 +11,7 @@ import PersonaAvatar from '../shared/PersonaAvatar'
 import LazyPersonaAvatar from '../shared/LazyPersonaAvatar'
 import TeamsIcon from '../shared/TeamsIcon'
 import OutlookIcon from '../shared/OutlookIcon'
+import Pagination from '../shared/Pagination'
 
 interface ListViewProps {
   members: Member[]
@@ -18,6 +19,10 @@ interface ListViewProps {
   listFieldOrder: string[]
   /** Localized labels for custom fields */
   listFieldLabels: Record<string, string>
+  /** Number of rows displayed per page */
+  pageSize: number
+  /** Changes when the search or filters change, to reset the current page. */
+  resetKey?: string
   onMemberClick: (member: Member) => void
 }
 
@@ -31,20 +36,20 @@ const headerCellStyle: React.CSSProperties = {
   textAlign: 'left',
   fontSize: 11,
   fontWeight: 600,
-  color: '#605e5c',
+  color: 'var(--spdc-text-secondary)',
   letterSpacing: '0.04em',
   textTransform: 'uppercase',
-  borderBottom: '1px solid #edebe9',
+  borderBottom: '1px solid var(--spdc-divider)',
   userSelect: 'none',
   cursor: 'pointer',
   whiteSpace: 'nowrap',
-  backgroundColor: '#F8F9FB',
+  backgroundColor: 'var(--spdc-surface-alt)',
 }
 
 const cellStyle: React.CSSProperties = {
   padding: '10px 16px',
   fontSize: 14,
-  color: '#201f1e',
+  color: 'var(--spdc-text-primary)',
   verticalAlign: 'middle',
 }
 
@@ -52,12 +57,12 @@ const ListView: React.FC<ListViewProps> = ({
   members,
   listFieldOrder,
   listFieldLabels,
+  pageSize,
+  resetKey,
   onMemberClick,
 }) => {
-  const { visibleItems, hasMore, loadMore } = usePagination(members, 'list')
   const theme = useTheme()
   const primaryColor = theme?.palette?.themePrimary || '#1B7A6E'
-  const [loadMoreHovered, setLoadMoreHovered] = React.useState(false)
   const [sortState, setSortState] = React.useState<SortState>({
     key: 'displayName',
     descending: false,
@@ -285,7 +290,7 @@ const ListView: React.FC<ListViewProps> = ({
 
   // ── Sorting ───────────────────────────────────────────────────────────────
   const sorted = React.useMemo(() => {
-    const result = [...visibleItems]
+    const result = [...members]
     result.sort((a, b) => {
       let aVal: string
       let bVal: string
@@ -304,7 +309,24 @@ const ListView: React.FC<ListViewProps> = ({
       return sortState.descending ? -cmp : cmp
     })
     return result
-  }, [visibleItems, sortState])
+  }, [members, sortState])
+
+  const {
+    pageItems,
+    page,
+    totalPages,
+    startIndex,
+    endIndex,
+    totalItems,
+    setPage,
+    reset,
+  } = usePagination(sorted, pageSize)
+
+  // Reset to the first page when the search/filters or the sort column change.
+  React.useEffect(() => {
+    reset()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetKey, sortState.key, sortState.descending])
 
   const toggleSort = (key: string) => {
     setSortState((prev) =>
@@ -360,7 +382,7 @@ const ListView: React.FC<ListViewProps> = ({
           style={{
             width: '100%',
             borderCollapse: 'collapse',
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--spdc-surface)',
           }}
         >
           <caption
@@ -401,7 +423,7 @@ const ListView: React.FC<ListViewProps> = ({
                     style={{
                       ...(col.headerStyle || headerCellStyle),
                       backgroundColor:
-                        hoveredCol === sk ? '#eef0f4' : '#F8F9FB',
+                        hoveredCol === sk ? 'var(--spdc-header-hover)' : 'var(--spdc-surface-alt)',
                       transition: 'background-color 0.15s ease',
                     }}
                     onClick={() => toggleSort(sk)}
@@ -416,7 +438,7 @@ const ListView: React.FC<ListViewProps> = ({
             </tr>
           </thead>
           <tbody>
-            {sorted.map((member) => (
+            {pageItems.map((member) => (
               <tr
                 key={member.id}
                 tabIndex={0}
@@ -432,10 +454,10 @@ const ListView: React.FC<ListViewProps> = ({
                     onMemberClick(member)
                   }
                 }}
-                style={{ cursor: 'pointer', borderBottom: '1px solid #f3f2f1' }}
+                style={{ cursor: 'pointer', borderBottom: '1px solid var(--spdc-hover)' }}
                 onMouseEnter={(e) => {
                   ;(e.currentTarget as HTMLElement).style.backgroundColor =
-                    '#faf9f8'
+                    'var(--spdc-page-bg)'
                 }}
                 onMouseLeave={(e) => {
                   ;(e.currentTarget as HTMLElement).style.backgroundColor =
@@ -453,41 +475,14 @@ const ListView: React.FC<ListViewProps> = ({
         </table>
       </div>
 
-      {hasMore && (
-        <div
-          style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}
-        >
-          <button
-            onClick={loadMore}
-            onMouseEnter={() => setLoadMoreHovered(true)}
-            onMouseLeave={() => setLoadMoreHovered(false)}
-            style={{
-              padding: '8px 24px',
-              borderRadius: 20,
-              border: `1px solid ${primaryColor}`,
-              background: loadMoreHovered ? '#f3f2f1' : '#ffffff',
-              cursor: 'pointer',
-              fontSize: 14,
-              color: primaryColor,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              transition: 'background 0.15s ease',
-            }}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path d="M7 1a1 1 0 0 1 1 1v4h4a1 1 0 1 1 0 2H8v4a1 1 0 1 1-2 0V8H2a1 1 0 1 1 0-2h4V2a1 1 0 0 1 1-1z" />
-            </svg>
-            {strings.LoadMore}
-          </button>
-        </div>
-      )}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        startIndex={startIndex}
+        endIndex={endIndex}
+        totalItems={totalItems}
+        onPageChange={setPage}
+      />
     </div>
   )
 }

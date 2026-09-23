@@ -11,14 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Real pagination (page numbers, previous/next) for the card and list views, with a configurable page size (12/24/36/48, default 24).
 - Light and dark SharePoint theme support (theme-aware color tokens, dark palette applied automatically).
-- 64x64 PNG web part icon with a transparent background, as recommended by the Marketplace checklist.
-- Solution metadata (developer links, categories, descriptions) prepared for the Microsoft Marketplace and SharePoint Store.
+- 64x64 PNG web part icon.
+- Solution metadata: developer links, categories and descriptions.
 - Unit-test and CI setup (Jest config, test suite, GitHub Actions build/test/package workflow).
 - Public documentation: README, LICENSE, CHANGELOG, `.editorconfig`, `.nvmrc`.
 
 ### Changed
 
-- Renamed the solution to `maecia-directory-client-side-solution` (Marketplace naming rules) and the web part to **Maecia Directory** / **Annuaire Maecia**.
+- Renamed the solution to `maecia-directory-client-side-solution` and the web part to **Maecia Directory** / **Annuaire Maecia**.
 - Reduced Microsoft Graph permission requests to `User.Read.All` only.
 - Removed global DOM style injection and stopped touching `document.body` (SPFx contract conformance).
 - Users are now loaded in pages of 999 to reduce the number of Microsoft Graph requests.
@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `useMembers` hook dependency handling and lint warnings.
 - Broken Jest setup and unit tests.
-- Marketplace developer and legal links pointing to non-existent pages (404).
+- Developer and legal links pointing to non-existent pages (404).
 
 ## [1.6.0] - 2026-09-18
 
@@ -46,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Migrated the build to SPFx 1.23 and Heft.
 - Added French and English property pane strings.
-- Solution metadata prepared for the Microsoft Marketplace and SharePoint Store.
+- Solution metadata prepared for distribution.
 
 ### Fixed
 

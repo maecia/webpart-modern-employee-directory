@@ -13,10 +13,10 @@ A configurable SharePoint Framework (SPFx) web part that turns any SharePoint pa
 
 - [Overview](#overview)
 - [Features](#features)
-- [Demo](#demo)
-- [Screenshots](#screenshots)
 - [Requirements](#requirements)
 - [Getting started](#getting-started)
+- [Demo](#demo)
+- [Gallery](#gallery)
 - [Installation and deployment](#installation-and-deployment)
 - [User manual](#user-manual)
 - [Administrator manual](#administrator-manual)
@@ -36,7 +36,7 @@ A configurable SharePoint Framework (SPFx) web part that turns any SharePoint pa
 
 End users get a fast, responsive directory with real-time search, multi-select filters, contact shortcuts for Microsoft Teams and Outlook, and a CSV export that respects the active search and filters.
 
-The solution contains a **single web part**, is deployed tenant-wide (`skipFeatureDeployment: true`) and is ready to be published to the **Microsoft Marketplace / SharePoint Store**.
+The solution contains a **single web part** and is deployed tenant-wide (`skipFeatureDeployment: true`).
 
 ---
 
@@ -58,52 +58,6 @@ The solution contains a **single web part**, is deployed tenant-wide (`skipFeatu
 | **Sort order** | Default sort by first name, last name (ascending/descending) or random (stable per session). | Administrator |
 | **Multilingual labels** | Property pane and UI shipped in French and English; per-language custom labels for filters and fields, driven by the SharePoint UI languages. | Administrator |
 | **Theming** | Light and dark SharePoint themes are supported; the accent colour follows the page theme. | Administrator |
-
----
-
-## Demo
-
-The web part is a normal SPFx web part and runs in the SharePoint workbench for development, or on any SharePoint page after deployment.
-
-Local demo:
-
-```bash
-nvm use 22
-npm ci
-export SPFX_SERVE_TENANT_DOMAIN=<your-tenant>.sharepoint.com
-npm run serve
-```
-
-Then add **Maecia Directory** to the page and try the following scenario:
-
-1. Switch between the **card** and **list** views with the toggle in the toolbar.
-2. Type a name in the search box: results update as you type and are ranked by relevance.
-3. Select values in a configured filter: results narrow down and the counter updates.
-4. Use the **pager** at the bottom of the view (page size is configurable: 12, 24, 36 or 48).
-5. Click a card or a row: the detail panel opens. Press `Escape` or click outside to close it.
-6. Click the Teams or Outlook action: the corresponding app opens in a new tab.
-7. Click **Export to CSV**: the currently visible members are downloaded.
-8. Switch the site theme (light/dark): the directory adapts automatically.
-
-### Screenshots
-
-| Card view | List view |
-| --- | --- |
-| ![Card view](docs/images/card-view.png) | ![List view](docs/images/list-view.png) |
-
-| Search and filters | Detail panel |
-| --- | --- |
-| ![Search and filters](docs/images/search-filters.png) | ![Detail panel](docs/images/detail-panel.png) |
-
-| Property pane – display | Property pane – fields |
-| --- | --- |
-| ![Property pane display](docs/images/property-pane-display.png) | ![Property pane fields](docs/images/property-pane-fields.png) |
-
-| Dark theme |
-| --- |
-| ![Dark theme](docs/images/dark-theme.png) |
-
-> Drop the images in `docs/images/` using the file names above (see `docs/images/README.md`). The same screenshots are reused for the Microsoft Marketplace listing in Partner Center.
 
 ---
 
@@ -132,7 +86,56 @@ export SPFX_SERVE_TENANT_DOMAIN=<your-tenant>.sharepoint.com
 npm run serve
 ```
 
-The workbench opens at `https://localhost:4321` and loads the page configured in `config/serve.json`. The first run also requires the Microsoft Graph permission to be granted (see [Installation](#installation-and-deployment)).
+The dev server hosts the local bundle at `https://localhost:4321`. The root URL intentionally returns `404`: there is no page there — SharePoint loads the bundle through the `debugManifestsFile` query configured in `config/serve.json`, so open the SharePoint page printed by the server rather than the `localhost` URL. The first run also requires the Microsoft Graph permission to be granted (see [Installation](#installation-and-deployment)).
+
+Then open the page with the debug query (the dev server prints this URL on startup):
+
+```text
+https://<your-tenant>.sharepoint.com/SitePages/Home.aspx?debugManifestsFile=https%3A%2F%2Flocalhost%3A4321%2Ftemp%2Fbuild%2Fmanifests.js&debug=true&noredir=true
+```
+
+For a quick test, use the hosted workbench instead (nothing to create, changes are not persisted):
+
+```text
+https://<your-tenant>.sharepoint.com/_layouts/15/workbench.aspx?debugManifestsFile=https%3A%2F%2Flocalhost%3A4321%2Ftemp%2Fbuild%2Fmanifests.js&debug=true&noredir=true
+```
+
+Edit the page and add the **Maecia Directory** web part from the toolbox. Without the `debugManifestsFile` query, SharePoint loads the catalog version instead of the local bundle.
+
+---
+
+## Demo
+
+Once the dev server is running (see [Getting started](#getting-started)), add **Maecia Directory** to the page and try the following scenario:
+
+1. Switch between the **card** and **list** views with the toggle in the toolbar.
+2. Type a name in the search box: results update as you type and are ranked by relevance.
+3. Select values in a configured filter: results narrow down and the counter updates.
+4. Use the **pager** at the bottom of the view (page size is configurable: 12, 24, 36 or 48).
+5. Click a card or a row: the detail panel opens. Press `Escape` or click outside to close it.
+6. Click the Teams or Outlook action: the corresponding app opens in a new tab.
+7. Click **Export to CSV**: the currently visible members are downloaded.
+8. Switch the site theme (light/dark): the directory adapts automatically.
+
+### Gallery
+
+| Card view | Smart search |
+| --- | --- |
+| ![Card view](docs/images/card-view.png) | ![Smart search](docs/images/smart-search.png) |
+
+| Customizable filters | Two complementary views |
+| --- | --- |
+| ![Customizable filters](docs/images/customizable-filters.png) | ![Two complementary views](docs/images/two-views.png) |
+
+| Fully configurable directory | Complete employee profile |
+| --- | --- |
+| ![Configurable directory](docs/images/configurable-directory.png) | ![Employee profile](docs/images/employee-profile.png) |
+
+| Your data stays in Microsoft 365 |
+| --- |
+| ![Microsoft 365 data](docs/images/microsoft-365-data.png) |
+
+> Visuals live in `docs/images/` (see `docs/images/README.md`).
 
 ---
 
@@ -160,19 +163,7 @@ The solution is **tenant-scoped** (`skipFeatureDeployment: true`): once deployed
 
 ### Automated build
 
-`.github/workflows/build.yml` runs unit tests, builds the production bundle and uploads the `.sppkg` as a workflow artifact on every push/PR (and on manual dispatch). Download the artifact from the **Actions** tab.
-
-### Publishing to the Microsoft Marketplace
-
-The SharePoint Framework solution is published through **Partner Center**, not from this repository:
-
-1. Create a **Partner Center developer account** (company account, MPN ID) at <https://partner.microsoft.com/dashboard/marketplace-offers/overview>.
-2. Create a new **Office Add-in / SPFx solution** offer and upload the `sharepoint-directory.sppkg` built above.
-3. Complete the listing: name, descriptions (en-US and fr-FR), category, support URL, privacy policy, terms of use, and at least 2 screenshots (1366×768 minimum).
-4. Provide test notes: approve the `User.Read.All` permission in the tenant's **API access** page and test the web part on any SharePoint page.
-5. Submit for certification. SPFx solutions are validated in about 24 hours; once approved, the app is available in the SharePoint Store / Microsoft Marketplace.
-
-The `.sppkg` is a build artifact and is **not committed**: produce it with `npm run build:production` or download it from the GitHub Actions artifacts.
+`.github/workflows/build.yml` runs the unit tests, builds the production bundle and packages the `.sppkg` on every push/PR (and on manual dispatch), and uploads it as a workflow artifact. The `.sppkg` is a build artifact and is **not committed**: produce it with `npm run build:production` or download it from the **Actions** tab.
 
 ---
 
@@ -366,7 +357,7 @@ The solution requests the following delegated permission, declared in `config/pa
 
 | Command | Description |
 | --- | --- |
-| `npm run serve` | Start the local SPFx workbench with live reload. |
+| `npm run serve` | Start the local dev server (serves the bundle with live reload). |
 | `npm run build` | Clean debug build (compile + lint + bundle). |
 | `npm run build:production` | Production build and `.sppkg` packaging. |
 | `npm test` | Run the Jest unit tests. |

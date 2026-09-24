@@ -375,7 +375,7 @@ Tests use `jest.config.js` and `tsconfig.jest.json`. Linting runs as part of the
 - Profile photos are fetched as blob URLs and revoked when the web part is disposed.
 - CSV export happens entirely in the browser.
 - Privacy policy: <https://www.maecia.com/politique-de-confidentialite>
-- Terms of use: <https://www.maecia.com/mentions-legales>
+- Terms of use: <https://www.maecia.com/conditions-d-utilisation-annuaire-moderne>
 
 ---
 
@@ -394,7 +394,7 @@ Tests use `jest.config.js` and `tsconfig.jest.json`. Linting runs as part of the
 ## Support
 
 - Issues and feature requests: <https://github.com/maecia/webpart-sharepoint-directory/issues>
-- Website: <https://www.maecia.com/agence-sharepoint>
+- Website: <https://www.maecia.com/annuaire-sharepoint>
 
 ---
 

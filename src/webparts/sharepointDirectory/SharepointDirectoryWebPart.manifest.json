@@ -12,7 +12,7 @@
     {
       "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
       "group": { "default": "Other", "fr-FR": "Autres" },
-      "title": { "default": "Employee Directory", "fr-FR": "Annuaire collaborateurs" },
+      "title": { "default": "Modern Employee Directory", "fr-FR": "Annuaire moderne des collaborateurs" },
       "description": {
         "default": "Display a searchable directory of Microsoft 365 users on any SharePoint page.",
         "fr-FR": "Affichez un annuaire recherchable des utilisateurs Microsoft 365 sur n'importe quelle page SharePoint."

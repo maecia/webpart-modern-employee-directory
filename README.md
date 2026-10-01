@@ -1,6 +1,6 @@
-# Maecia Directory
+# Modern Employee Directory
 
-A configurable SharePoint Framework (SPFx) web part that turns any SharePoint page into a modern, searchable directory of your Microsoft 365 users.
+A configurable SharePoint Framework (SPFx) web part by **Maecia** that turns any SharePoint page into a modern, searchable directory of your Microsoft 365 users.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![SPFx](https://img.shields.io/badge/SPFx-1.23-blue.svg)](https://learn.microsoft.com/sharepoint/dev/spfx/sharepoint-framework-overview)
@@ -32,7 +32,7 @@ A configurable SharePoint Framework (SPFx) web part that turns any SharePoint pa
 
 ## Overview
 
-**Maecia Directory** reads the active members of a Microsoft 365 tenant through Microsoft Graph and displays them on any SharePoint page. Page authors configure, from the property pane, which fields appear in each of the three views (card, list and detail panel), which filters are available and how the directory is sorted.
+**Modern Employee Directory** reads the active members of a Microsoft 365 tenant through Microsoft Graph and displays them on any SharePoint page. Page authors configure, from the property pane, which fields appear in each of the three views (card, list and detail panel), which filters are available and how the directory is sorted.
 
 End users get a fast, responsive directory with real-time search, multi-select filters, contact shortcuts for Microsoft Teams and Outlook, and a CSV export that respects the active search and filters.
 
@@ -72,8 +72,8 @@ The solution contains a **single web part** and is deployed tenant-wide (`skipFe
 ## Getting started
 
 ```bash
-git clone https://github.com/maecia/webpart-sharepoint-directory.git
-cd webpart-sharepoint-directory
+git clone https://github.com/maecia/webpart-modern-employee-directory.git
+cd webpart-modern-employee-directory
 
 nvm install 22
 nvm use 22
@@ -100,13 +100,13 @@ For a quick test, use the hosted workbench instead (nothing to create, changes a
 https://<your-tenant>.sharepoint.com/_layouts/15/workbench.aspx?debugManifestsFile=https%3A%2F%2Flocalhost%3A4321%2Ftemp%2Fbuild%2Fmanifests.js&debug=true&noredir=true
 ```
 
-Edit the page and add the **Maecia Directory** web part from the toolbox. Without the `debugManifestsFile` query, SharePoint loads the catalog version instead of the local bundle.
+Edit the page and add the **Modern Employee Directory** web part from the toolbox. Without the `debugManifestsFile` query, SharePoint loads the catalog version instead of the local bundle.
 
 ---
 
 ## Demo
 
-Once the dev server is running (see [Getting started](#getting-started)), add **Maecia Directory** to the page and try the following scenario:
+Once the dev server is running (see [Getting started](#getting-started)), add **Modern Employee Directory** to the page and try the following scenario:
 
 1. Switch between the **card** and **list** views with the toggle in the toolbar.
 2. Type a name in the search box: results update as you type and are ranked by relevance.
@@ -149,17 +149,17 @@ npm ci
 npm run build:production
 ```
 
-This produces `sharepoint/solution/sharepoint-directory.sppkg`.
+This produces `sharepoint/solution/modern-employee-directory.sppkg`.
 
 ### Deploy to the App Catalog
 
 The solution is **tenant-scoped** (`skipFeatureDeployment: true`): once deployed it is available on every site without per-site installation.
 
 1. Open the **SharePoint App Catalog** (`https://<tenant>-admin.sharepoint.com` → *Apps* → *App Catalog*).
-2. Upload `sharepoint-directory.sppkg` to **Apps for SharePoint**.
+2. Upload `modern-employee-directory.sppkg` to **Apps for SharePoint**.
 3. Check **Make this solution available to all sites in the organization**, then deploy.
-4. In the SharePoint admin center, go to **Advanced** → **API access** and approve the pending **Microsoft Graph `User.Read.All`** request for *Maecia Directory*. The web part cannot read users or photos until this is approved.
-5. Edit any SharePoint page, add the **Maecia Directory** web part from the toolbox.
+4. In the SharePoint admin center, go to **Advanced** → **API access** and approve the pending **Microsoft Graph `User.Read.All`** request for *Modern Employee Directory*. The web part cannot read users or photos until this is approved.
+5. Edit any SharePoint page, add the **Modern Employee Directory** web part from the toolbox.
 
 ### Automated build
 
@@ -374,8 +374,8 @@ Tests use `jest.config.js` and `tsconfig.jest.json`. Linting runs as part of the
 - No data is sent to Maecia or any third party. There is no telemetry and no external endpoint.
 - Profile photos are fetched as blob URLs and revoked when the web part is disposed.
 - CSV export happens entirely in the browser.
-- Privacy policy: <https://www.maecia.com/politique-de-confidentialite>
-- Terms of use: <https://www.maecia.com/conditions-d-utilisation-annuaire-moderne>
+- Privacy policy: <https://www.maecia.com/privacy-policy> (English) / <https://www.maecia.com/politique-de-confidentialite> (Français)
+- Terms of use: <https://www.maecia.com/terms-of-use-modern-employee-directory> (English) / <https://www.maecia.com/conditions-d-utilisation-annuaire-moderne> (Français)
 
 ---
 
@@ -393,8 +393,9 @@ Tests use `jest.config.js` and `tsconfig.jest.json`. Linting runs as part of the
 
 ## Support
 
-- Issues and feature requests: <https://github.com/maecia/webpart-sharepoint-directory/issues>
-- Website: <https://www.maecia.com/annuaire-sharepoint>
+- Issues and feature requests: <https://github.com/maecia/webpart-modern-employee-directory/issues>
+- Website (English): <https://www.maecia.com/sharepoint-employee-directory>
+- Site web (français): <https://www.maecia.com/annuaire-sharepoint>
 
 ---
 

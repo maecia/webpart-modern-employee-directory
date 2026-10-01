@@ -1,20 +1,20 @@
 {
-  "name": "sharepoint-directory",
+  "name": "modern-employee-directory",
   "version": "1.7.0",
   "private": true,
-  "description": "Maecia Directory - a configurable SharePoint Framework web part that displays a searchable directory of Microsoft 365 users.",
+  "description": "Modern Employee Directory - a configurable SharePoint Framework web part that displays a searchable directory of Microsoft 365 users.",
   "license": "MIT",
   "author": {
     "name": "Maecia",
     "url": "https://www.maecia.com"
   },
-  "homepage": "https://github.com/maecia/webpart-sharepoint-directory#readme",
+  "homepage": "https://github.com/maecia/webpart-modern-employee-directory#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maecia/webpart-sharepoint-directory.git"
+    "url": "git+https://github.com/maecia/webpart-modern-employee-directory.git"
   },
   "bugs": {
-    "url": "https://github.com/maecia/webpart-sharepoint-directory/issues"
+    "url": "https://github.com/maecia/webpart-modern-employee-directory/issues"
   },
   "keywords": [
     "sharepoint",

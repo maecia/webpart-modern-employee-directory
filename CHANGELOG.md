@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Renamed the solution to `maecia-directory-client-side-solution` and the web part to **Maecia Directory** / **Annuaire Maecia**.
+- Renamed the solution to `modern-employee-directory-client-side-solution` and the web part to **Modern Employee Directory** / **Annuaire moderne des collaborateurs**.
 - Reduced Microsoft Graph permission requests to `User.Read.All` only.
 - Removed global DOM style injection and stopped touching `document.body` (SPFx contract conformance).
 - Users are now loaded in pages of 999 to reduce the number of Microsoft Graph requests.

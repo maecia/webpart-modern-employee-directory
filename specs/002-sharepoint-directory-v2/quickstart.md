@@ -94,6 +94,6 @@ npx gulp bundle --ship
 npx gulp package-solution --ship
 
 # Déployer sur l'App Catalog
-m365 spo app add --filePath ./sharepoint/solution/sharepoint-directory.sppkg --overwrite
-m365 spo app deploy --name sharepoint-directory.sppkg --skipFeatureDeployment
+m365 spo app add --filePath ./sharepoint/solution/modern-employee-directory.sppkg --overwrite
+m365 spo app deploy --name modern-employee-directory.sppkg --skipFeatureDeployment
 ```

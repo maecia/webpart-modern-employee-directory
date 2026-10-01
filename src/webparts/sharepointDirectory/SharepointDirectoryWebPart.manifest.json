@@ -3,7 +3,7 @@
   "id": "b3c4d5e6-f7a8-9012-cdef-123456789012",
   "alias": "SharepointDirectoryWebPart",
   "componentType": "WebPart",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "manifestVersion": 2,
   "requiresCustomScript": false,
   "supportsFullBleed": true,
@@ -12,7 +12,7 @@
     {
       "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
       "group": { "default": "Other", "fr-FR": "Autres" },
-      "title": { "default": "Modern Employee Directory", "fr-FR": "Annuaire moderne des collaborateurs" },
+      "title": { "default": "Employee Directory", "fr-FR": "Annuaire collaborateurs" },
       "description": {
         "default": "Display a searchable directory of Microsoft 365 users on any SharePoint page.",
         "fr-FR": "Affichez un annuaire recherchable des utilisateurs Microsoft 365 sur n'importe quelle page SharePoint."

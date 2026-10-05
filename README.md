@@ -393,9 +393,14 @@ Tests use `jest.config.js` and `tsconfig.jest.json`. Linting runs as part of the
 
 ## Support
 
-- Issues and feature requests: <https://github.com/maecia/webpart-modern-employee-directory/issues>
+Need help with Modern Employee Directory?
+
+For installation, configuration, or technical support, contact the Maecia team: [technique@maecia.com](mailto:technique@maecia.com)
+
+For bug reports and feature requests, you can also open an issue in this repository: [Open a GitHub issue](https://github.com/maecia/webpart-modern-employee-directory/issues/new)
+
 - Website (English): <https://www.maecia.com/sharepoint-employee-directory>
-- Site web (français): <https://www.maecia.com/annuaire-sharepoint>
+- Site web (Français): <https://www.maecia.com/annuaire-sharepoint>
 
 ---
 
